@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIN53 Data Management</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/layout.css">
+
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('ain53_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <!-- React 18 & ReactDOM 18 UMD (Zero Build Overhead) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Startup Loading Screen Overlay -->
+  <div id="loading-screen" class="loading-screen">
+    <!-- Overlay Background Mesh -->
+    <div class="mesh-bg"></div>
+
+    <!-- Glassmorphic Card -->
+    <div class="loader-card">
+      <div class="visual-container">
+        <!-- Glow sphere -->
+        <div class="icon-glow-soft"></div>
+
+        <!-- Tech Hologram Dashed Ring -->
+        <div class="hologram-ring"></div>
+
+        <!-- Outer SVG Progress Circle -->
+        <svg class="svg-ring-container" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="loaderRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#d4a44a" />
+              <stop offset="100%" stop-color="#10b981" />
+            </linearGradient>
+          </defs>
+          <!-- Background track -->
+          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0, 0, 0, 0.03)" stroke-width="3" />
+          <!-- Progress bar -->
+          <circle id="progress-circle" cx="50" cy="50" r="44" fill="none" stroke="url(#loaderRingGrad)"
+            stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276.4" stroke-dashoffset="276.4"
+            style="transition: stroke-dashoffset 0.15s cubic-bezier(0.4, 0, 0.2, 1);" />
+        </svg>
+
+        <!-- App Icon Centerpiece -->
+        <div class="icon-box">
+          <img class="app-icon" src="./ICON.png" alt="App Icon"
+            onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';">
+        </div>
+      </div>
+
+      <!-- Typography Branding -->
+      <div class="title-text">AIN53</div>
+      <div class="subtitle-text">Data Management</div>
+
+      <!-- Status Tracking -->
+      <div class="status-panel">
+        <div class="percent-indicator"><span id="pct-val">0</span><span>%</span></div>
+        <div class="console-message">
+          <span id="log-msg">Initializing core components</span><span class="terminal-cursor"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background Mesh -->
+  <div class="mesh-bg"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="https://ain53.org/" target="_blank" rel="noopener noreferrer" class="sidebar-logo-container"
+        title="Visit ain53.org">
+        <img class="sidebar-logo" src="./ICON.png" alt="Logo"
+          onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';">
+        <div class="sidebar-title-wrapper">
+          <h2>AIN53</h2>
+          <p>Data Management</p>
+        </div>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-view="view-pdf">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>PDF to CSV</span>
+      </button>
+      <button class="nav-btn" data-view="view-csv">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>CSV to Folders</span>
+      </button>
+      <button class="nav-btn" data-view="view-sorting">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <span>Media Sorting</span>
+      </button>
+      <button class="nav-btn" data-view="view-inventory">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line x1="6" y1="6" x2="6.01" y2="6"></line>
+          <line x1="6" y1="18" x2="6.01" y2="18"></line>
+        </svg>
+        <span>Drive Inventory</span>
+      </button>
+    </nav>
+
+    <!-- Bottom Navigation Section -->
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.55rem; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
+      <button class="nav-btn" data-view="view-settings">
+        <div style="display: flex; align-items: center; gap: 0.85rem; width: 100%;">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Settings</span>
+        </div>
+        <span id="update-nav-badge" class="hidden" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+      </button>
+
+      <button class="nav-btn more-info-btn" id="btn-more-info">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>User Guide</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Shell -->
+  <div class="main-shell">
+    <!-- React Top Header -->
+    <div id="react-header-root"></div>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+
+      <!-- Toast Notifications -->
+      <div id="toast" class="toast hidden"></div>
+
+      <!-- ── View: PDF to CSV ── -->
+      <section id="view-pdf" class="view-section active">
+        <div class="card glass">
+          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
+              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> PDF to CSV Extractor</h3>
+          <p class="text-muted">Extract tables from event PDFs, map columns, and export to CSV.</p>
+
+          <div class="dropzone" id="pdf-dropzone">
+            <div class="dropzone-text">
+              <h4>Select PDF File</h4>
+              <p>Click here to choose a file</p>
+            </div>
+            <button id="btn-pick-pdf" class="btn btn-select">Browse PDF</button>
+          </div>
+
+          <div id="pdf-settings" class="hidden mt-4">
+            <div class="file-info mb-4" id="pdf-file-info"></div>
+
+            <div class="input-group mb-3">
+              <label>Mauze</label>
+              <input type="text" id="pdf-mauze" placeholder="Enter Mauze (Optional)" class="input-glass">
+            </div>
+
+            <div class="grid-2 mb-3">
+              <div class="input-group">
+                <label>Start Sr Number</label>
+                <input type="number" id="pdf-sr-start" placeholder="Min" class="input-glass">
+              </div>
+              <div class="input-group">
+                <label>End Sr Number</label>
+                <input type="number" id="pdf-sr-end" placeholder="Max" class="input-glass">
+              </div>
+            </div>
+
+            <div class="mapping-container mb-4">
+              <h4>Column Mapping</h4>
+              <div id="pdf-mapping-grid" class="mapping-grid"></div>
+            </div>
+
+            <div class="flex gap-2">
+              <button id="btn-pdf-preview" class="btn btn-secondary">Preview Data</button>
+              <button id="btn-pdf-download" class="btn btn-success">Download CSV</button>
+            </div>
+
+            <div class="preview-wrapper mt-4 hidden" id="pdf-preview-wrapper">
+              <div class="status-bar info" id="pdf-status">Rows found: 0</div>
+              <div class="table-container">
+                <table class="table-glass" id="pdf-table">
+                  <thead>
+                    <tr>
+                      <th>Seq</th>
+                      <th>Event</th>
+                      <th>Sticker</th>
+                      <th>Name</th>
+                      <th>ITS</th>
+                      <th>Location</th>
+                      <th>Mobile</th>
+                      <th>Mauze</th>
+                      <th>Sub Event</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── View: CSV to Folders ── -->
+      <section id="view-csv" class="view-section hidden">
+        <div class="card glass">
+          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
+              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> CSV to Folders</h3>
+          <p class="text-muted">Create master and leaf folder structures directly from a CSV.</p>
+
+          <div class="input-group mb-3 mt-4">
+            <label>Input CSV File (Drag &amp; Drop Supported)</label>
+            <div class="flex gap-2" id="csv-input-container">
+              <input type="text" id="csv-input-path" class="input-glass" readonly placeholder="No file selected">
+              <button id="btn-csv-input" class="btn btn-select">Select File</button>
+            </div>
+          </div>
+
+          <div class="input-group mb-4">
+            <label>Destination Folder (Drag &amp; Drop Supported)</label>
+            <div class="flex gap-2" id="csv-dest-container">
+              <input type="text" id="csv-dest-path" class="input-glass" readonly placeholder="No folder selected">
+              <button id="btn-csv-dest" class="btn btn-select">Select Folder</button>
+            </div>
+          </div>
+
+          <button id="btn-csv-process" class="btn btn-primary" disabled>Generate Folders</button>
+
+          <div id="csv-result" class="mt-4 hidden status-bar success"></div>
+        </div>
+      </section>
+
+      <!-- ── View: Media Sorting ── -->
+      <section id="view-sorting" class="view-section hidden">
+
+        <!-- SETUP SCREEN -->
+        <div id="sort-setup-screen" class="card glass h-full flex-col">
+          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
+              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> Media Sorting</h3>
+          <p class="text-muted mb-4">Sort photos and videos into event folders using CSV mapping.</p>
+
+          <div class="grid-2 gap-4 mt-4">
+            <div class="input-group">
+              <label>1. Mapping CSV File (Drag &amp; Drop Supported)</label>
+              <div class="flex gap-2" id="sort-mapping-container">
+                <input type="text" id="sort-mapping-path" class="input-glass" readonly placeholder="No mapping file">
+                <button id="btn-sort-mapping" class="btn btn-select">Browse</button>
+              </div>
+            </div>
+            <div class="input-group">
+              <label>2. Root Source Directory (Drag &amp; Drop Supported)</label>
+              <div class="flex gap-2" id="sort-root-container">
+                <input type="text" id="sort-root-path" class="input-glass" readonly placeholder="No root directory">
+                <button id="btn-sort-root" class="btn btn-select">Browse</button>
+              </div>
+            </div>
+          </div>
+          <button id="btn-sort-scan" class="btn btn-primary mt-4 w-full" disabled>Start Sorting Files</button>
+        </div>
+
+        <!-- ANALYSIS SCREEN -->
+        <div id="sort-analysis-screen" class="card glass hidden">
+          <div class="analysis-header text-center mb-4">
+            <h3 class="card-title">Analysing Media Files</h3>
+            <p id="analysis-subtitle" class="text-muted scanning-pulse">Scanning for sub-event markers in photos &amp;
+              videos…</p>
+          </div>
+
+          <div class="scan-ring-container flex justify-center mb-4">
+            <div class="scan-ring" style="width:120px; height:120px; position:relative;">
+              <svg viewBox="0 0 100 100" style="transform: rotate(-90deg); width:100%; height:100%;">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="6" />
+                <circle id="ring-progress" cx="50" cy="50" r="45" fill="none" stroke="var(--accent-blue)"
+                  stroke-width="6" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="283"
+                  style="transition: stroke-dashoffset 0.3s ease;" />
+              </svg>
+              <div id="ring-percent"
+                style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:700; color:var(--accent-blue);">
+                0%</div>
+            </div>
+          </div>
+
+          <div class="progress-section mb-4">
+            <div class="progress-bar-bg mb-2">
+              <div class="progress-bar-fill" id="analysis-bar"></div>
+            </div>
+            <div class="flex" style="justify-content: space-between;">
+              <span class="text-sm font-bold" id="analysis-progress-text">0 / 0 files</span>
+              <span class="text-muted text-sm" id="analysis-eta">Starting analysis…</span>
+            </div>
+          </div>
+
+          <div class="stats-grid mb-4">
+            <div class="stat-card" id="stat-card-photos">
+              <div class="stat-value" id="analysis-photos">0</div>
+              <div class="stat-label">Photos</div>
+            </div>
+            <div class="stat-card" id="stat-card-videos">
+              <div class="stat-value" id="analysis-videos">0</div>
+              <div class="stat-label">Videos</div>
+            </div>
+            <div class="stat-card" id="stat-card-markers">
+              <div class="stat-value" id="analysis-markers">0</div>
+              <div class="stat-label">Markers</div>
+            </div>
+          </div>
+
+          <div class="file-ticker mb-4">
+            <div class="ticker-label text-xs text-muted mb-2">CURRENTLY ANALYSING</div>
+            <div class="flex gap-2 align-center">
+              <span class="ticker-badge photo" id="ticker-badge">Photo</span>
+              <span class="ticker-filename" id="ticker-filename"
+                style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px;">Waiting…</span>
+              <span class="ticker-contributor text-xs" id="ticker-contributor"
+                style="color:var(--accent-blue); font-weight:600;"></span>
+            </div>
+          </div>
+
+          <div class="activity-log" id="activity-log">
+            <div class="log-entry"><span style="color:var(--accent-green);">●</span> Analysis engine ready</div>
+          </div>
+        </div>
+
+        <!-- MAIN WORKSPACE -->
+        <div id="sort-main-screen" class="hidden sort-workspace-fill">
+          <div class="dashboard-header flex mb-4"
+            style="justify-content: space-between; align-items: center; background:var(--bg-glass); backdrop-filter: blur(10px); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass); flex-shrink: 0;">
+            <h3 id="dashboard-title" class="card-title mb-0" style="margin-bottom:0;">Dashboard</h3>
+            <div class="header-actions flex gap-2">
+              <button class="btn btn-secondary" id="btn-undo" disabled>Undo</button>
+              <button class="btn btn-secondary" id="btn-undo-transfer" disabled>Undo Transfer</button>
+              <button class="btn btn-primary" id="btn-copy-all">Copy All</button>
+              <button class="btn btn-success" id="btn-move-all">Move All</button>
+            </div>
+          </div>
+
+          <div class="workspace-layout flex gap-4">
+            <!-- Sorting Internal Sidebar -->
+            <div class="sort-sidebar" style="width: 220px; flex-shrink:0; overflow-y: auto;">
+              <div class="card glass" style="padding: 1rem;">
+                <h4 class="text-sm text-muted mb-2">FILTER BY CONTRIBUTOR</h4>
+                <button class="btn btn-secondary w-full mb-2 active" id="btn-filter-all"
+                  style="text-align:left; justify-content:flex-start;">All Contributors</button>
+                <div id="contributor-filters" class="flex flex-col gap-2 mb-4"></div>
+
+                <h4 class="text-sm text-muted mb-2">FOLDER TOGGLES</h4>
+                <button class="btn btn-secondary w-full mb-2" id="btn-expand-all">Expand All</button>
+                <button class="btn btn-secondary w-full mb-4" id="btn-collapse-all">Collapse All</button>
+
+                <h4 class="text-sm text-muted mb-2">STATS</h4>
+                <div class="text-sm flex-col gap-2">
+                  <div>Total Files: <strong id="stat-total-files">0</strong></div>
+                  <div>Excluded: <strong id="stat-excluded">0</strong></div>
+                  <div>Folders: <strong id="stat-total-folders">0</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Viewer Area -->
+            <div class="sort-viewer flex-1" style="min-width:0; padding-right: 0.5rem;">
+              <div class="search-bar mb-4 relative">
+                <input type="text" id="file-search-input" class="input-glass w-full"
+                  placeholder="Search files by name…">
+                <div id="search-results-info" class="text-xs text-muted mt-1"></div>
+              </div>
+
+              <div id="folders-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODALS -->
+        <div id="edit-modal" class="modal sort-modal" style="display: none;">
+          <div class="modal-content glass">
+            <h3 id="modal-title" class="card-title">Shift File Assignment</h3>
+            <p id="modal-desc" class="text-muted mb-4">Shift or move file sequencing for selected files.</p>
+            <div class="flex-col gap-2">
+              <button class="btn btn-primary flex justify-between" id="btn-shift-down">
+                <span>Shift All Down</span><span class="text-xs" style="opacity:0.8;">Selected + below shift</span>
+              </button>
+              <button class="btn btn-primary flex justify-between" id="btn-shift-up">
+                <span>Shift All Up</span><span class="text-xs" style="opacity:0.8;">Selected + above shift</span>
+              </button>
+              <button class="btn btn-secondary flex justify-between" id="btn-move-down">
+                <span>Move to Next Folder</span><span class="text-xs" style="opacity:0.8;">Move only</span>
+              </button>
+              <button class="btn btn-secondary flex justify-between" id="btn-move-up">
+                <span>Move to Previous Folder</span><span class="text-xs" style="opacity:0.8;">Move only</span>
+              </button>
+              <button class="btn btn-secondary mt-2 text-center justify-center" id="btn-edit-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="preview-modal" class="modal sort-modal" style="display: none;">
+          <div class="modal-content glass">
+            <h3 class="card-title">Sequence Change Preview</h3>
+            <p class="text-muted text-sm mb-4">Review the following changes before applying:</p>
+            <div id="preview-modal-body" class="report-body text-left text-sm mb-4"
+              style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-success flex-1" id="btn-preview-confirm">Confirm</button>
+              <button class="btn btn-secondary flex-1" id="btn-preview-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="report-modal" class="modal sort-modal" style="display: none;">
+          <div class="modal-content glass">
+            <h3 class="card-title">Sequence Change Summary</h3>
+            <div id="report-modal-body" class="report-body text-left text-sm mb-4"
+              style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary flex-1" id="btn-report-done">Done</button>
+              <button class="btn btn-secondary flex-1" id="btn-report-undo">Undo Changes</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── View: Drive Inventory ── -->
+      <section id="view-inventory" class="view-section hidden">
+        <div class="card glass">
+          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
+              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> Drive Inventory</h3>
+          <p class="text-muted">Scan a drive and generate an Excel report of folder structures and missing sequence
+            gaps.</p>
+
+          <div class="input-group mb-3 mt-4">
+            <label>Target Drive / Folder (Drag &amp; Drop Supported)</label>
+            <div class="flex gap-2" id="inv-drive-container">
+              <input type="text" id="inv-drive-path" class="input-glass" readonly placeholder="No folder selected">
+              <button id="btn-inv-drive" class="btn btn-select">Select Drive</button>
+            </div>
+          </div>
+
+          <div class="input-group mb-4">
+            <label>Save Report As</label>
+            <div class="flex gap-2">
+              <input type="text" id="inv-save-path" class="input-glass" readonly
+                placeholder="No save location selected">
+              <button id="btn-inv-save" class="btn btn-select" disabled>Select Location</button>
+            </div>
+          </div>
+
+          <button id="btn-inv-generate" class="btn btn-primary w-full" disabled>Generate Excel Report</button>
+
+          <div id="inv-result" class="mt-4 hidden status-bar info"></div>
+        </div>
+      </section>
+
+      <!-- ── Global Progress Overlay ── -->
+      <div id="global-progress-overlay" class="modal hidden"
+        style="background: rgba(248, 250, 252, 0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 99999; display: none; align-items: center; justify-content: center;">
+        <!-- Glassmorphic Loader Card -->
+        <div class="loader-card"
+          style="width: 380px; padding: 40px 30px; border-radius: 24px; position: relative; z-index: 10;">
+          <h3 id="global-progress-title" class="title-text"
+            style="font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #059669, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Processing...</h3>
+          <p id="global-progress-subtitle" class="subtitle-text"
+            style="margin-bottom: 25px; font-size: 13px; font-weight: 500;">Please wait while the task completes.</p>
+
+          <!-- Circular Progress Ring & Icon -->
+          <div class="visual-container"
+            style="width: 130px; height: 130px; margin-bottom: 25px; position: relative; display: flex; align-items: center; justify-content: center;">
+            <div class="icon-glow-soft"
+              style="width: 80px; height: 80px; background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);">
+            </div>
+            <div class="hologram-ring"
+              style="width: 110px; height: 110px; border: 1px dashed rgba(16, 185, 129, 0.15);">
+            </div>
+
+            <svg class="svg-ring-container" viewBox="0 0 100 100"
+              style="width: 100%; height: 100%; position: absolute; transform: rotate(-90deg);">
+              <defs>
+                <linearGradient id="globalProgressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#059669" />
+                  <stop offset="100%" stop-color="#34d399" />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0, 0, 0, 0.02)" stroke-width="3.5" />
+
+              <!-- Determinate/Indeterminate Circle -->
+              <circle id="global-progress-circle" cx="50" cy="50" r="44" fill="none" stroke="url(#globalProgressGrad)"
+                stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="276.46"
+                style="transition: stroke-dashoffset 0.25s ease;" />
+            </svg>
+
+            <!-- Core Center Indicator -->
+            <div class="icon-box"
+              style="width: 64px; height: 64px; background: white; border: 1px solid rgba(16, 185, 129, 0.1); box-shadow: 0 4px 16px rgba(16, 185, 129, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5;">
+              <!-- Simple clean loading svg -->
+              <svg id="global-progress-inner-spinner" viewBox="0 0 24 24" width="28" height="28" fill="none"
+                stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="animation: rotate 2s linear infinite;">
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="12" y1="18" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="8.41" y2="8.41"></line>
+                <line x1="15.59" y1="15.59" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="6" y2="12"></line>
+                <line x1="18" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="8.41" y2="15.59"></line>
+                <line x1="15.59" y1="8.41" x2="19.07" y2="4.93"></line>
+              </svg>
+              <!-- Percentage value hidden initially -->
+              <div id="global-progress-inner-text" class="hidden"
+                style="font-size: 16px; font-weight: 700; color: var(--text-primary);">0%</div>
+            </div>
+          </div>
+
+          <!-- Determinate details -->
+          <div id="global-progress-details" class="hidden w-full"
+            style="display: flex; flex-direction: column; gap: 4px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px;">
+            <div class="flex" style="justify-content: space-between; align-items: center;">
+              <span id="global-progress-text"
+                style="font-size: 12px; font-weight: 700; color: var(--text-primary); font-family: 'Space Mono', monospace;">0
+                / 0</span>
+              <span id="global-progress-eta"
+                style="font-size: 11px; font-weight: 500; color: var(--text-muted);">Calculating ETA...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS VIEW PANEL -->
+      <div id="view-settings" class="view-panel hidden">
+        <div class="card glass">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
+            <div>
+              <h2 class="card-title" style="font-size: 1.6rem; margin-bottom: 0.2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Application Settings</span>
+              </h2>
+              <p style="color: var(--text-muted); font-size: 0.88rem;">Manage theme preferences, application updates, and system version information.</p>
+            </div>
+            <span class="app-version-tag" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;">v 1.0.14</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 1.8rem;">
+            <!-- Theme Settings Card -->
+            <div style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎨</span> Appearance &amp; Theme Selection
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.2rem;">Choose your preferred color theme. Your selection is automatically saved and remembered across application launches.</p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div id="theme-card-dark" class="theme-select-card active" data-theme-id="dark" style="background: rgba(4, 28, 19, 0.7); border: 2px solid #10b981; border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all var(--transition);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+                    <span style="font-weight: 700; font-size: 1rem; color: #f8fafc;">🌙 Dark Emerald</span>
+                    <span class="theme-check-icon" style="color: #10b981; font-weight: 800;">✓ Selected</span>
+                  </div>
+                  <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Deep Forest Emerald &amp; Imperial Gold (Default Theme)</p>
+                </div>
+
+                <div id="theme-card-light" class="theme-select-card" data-theme-id="light" style="background: rgba(255, 249, 230, 0.85); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all var(--transition);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+                    <span style="font-weight: 700; font-size: 1rem; color: #072a1c;">☀️ Imperial Alabaster</span>
+                    <span class="theme-check-icon hidden" style="color: #10b981; font-weight: 800;">✓ Selected</span>
+                  </div>
+                  <p style="font-size: 0.8rem; color: #856404; margin: 0;">Warm Cream &amp; Alabaster Light Mode matching ain53.org</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Software Updates & Version Card -->
+            <div style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>🚀</span> Software Updates &amp; System Version
+                  </h3>
+                  <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Current Installed Version: <strong class="app-version-tag" style="color: #10b981;">v 1.0.14</strong></p>
+                </div>
+                
+                <button id="btn-settings-check-updates" class="btn btn-primary" style="gap: 8px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Check for Updates Now</span>
+                </button>
+              </div>
+              
+              <div style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: flex-end; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Official Website: <a href="https://ain53.org/" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">ain53.org</a></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div> <!-- /.main-shell -->
+
+  <!-- Floating React Live Process Dock -->
+  <div id="react-live-dock-root"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/react_components.js"></script>
+  <script src="js/00_pdf.js"></script>
+  <script src="js/01_csv.js"></script>
+  <script src="js/02_sorting.js"></script>
+  <script src="js/03_inventory.js"></script>
+  <!-- Startup Loader Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Boot steps simulation
+      const bootSteps = [
+        { progress: 0, text: "Initializing core system..." },
+        { progress: 15, text: "Verifying secure protocols..." },
+        { progress: 30, text: "Loading modules and libraries..." },
+        { progress: 50, text: "Establishing database handshake..." },
+        { progress: 70, text: "Optimizing sorting indexes..." },
+        { progress: 85, text: "Mounting user interfaces..." },
+        { progress: 100, text: "Ready to launch" }
+      ];
+
+      const circle = document.getElementById('progress-circle');
+      const pctVal = document.getElementById('pct-val');
+      const logMsg = document.getElementById('log-msg');
+      const loaderScreen = document.getElementById('loading-screen');
+
+      // Circ length = 2 * PI * R = 2 * 3.14159 * 44 = 276.46
+      const strokeDash = 276.46;
+
+      function setProgress(percent) {
+        const offset = strokeDash - (percent / 100) * strokeDash;
+        if (circle) circle.style.strokeDashoffset = offset;
+        if (pctVal) pctVal.textContent = percent;
+      }
+
+      let stepIndex = 0;
+      let currentPercent = 0;
+
+      function runSimulation() {
+        if (currentPercent >= 100) {
+          setTimeout(() => {
+            if (loaderScreen) {
+              loaderScreen.classList.add('fade-out');
+              setTimeout(() => {
+                loaderScreen.style.display = 'none';
+              }, 400);
+            }
+          }, 300);
+          return;
+        }
+
+        const targetStep = bootSteps[stepIndex];
+        if (currentPercent >= targetStep.progress && stepIndex < bootSteps.length - 1) {
+          stepIndex++;
+        }
+
+        if (logMsg) logMsg.textContent = bootSteps[stepIndex].text;
+
+        // Quick randomized increment (makes it look real, fast, and completes in ~1 second)
+        currentPercent += Math.floor(Math.random() * 8) + 6;
+        if (currentPercent > 100) currentPercent = 100;
+
+        setProgress(currentPercent);
+
+        // Fast randomized delay (between 50ms and 120ms)
+        const nextDelay = Math.floor(Math.random() * 70) + 50;
+        setTimeout(runSimulation, nextDelay);
+      }
+
+      // Start the simulation with a tiny entry delay
+      setTimeout(runSimulation, 200);
+
+      // User Guide Modal Logic
+      const guideBtn = document.getElementById('btn-more-info');
+      const guideModal = document.getElementById('guide-modal');
+      const guideCloseBtn = document.getElementById('btn-guide-close');
+      const guideModalContent = document.getElementById('guide-modal-content');
+
+      if (guideBtn && guideModal && guideCloseBtn) {
+        guideBtn.addEventListener('click', () => {
+          guideModal.style.display = 'flex';
+        });
+
+        guideCloseBtn.addEventListener('click', () => {
+          guideModal.style.display = 'none';
+        });
+
+        guideModal.addEventListener('click', (e) => {
+          if (e.target === guideModal) {
+            guideModal.style.display = 'none';
+          }
+        });
+
+        // Anchors scroll inside the modal content box smoothly
+        const guideLinks = document.querySelectorAll('.guide-nav-links a');
+        guideLinks.forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl && guideModalContent) {
+              const containerTop = guideModalContent.getBoundingClientRect().top;
+              const targetTop = targetEl.getBoundingClientRect().top;
+              const scrollOffset = targetTop - containerTop + guideModalContent.scrollTop - 20;
+
+              guideModalContent.scrollTo({
+                top: scrollOffset,
+                behavior: 'smooth'
+              });
+            }
+          });
+        });
+
+        // Navigation buttons inside each section
+        const guideNavBtns = document.querySelectorAll('.btn-guide-nav');
+        guideNavBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const targetView = btn.getAttribute('data-target-view');
+            // Hide the user guide modal
+            guideModal.style.display = 'none';
+            // Click the corresponding nav button
+            const sidebarBtn = document.querySelector(`.sidebar-nav .nav-btn[data-view="${targetView}"]`);
+            if (sidebarBtn) {
+              sidebarBtn.click();
+            }
+          });
+        });
+      }
+
+      // Global Drag and Drop Overlay Logic
+      const dragOverlay = document.getElementById('drag-drop-overlay');
+      window._dragCounter = 0;
+
+      window.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        window._dragCounter++;
+        if (window._dragCounter === 1) {
+          dragOverlay.classList.remove('hidden');
+        }
+      });
+
+      window.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        window._dragCounter--;
+        if (window._dragCounter === 0) {
+          dragOverlay.classList.add('hidden');
+        }
+      });
+
+      window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+
+      window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        window._dragCounter = 0;
+        dragOverlay.classList.add('hidden');
+      });
+    });
+  </script>
+
+  <!-- USER GUIDE MODAL -->
+  <div id="guide-modal" class="modal"
+    style="background: rgba(248, 250, 252, 0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 999999; display: none; align-items: center; justify-content: center;">
+    <div class="modal-content glass" id="guide-modal-content"
+      style="width: 90%; max-width: 750px; max-height: 85vh; overflow-y: auto; padding: 2.5rem; border-radius: 24px; position: relative;">
+
+      <!-- Close Button -->
+      <button id="btn-guide-close" class="btn-close-modal"
+        style="position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-muted); transition: color var(--transition);">&times;</button>
+
+      <!-- Header -->
+      <div
+        style="text-align: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+        <div class="sidebar-logo-container" style="justify-content: center;">
+          <img class="sidebar-logo" src="./ICON.png" alt="Logo" style="width: 54px; height: 54px;"
+            onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';">
+          <div class="sidebar-title-wrapper" style="text-align: left;">
+            <h2 style="font-size: 1.8rem;">AIN53</h2>
+            <p>Data Management</p>
+          </div>
+        </div>
+        <h1
+          style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-top: 1.2rem; margin-bottom: 0;">
+          Application User Guide</h1>
+
+        <!-- Navigation Chips -->
+        <div class="guide-nav-links"
+          style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; width: 100%;">
+          <a href="#guide-pdf"
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">1.
+            PDF Extractor</a>
+          <a href="#guide-folders"
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">2.
+            Folder Creator</a>
+          <a href="#guide-sorting"
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">3.
+            Media Sorter</a>
+          <a href="#guide-inventory"
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">4.
+            Drive Inventory</a>
+        </div>
+      </div>
+
+      <!-- Scrollable Content -->
+      <div class="guide-body" style="text-align: left; display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- SECTION: PDF Extractor -->
+        <section id="guide-pdf"
+          style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+          <h3
+            style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
+            <span class="step-badge"
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">1</span>
+            PDF to CSV Extractor
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Extracts
+            tables from event PDFs, maps columns, and exports them to a structured spreadsheet format.</p>
+          <h4
+            style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+            How to Use:</h4>
+          <ul
+            style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); padding-left: 0;">
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click on <strong>Browse PDF</strong> or drag and drop a PDF file into the upload zone.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Adjust settings: Enter an optional Mauze code, or limit sequence extraction (e.g. Sticker 100 to
+                500).</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Verify column mappings. If the auto-mapper misaligns a column, adjust it via the drop-down
+                selectors.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Preview Data</strong> to check the formatted rows, then click <strong>Download
+                  CSV</strong> to save the final file.</span>
+            </li>
+          </ul>
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button class="btn btn-select btn-guide-nav" data-target-view="view-pdf"
+              style="gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.2rem; display: inline-flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Go to PDF to CSV Extractor</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- SECTION: Folder Creator -->
+        <section id="guide-folders"
+          style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+          <h3
+            style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
+            <span class="step-badge"
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">2</span>
+            CSV to Folders
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Generates
+            hierarchical directory systems automatically from your event spreadsheet to prepare target folders before
+            sorting files.</p>
+          <h4
+            style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+            How to Use:</h4>
+          <ul
+            style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); padding-left: 0;">
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Navigate to the <strong>CSV to Folders</strong> tab.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Select File</strong> or drag and drop your mapping CSV file directly into the input
+                container.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Select Folder</strong> or drag and drop your target destination folder directly into
+                the input container.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Generate Folders</strong>. Once finished, the destination folder will open
+                automatically.</span>
+            </li>
+          </ul>
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button class="btn btn-select btn-guide-nav" data-target-view="view-csv"
+              style="gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.2rem; display: inline-flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Go to CSV to Folders</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- SECTION: Media Sorter -->
+        <section id="guide-sorting"
+          style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+          <h3
+            style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
+            <span class="step-badge"
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">3</span>
+            Media Sorting
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Scans
+            folders of raw photos and videos, analyzes files for event boundaries, maps them to sub-events visually, and
+            performs file copies or moves.</p>
+          <h4
+            style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+            How to Use:</h4>
+          <ul
+            style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); padding-left: 0;">
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Select the Mapping CSV File and the Root Source Directory of your files (Clicking selection buttons
+                or using Drag &amp; Drop are supported).</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Start Sorting Files</strong>. The app will scan and analyze the files.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Review groups in the visual dashboard. Toggle checkboxes to <strong>Edit</strong> (shift sequences)
+                or <strong>Don't Copy</strong> (exclude items).</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Verify actions in the preview window, then click <strong>Copy All</strong> or <strong>Move
+                  All</strong> to run file transfers.</span>
+            </li>
+          </ul>
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button class="btn btn-select btn-guide-nav" data-target-view="view-sorting"
+              style="gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.2rem; display: inline-flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <span>Go to Media Sorting</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- SECTION: Drive Inventory -->
+        <section id="guide-inventory"
+          style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+          <h3
+            style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
+            <span class="step-badge"
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">4</span>
+            Drive Inventory
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Performs
+            verification scans across target drives to find missing numerical gaps or corrupted copy transfers.</p>
+          <h4
+            style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+            How to Use:</h4>
+          <ul
+            style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); padding-left: 0;">
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Select the <strong>Target Drive / Folder</strong> to scan (Supports Browse or Drag &amp;
+                Drop).</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Select Location</strong> to choose where to save the generated Excel report.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Generate Excel Report</strong>. Gaps are colored red, non-standard files blue, and
+                totals yellow.</span>
+            </li>
+          </ul>
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button class="btn btn-select btn-guide-nav" data-target-view="view-inventory"
+              style="gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.2rem; display: inline-flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+              <span>Go to Drive Inventory</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Footer inside modal -->
+      <div
+        style="margin-top: 2rem; border-top: 1px solid rgba(0, 0, 0, 0.05); padding-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+        <p>© 2026 AIN. All Rights Reserved. - AIN53 Data Management</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTO UPDATE RELEASE NOTES MODAL -->
+  <div id="update-modal" class="modal hidden">
+    <div class="modal-content glass" style="max-width: 580px; padding: 28px; border-radius: 20px;">
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.8rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div
+            style="width: 38px; height: 38px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #10b981;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Software Update
+              Available</h3>
+            <span id="update-modal-version-tag" style="font-size: 0.8rem; color: #10b981; font-weight: 700;">Version
+              Ready</span>
+          </div>
+        </div>
+        <button id="btn-close-update-modal"
+          style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <h4
+          style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 0.05em;">
+          What's New in this Release:</h4>
+        <div id="update-modal-notes"
+          style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 10px; padding: 14px; font-size: 0.88rem; color: var(--text-primary); max-height: 180px; overflow-y: auto; line-height: 1.5; white-space: pre-wrap;">
+          New updates and enhancements are available from GitHub.
+        </div>
+      </div>
+
+      <!-- Download progress box inside modal -->
+      <div id="update-modal-progress-container" class="hidden"
+        style="margin-bottom: 1.2rem; background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 10px; padding: 14px;">
+        <div
+          style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
+          <span id="update-progress-status-text">Downloading Update...</span>
+          <span id="update-progress-pct-text">0%</span>
+        </div>
+        <div
+          style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 0.4rem;">
+          <div id="update-progress-bar-fill"
+            style="width: 0%; height: 100%; background: linear-gradient(90deg, #059669, #34d399); transition: width 0.2s ease;">
+          </div>
+        </div>
+        <div
+          style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">
+          <span id="update-progress-bytes">0 MB / 0 MB</span>
+          <span id="update-progress-speed">0 KB/s</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center;">
+        <button id="btn-update-later" class="btn"
+          style="background: transparent; border: 1px solid var(--border-glass); color: var(--text-secondary); padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600;">Remind
+          Me Later</button>
+        <button id="btn-start-update" class="btn btn-success"
+          style="display: inline-flex; align-items: center; gap: 8px; padding: 0.6rem 1.4rem; border-radius: 10px; cursor: pointer; font-weight: 700;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download &amp; Install Now</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MEDIA LIGHTBOX PREVIEW MODAL -->
+  <div id="lightbox-modal" class="modal hidden" style="background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 999999; display: flex; align-items: center; justify-content: center;">
+    <div class="modal-content glass" style="max-width: 920px; width: 92%; padding: 24px; border-radius: 20px; position: relative; display: flex; flex-direction: column; gap: 14px; align-items: center; border: 1px solid var(--border-glass-hover); box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.2rem;">🖼️</span>
+          <span id="lightbox-title" style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">Media Preview</span>
+        </div>
+        <button id="btn-close-lightbox" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div style="width: 100%; max-height: 70vh; min-height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.6); border-radius: 12px; border: 1px solid var(--border-glass);">
+        <img id="lightbox-img" src="" alt="Preview" class="hidden" style="max-width: 100%; max-height: 70vh; object-fit: contain;">
+        <video id="lightbox-video" controls class="hidden" style="max-width: 100%; max-height: 70vh; outline: none;"></video>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.2); padding: 8px 14px; border-radius: 8px;">
+        <span id="lightbox-path" style="max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+        <span id="lightbox-meta" style="color: var(--accent-blue); font-weight: 600;">High-Res View</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL DRAG AND DROP OVERLAY -->
+  <div id="drag-drop-overlay" class="drag-drop-overlay hidden">
+    <div class="drag-drop-box">
+      <svg class="drag-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+      </svg>
+      <h2>Import Your Files</h2>
+      <p>Drop PDF or CSV files here to load them into the highlighted dropzone</p>
+    </div>
+  </div>
+</body>
+
+</html>

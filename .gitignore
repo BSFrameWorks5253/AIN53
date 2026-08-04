@@ -1,0 +1,12 @@
+# Build & Temp Folders
+build/
+dist/
+payload.zip
+__pycache__/
+*.pyc
+*.spec
+*.backup*
+scratch/
+
+# Ignore large build artifacts from git history (they get uploaded to GitHub Releases instead)
+_All Builds/

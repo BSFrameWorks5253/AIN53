@@ -1,0 +1,6 @@
+pywebview
+pandas
+pdfplumber
+opencv-python
+Pillow
+openpyxl
