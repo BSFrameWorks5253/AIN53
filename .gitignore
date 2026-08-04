@@ -7,6 +7,8 @@ __pycache__/
 *.spec
 *.backup*
 scratch/
+.env
 
 # Ignore large build artifacts from git history (they get uploaded to GitHub Releases instead)
 _All Builds/
+

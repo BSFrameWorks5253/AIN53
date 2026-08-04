@@ -293,7 +293,23 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
     tag = f"v{current_version}"
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     
-    # 1. Direct GitHub REST API upload via GITHUB_TOKEN if available
+    # Check .env file if environment variable is not explicitly set
+    if not token:
+        env_file = base_dir / ".env"
+        if env_file.exists():
+            for line in env_file.read_text(encoding='utf-8', errors='ignore').splitlines():
+                line = line.strip()
+                if line.startswith("ghp_") or line.startswith("github_pat_"):
+                    token = line
+                    break
+                elif "=" in line:
+                    k, v = line.split("=", 1)
+                    if k.strip() in ["GITHUB_TOKEN", "GH_TOKEN"]:
+                        token = v.strip().strip("'\"")
+                        break
+
+    # 1. Direct GitHub REST API upload via GITHUB_TOKEN / .env if available
+
     if token:
         try:
             import urllib.request
@@ -374,16 +390,26 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
     try:
         git_check = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True, cwd=base_dir)
         if git_check.returncode == 0:
-            print(f"Pushing Git tag {tag} to GitHub...")
-            subprocess.run(["git", "add", "version.txt"], cwd=base_dir, check=False)
-            subprocess.run(["git", "commit", "-m", f"Bump version to {next_version} for release {tag}"], cwd=base_dir, check=False)
+            print(f"Publishing Git tag {tag} to GitHub...")
+            subprocess.run(["git", "add", "."], cwd=base_dir, check=False)
+            subprocess.run(["git", "commit", "-m", f"Release build {tag}"], cwd=base_dir, check=False)
             subprocess.run(["git", "tag", "-a", tag, "-m", f"Release {tag}"], cwd=base_dir, check=False)
-            subprocess.run(["git", "push", "origin", "main", "--tags"], cwd=base_dir, check=False)
-            print(f"✨ Git tag {tag} pushed to GitHub! GitHub Actions workflow will create the release.")
-            return True
+            push_res = subprocess.run(["git", "push", "origin", "main", "--tags"], capture_output=True, text=True, cwd=base_dir)
+            
+            if push_res.returncode == 0:
+                print(f"✨ Git tag {tag} and main branch pushed to GitHub successfully!")
+                print("⚡ GitHub Actions workflow is now compiling and publishing the release assets!")
+                return True
+            else:
+                print(f"\n⚠️  Git push returned an error:\n{push_res.stderr.strip()}")
+                if "workflow" in push_res.stderr:
+                    print("\n🔑 SOLUTION FOR WORKFLOW PERMISSION ERROR:")
+                    print("Your GitHub token needs the 'workflow' scope permission.")
+                    print("1. Go to GitHub -> Settings -> Developer Settings -> Personal Access Tokens (Classic).")
+                    print("2. Edit your token and check the 'workflow' checkbox.")
+                    print("3. Save token and run `git push origin main --tags` in your terminal.")
         else:
             print("\n💡 Note for Automatic GitHub Uploads:")
-            print("To enable instant automatic uploads from bundle_win.py, either:")
             print("  1. Set GITHUB_TOKEN environment variable in your system: $env:GITHUB_TOKEN='your_github_pat'")
             print("  2. Install GitHub CLI (gh) and run 'gh auth login'")
             print("  3. Initialize Git repository (`git init`) and set remote to https://github.com/BSFrameWorks5253/AIN53.git")
@@ -391,6 +417,7 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
         print(f"Warning: Git check/push failed: {e}")
 
     return False
+
 
 if __name__ == '__main__':
     main()
