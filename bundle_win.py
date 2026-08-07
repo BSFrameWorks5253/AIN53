@@ -508,8 +508,8 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
             print(f"Publishing Git tag {tag} to GitHub...")
             subprocess.run(["git", "add", "."], cwd=base_dir, check=False)
             subprocess.run(["git", "commit", "-m", f"Release build {tag}"], cwd=base_dir, check=False)
-            subprocess.run(["git", "tag", "-a", tag, "-m", f"Release {tag}"], cwd=base_dir, check=False)
-            push_res = subprocess.run(["git", "push", "origin", "main", "--tags"], capture_output=True, text=True, cwd=base_dir)
+            subprocess.run(["git", "tag", "-f", "-a", tag, "-m", f"Release {tag}"], cwd=base_dir, check=False)
+            push_res = subprocess.run(["git", "push", "origin", "main", tag], capture_output=True, text=True, cwd=base_dir)
             
             if push_res.returncode == 0:
                 print(f"[SUCCESS] Git tag {tag} and main branch pushed to GitHub successfully!")
