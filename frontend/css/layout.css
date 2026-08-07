@@ -5,11 +5,13 @@ body {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 /* ── Sidebar ── */
 .sidebar {
-  width: 260px;
+  width: calc(260px * var(--app-scale, 1));
   background: var(--bg-glass);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
@@ -66,7 +68,7 @@ body {
 
 .sidebar-header p {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   color: var(--accent-blue);
   font-weight: 700;
   text-transform: uppercase;
@@ -93,7 +95,7 @@ body {
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-family: 'Outfit', 'Inter', sans-serif;
   cursor: pointer;
   position: relative;
@@ -115,8 +117,8 @@ body {
 }
 
 .nav-btn .nav-icon {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
   color: var(--text-muted);
   opacity: 0.85;
   transition: all var(--transition);
@@ -181,7 +183,7 @@ body {
 }
 
 .header-tool-title {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -190,11 +192,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   background: var(--badge-bg);
   border: 1px solid var(--border-glass);
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--badge-text);
 }
@@ -230,12 +232,12 @@ body {
 }
 
 .theme-btn {
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 12px;
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   line-height: 1.2;
@@ -321,7 +323,7 @@ body {
   bottom: 1.5rem;
   right: 1.5rem;
   z-index: 9999;
-  width: 320px;
+  width: 340px;
   background: var(--bg-glass-hover);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -347,7 +349,7 @@ body {
 }
 
 .dock-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
   display: flex;
@@ -373,7 +375,7 @@ body {
 .dock-stats {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
 }

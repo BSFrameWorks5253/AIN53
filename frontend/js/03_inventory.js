@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.showToast(data.error, true);
       } else {
         const escPath = (data.path || currentSave || '').replace(/\\/g, '\\\\');
-        resultArea.innerHTML = `<div class="flex align-center justify-between w-full"><span>Report generated successfully at: ${data.path}</span><button class="btn btn-select btn-sm" style="padding:0.4rem 0.85rem; font-size:0.82rem;" onclick="window.pywebview.api.open_in_explorer('${escPath}')">📁 Open Output Folder</button></div>`;
+        resultArea.innerHTML = `<div class="flex align-center justify-between w-full"><span>Report generated successfully at: ${data.path}</span><button class="btn btn-select btn-sm" style="padding:0.4rem 0.85rem; font-size:0.88rem;" onclick="window.pywebview.api.open_in_explorer('${escPath}')">📁 Open Output Folder</button></div>`;
         resultArea.classList.remove('hidden');
         window.showToast("Drive inventory Excel report generated successfully!", 'success');
       }

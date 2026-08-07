@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusEl = document.getElementById('pdf-status');
         const escPath = (data.saved || '').replace(/\\/g, '\\\\');
         if (statusEl) {
-          statusEl.innerHTML = `<div class="flex align-center justify-between w-full"><span>Saved ${data.total_rows} rows to CSV</span><button class="btn btn-select btn-sm" style="padding:0.4rem 0.85rem; font-size:0.82rem;" onclick="window.pywebview.api.open_in_explorer('${escPath}')">📁 Open Output Folder</button></div>`;
+          statusEl.innerHTML = `<div class="flex align-center justify-between w-full"><span>Saved ${data.total_rows} rows to CSV</span><button class="btn btn-select btn-sm" style="padding:0.4rem 0.85rem; font-size:0.88rem;" onclick="window.pywebview.api.open_in_explorer('${escPath}')">📁 Open Output Folder</button></div>`;
         }
       }
     } finally {

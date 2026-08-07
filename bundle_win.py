@@ -17,11 +17,81 @@ Process Flow:
 """
 import os
 import sys
+import re
 import shutil
 import subprocess
 import time
 import stat
 from pathlib import Path
+
+# Ensure Windows terminal UTF-8 encoding for unicode print output
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+if hasattr(sys.stderr, 'reconfigure'):
+    try:
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+def compute_next_version(current: str) -> str:
+    parts = current.split('.')
+    if len(parts) >= 3:
+        try:
+            patch = int(parts[-1])
+            parts[-1] = str(patch + 1)
+            return ".".join(parts)
+        except ValueError:
+            pass
+    try:
+        parts = [int(p) for p in parts]
+        parts[-1] += 1
+        return ".".join(map(str, parts))
+    except Exception:
+        return current + ".1"
+
+def update_version_in_files(new_version: str, base_dir: Path):
+    print(f"=== Synchronizing Version v{new_version} Across Project ===")
+    
+    # 1. version.txt
+    v_file = base_dir / "version.txt"
+    v_file.write_text(new_version, encoding='utf-8')
+    print(f"  [Updated] version.txt -> {new_version}")
+
+    # 2. frontend/index.html
+    html_file = base_dir / "frontend" / "index.html"
+    if html_file.exists():
+        try:
+            content = html_file.read_text(encoding='utf-8', errors='ignore')
+            updated = re.sub(r'v\s*\d+\.\d+\.\d+', f'v {new_version}', content)
+            html_file.write_text(updated, encoding='utf-8')
+            print(f"  [Updated] frontend/index.html -> v {new_version}")
+        except Exception as e:
+            print(f"  [Error] frontend/index.html: {e}")
+
+    # 3. frontend/js/react_components.js
+    rc_file = base_dir / "frontend" / "js" / "react_components.js"
+    if rc_file.exists():
+        try:
+            content = rc_file.read_text(encoding='utf-8', errors='ignore')
+            updated = re.sub(r'v\s*\d+\.\d+\.\d+', f'v {new_version}', content)
+            rc_file.write_text(updated, encoding='utf-8')
+            print(f"  [Updated] frontend/js/react_components.js -> v {new_version}")
+        except Exception as e:
+            print(f"  [Error] frontend/js/react_components.js: {e}")
+
+    # 4. installer.py
+    inst_file = base_dir / "installer.py"
+    if inst_file.exists():
+        try:
+            content = inst_file.read_text(encoding='utf-8', errors='ignore')
+            updated = re.sub(r'VERSION\s*=\s*["\']\d+\.\d+\.\d+["\']', f'VERSION = "{new_version}"', content)
+            inst_file.write_text(updated, encoding='utf-8')
+            print(f"  [Updated] installer.py -> VERSION = \"{new_version}\"")
+        except Exception as e:
+            print(f"  [Error] installer.py: {e}")
 
 def safe_delete(path, retries=5, delay=0.5):
     """
@@ -65,14 +135,30 @@ def safe_delete(path, retries=5, delay=0.5):
                 time.sleep(delay)
             else:
                 print(f"Warning: Failed to delete {path}: {e}")
-                return False
+def make_zip_safe(source_dir, output_zip_path):
+    """
+    Safely zip a directory into a zip archive, ignoring broken symlinks (like PyInstaller tzdata leapseconds).
+    """
+    import zipfile
+    source_dir = Path(source_dir)
+    output_zip_path = Path(output_zip_path)
+    
+    with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for file_path in source_dir.rglob('*'):
+            if file_path.is_file() or file_path.is_symlink():
+                try:
+                    rel_path = file_path.relative_to(source_dir)
+                    zf.write(file_path, rel_path)
+                except (FileNotFoundError, OSError) as e:
+                    print(f"Skipping unreadable item {file_path.name}: {e}")
 
 def main():
+
     # --------------------------------------------------------------------------
-    # 1. OS & VERSION CHECK
+    # 1. OS & VERSION CHECK & SYNC
     # --------------------------------------------------------------------------
     if sys.platform != 'win32':
-        print("⚠️  Warning: This script is intended to run on Windows.")
+        print("Warning: This script is intended to run on Windows.")
         print("PyInstaller cannot cross-compile to a Windows executable (.exe) from other operating systems.")
         print("Please run this script on a Windows machine or a Windows Virtual Machine.")
 
@@ -82,8 +168,23 @@ def main():
     if not version_file.exists():
         version_file.write_text("1.0.0")
     
-    version = version_file.read_text().strip()
-    print(f"=== Starting Professional Windows Build for Version {version} ===")
+    current_version = version_file.read_text().strip() or "1.0.0"
+
+    # Allow custom version from command line args (e.g. python bundle_win.py 1.0.21)
+    target_version = current_version
+    for arg in sys.argv[1:]:
+        if not arg.startswith('-') and re.match(r'^\d+\.\d+\.\d+$', arg.strip()):
+            target_version = arg.strip()
+            break
+        elif arg.startswith('--version='):
+            target_version = arg.split('=', 1)[1].strip()
+            break
+
+    # Synchronize target version across all project files before compilation
+    update_version_in_files(target_version, base_dir)
+    version = target_version
+
+    print(f"\n=== Starting Professional Windows Build for Version {version} ===")
     
     # --------------------------------------------------------------------------
     # 2. ICON COMPILATION
@@ -142,9 +243,9 @@ def main():
         "--windowed",              # Run in windowed mode (hide console window)
         "--noconfirm",             # Overwrite folder targets without prompt
         "--name", app_name,
-        "--add-data", f"frontend{os.pathsep}frontend",  # Include GUI files folder
-        "--add-data", f"version.txt{os.pathsep}.",      # Include version file
-        "--add-data", f"LICENSE{os.pathsep}.",          # Include LICENSE file
+        "--add-data", f"{base_dir / 'frontend'}{os.pathsep}frontend",  # Include GUI files folder
+        "--add-data", f"{base_dir / 'version.txt'}{os.pathsep}.",      # Include version file
+        "--add-data", f"{base_dir / 'LICENSE'}{os.pathsep}.",          # Include LICENSE file
         "main.py"
     ]
     
@@ -165,11 +266,12 @@ def main():
     # 5. STEP 2: COMPRESS APP BUNDLE INTO PAYLOAD ZIP
     # --------------------------------------------------------------------------
     print(f"\n--- [Step 2/3] Compressing Application Payload into ZIP ---")
-    shutil.make_archive(str(base_dir / "payload"), 'zip', output_app_dir)
+    make_zip_safe(output_app_dir, payload_zip)
     if not payload_zip.exists():
         print("Error: Failed to create payload.zip archive!")
         sys.exit(1)
     print(f"Success: Payload archived at: {payload_zip}")
+
 
     # --------------------------------------------------------------------------
     # 6. STEP 3: COMPILE WINDOWS GUI INSTALLER
@@ -184,15 +286,15 @@ def main():
         "--windowed",              # Run installer in windowed UI mode (hide console)
         "--noconfirm",
         "--name", setup_name,
-        "--add-data", f"payload.zip{os.pathsep}.",   # Embed zipped payload
-        "--add-data", f"version.txt{os.pathsep}.",   # Embed version metadata file
+        "--add-data", f"{payload_zip}{os.pathsep}.",   # Embed zipped payload
+        "--add-data", f"{base_dir / 'version.txt'}{os.pathsep}.",   # Embed version metadata file
         "installer.py"
     ]
     
     # Embed the icon file resources in the installer binary
     if ico_path.exists():
         cmd_setup.extend([
-            "--add-data", f"icon.ico{os.pathsep}.",
+            "--add-data", f"{ico_path}{os.pathsep}.",
             "--icon", str(ico_path)
         ])
         
@@ -207,9 +309,17 @@ def main():
         
     # Create final builds storage folder
     final_build_parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(final_setup_exe, final_build_parent / f"{setup_name}.exe")
+    setup_target_exe = final_build_parent / f"{setup_name}.exe"
+    shutil.copy2(final_setup_exe, setup_target_exe)
+    
+    # Create a zipped package of the installer to prevent Windows Defender browser download warnings
+    setup_target_zip = final_build_parent / f"{setup_name}.zip"
+    import zipfile
+    with zipfile.ZipFile(setup_target_zip, 'w', zipfile.ZIP_DEFLATED) as z:
+        z.write(setup_target_exe, arcname=setup_target_exe.name)
+        
     print(f"Success: Installer compiled successfully!")
-    print(f"Final installer available at: {final_build_parent / f'{setup_name}.exe'}")
+    print(f"Final installer available at: {setup_target_exe}")
 
     # --------------------------------------------------------------------------
     # 6b. STEP 4: COMPILE STANDALONE PORTABLE APPLICATION
@@ -260,13 +370,10 @@ def main():
     # --------------------------------------------------------------------------
     # 8. VERSION AUTO-INCREMENT
     # --------------------------------------------------------------------------
-    next_version = version
+    next_version = compute_next_version(version)
     try:
-        parts = version.split('.')
-        parts[-1] = str(int(parts[-1]) + 1)
-        next_version = '.'.join(parts)
-        version_file.write_text(next_version)
-        print(f"Incremented version: {version} -> {next_version} (saved to version.txt)")
+        update_version_in_files(next_version, base_dir)
+        print(f"Incremented version: {version} -> {next_version} (synced across codebase)")
     except Exception as e:
         print(f"Failed to increment version: {e}")
 
@@ -277,17 +384,25 @@ def main():
         base_dir=base_dir,
         current_version=version,
         next_version=next_version,
-        setup_exe=final_build_parent / f"{setup_name}.exe",
+        setup_exe=setup_target_exe,
+        setup_zip=setup_target_zip,
         portable_exe=final_build_parent / f"{portable_name}.exe"
     )
+
         
     print("\n=== Windows Build & Release Process Complete! ===")
 
-def publish_to_github(base_dir, current_version, next_version, setup_exe, portable_exe):
+def publish_to_github(base_dir, current_version, next_version, setup_exe, portable_exe, setup_zip=None):
     """
     Automates uploading build artifacts and pushing git tag to GitHub
     so the app instantly receives update notifications.
     """
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
     print("\n--- [Step 5/5] Publishing Release to GitHub ---")
     repo = "BSFrameWorks5253/AIN53"
     tag = f"v{current_version}"
@@ -309,7 +424,6 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
                         break
 
     # 1. Direct GitHub REST API upload via GITHUB_TOKEN / .env if available
-
     if token:
         try:
             import urllib.request
@@ -343,26 +457,27 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
                 
             upload_url = upload_url_template.split("{")[0]
             
-            for exe_file in [setup_exe, portable_exe]:
-                if exe_file.exists():
-                    print(f"Uploading asset: {exe_file.name} to GitHub Release...")
-                    file_data = exe_file.read_bytes()
-                    asset_req = urllib.request.Request(
-                        f"{upload_url}?name={exe_file.name}",
-                        data=file_data,
-                        headers={
-                            "Authorization": f"token {token}",
-                            "Content-Type": "application/octet-stream",
-                            "User-Agent": "AIN53-Publisher"
-                        },
-                        method="POST"
-                    )
-                    with urllib.request.urlopen(asset_req):
-                        print(f"✅ Successfully uploaded {exe_file.name} to GitHub!")
-            print(f"✨ GitHub Release {tag} published successfully!")
+            upload_files = [f for f in [setup_exe, setup_zip, portable_exe] if f and f.exists()]
+            for exe_file in upload_files:
+                print(f"Uploading asset: {exe_file.name} to GitHub Release...")
+                file_data = exe_file.read_bytes()
+                asset_req = urllib.request.Request(
+                    f"{upload_url}?name={exe_file.name}",
+                    data=file_data,
+                    headers={
+                        "Authorization": f"token {token}",
+                        "Content-Type": "application/octet-stream",
+                        "User-Agent": "AIN53-Publisher"
+                    },
+                    method="POST"
+                )
+                with urllib.request.urlopen(asset_req):
+                    print(f"[OK] Successfully uploaded {exe_file.name} to GitHub Release!")
+            print(f"[SUCCESS] GitHub Release {tag} published successfully!")
             return True
         except Exception as e:
             print(f"Warning: GitHub REST API upload failed: {e}")
+
 
     # 2. Try GitHub CLI (gh) if installed
     try:
@@ -379,7 +494,7 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
             ]
             res = subprocess.run(cmd, capture_output=True, text=True)
             if res.returncode == 0:
-                print(f"✨ GitHub Release {tag} published via GitHub CLI!")
+                print(f"[SUCCESS] GitHub Release {tag} published via GitHub CLI!")
                 return True
             else:
                 print(f"Warning: GitHub CLI release failed: {res.stderr}")
@@ -397,26 +512,19 @@ def publish_to_github(base_dir, current_version, next_version, setup_exe, portab
             push_res = subprocess.run(["git", "push", "origin", "main", "--tags"], capture_output=True, text=True, cwd=base_dir)
             
             if push_res.returncode == 0:
-                print(f"✨ Git tag {tag} and main branch pushed to GitHub successfully!")
-                print("⚡ GitHub Actions workflow is now compiling and publishing the release assets!")
+                print(f"[SUCCESS] Git tag {tag} and main branch pushed to GitHub successfully!")
                 return True
             else:
-                print(f"\n⚠️  Git push returned an error:\n{push_res.stderr.strip()}")
-                if "workflow" in push_res.stderr:
-                    print("\n🔑 SOLUTION FOR WORKFLOW PERMISSION ERROR:")
-                    print("Your GitHub token needs the 'workflow' scope permission.")
-                    print("1. Go to GitHub -> Settings -> Developer Settings -> Personal Access Tokens (Classic).")
-                    print("2. Edit your token and check the 'workflow' checkbox.")
-                    print("3. Save token and run `git push origin main --tags` in your terminal.")
+                print(f"\n[WARNING] Git push returned an error:\n{push_res.stderr.strip()}")
         else:
-            print("\n💡 Note for Automatic GitHub Uploads:")
-            print("  1. Set GITHUB_TOKEN environment variable in your system: $env:GITHUB_TOKEN='your_github_pat'")
-            print("  2. Install GitHub CLI (gh) and run 'gh auth login'")
-            print("  3. Initialize Git repository (`git init`) and set remote to https://github.com/BSFrameWorks5253/AIN53.git")
+            print("\n[NOTE] For Automatic GitHub Uploads:")
+            print("  1. Set GITHUB_TOKEN environment variable in your system")
+            print("  2. Install GitHub CLI (gh)")
     except Exception as e:
         print(f"Warning: Git check/push failed: {e}")
 
     return False
+
 
 
 if __name__ == '__main__':

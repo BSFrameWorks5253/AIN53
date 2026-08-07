@@ -18,6 +18,18 @@ import traceback
 from webview.dom import DOMEventHandler
 from pathlib import Path
 
+# Ensure Windows terminal UTF-8 encoding for unicode print output
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+if hasattr(sys.stderr, 'reconfigure'):
+    try:
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 # Diagnostics file setup (saved next to the executable)
 EXE_DIR = Path(sys.executable).parent
 LOG_FILE = EXE_DIR / "portable_debug.log"
@@ -143,9 +155,25 @@ class UnifiedApi:
         """Triggers asynchronous Open-CV thumbnail decoding for photos and videos."""
         return self._sorting.generate_thumbnail(*args, **kwargs)
         
+    def sorting_set_camera_ranges(self, *args, **kwargs):
+        """Sets custom start and end file ranges for camera conflict resolution."""
+        return self._sorting.set_camera_ranges(*args, **kwargs)
+
+    def sorting_get_contributor_prefixes(self, *args, **kwargs):
+        """Retrieves camera series prefix mapping per contributor for user review."""
+        return self._sorting.get_contributor_prefixes(*args, **kwargs)
+
+    def sorting_set_contributor_series(self, *args, **kwargs):
+        """Updates custom camera series prefix mapping per contributor."""
+        return self._sorting.set_contributor_series(*args, **kwargs)
+        
     def sorting_execute_transfer(self, *args, **kwargs): 
         """Executes batched copy/move actions and maintains transactional undo states."""
         return self._sorting.execute_transfer(*args, **kwargs)
+
+    def sorting_undo_transfer(self, *args, **kwargs):
+        """Reverts previous file transfer actions."""
+        return self._sorting.undo_transfer(*args, **kwargs)
 
     # --------------------------------------------------------------------------
     # SECTION: Drive Inventory Scanning & Formatting Methods
@@ -166,16 +194,28 @@ class UnifiedApi:
     # SECTION: Auto Update Engine Methods
     # --------------------------------------------------------------------------
     def check_for_updates(self):
-        """Checks GitHub Releases for new updates."""
+        """Checks GitHub Releases for new updates (Priority A: GitHub, Priority B: GAS)."""
         return self._updater.check_for_updates()
 
     def download_and_install_update(self, download_url=""):
-        """Downloads latest update setup installer and executes silent installation."""
+        """Downloads latest update setup installer with progress events."""
         return self._updater.download_and_install_update(download_url)
 
+    def apply_update_now(self):
+        """Launches the downloaded setup installer and restarts the app with the update applied."""
+        return self._updater.apply_update_now()
+
     def get_app_version(self):
-        """Returns local application version."""
+        """Returns local application version from version.txt."""
         return json.dumps({"version": self._updater.get_local_version()})
+
+    def get_setting(self, key):
+        """Returns a persisted app setting value by key (JSON encoded)."""
+        return self._updater.get_setting(key)
+
+    def set_setting(self, key, value):
+        """Persists an app setting value. Returns {success: true} on success."""
+        return self._updater.set_setting(key, value)
 
     # --------------------------------------------------------------------------
     # SECTION: Explorer & System Utilities
@@ -204,6 +244,16 @@ class UnifiedApi:
         self._sorting._window = window
         self._inventory._window = window
         self._updater.set_window(window)
+
+        # Stage 1: fire silent update check after 4-second startup delay.
+        # Runs in a daemon thread — non-blocking, errors are swallowed.
+        import threading
+        def _delayed_silent_check():
+            import time
+            time.sleep(4.0)
+            self._updater.silent_check_and_push()
+        threading.Thread(target=_delayed_silent_check, daemon=True,
+                         name="updater-startup-delay").start()
 
 
 # ==============================================================================

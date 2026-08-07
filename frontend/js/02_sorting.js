@@ -9,11 +9,13 @@ let sortAppState = {
   contributors: {},
   collapsedFolders: {},
   selectedContributor: 'ALL',
+  selectedMediaType: 'ALL',
   searchQuery: '',
   activeShiftFolderId: null,
   history: [],
   pendingShift: null,
-  activeMode: null
+  activeMode: null,
+  lastSelectedFileId: null
 };
 
 let analysisState = {
@@ -22,6 +24,9 @@ let analysisState = {
   rootDir: null
 };
 
+let currentMapping = null;
+let currentRoot = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   const btnMapping = document.getElementById('btn-sort-mapping');
   const btnRoot = document.getElementById('btn-sort-root');
@@ -29,9 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const pathMapping = document.getElementById('sort-mapping-path');
   const pathRoot = document.getElementById('sort-root-path');
-  
-  let currentMapping = null;
-  let currentRoot = null;
   
   function checkReady() {
     btnScan.disabled = !(currentMapping && currentRoot);
@@ -78,19 +80,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (paths && paths.length > 0) loadRoot(paths[0]);
   });
   
+  let _prefixesConfirmed = false;
+
   btnScan.addEventListener('click', async () => {
     btnScan.disabled = true;
     analysisState.rootDir = currentRoot;
     
     try {
+      // Step 1: Pre-Analysis Editable Camera Prefix Confirmation Modal (if not yet confirmed for this scan)
+      if (!_prefixesConfirmed) {
+        const prefRes = await window.pywebview.api.sorting_get_contributor_prefixes(currentMapping, currentRoot);
+        if (prefRes && prefRes.ordered_contributors && prefRes.ordered_contributors.length > 0) {
+          const confirmed = await showCameraPrefixModal(prefRes, currentMapping);
+          if (!confirmed) {
+            btnScan.disabled = false;
+            return;
+          }
+          _prefixesConfirmed = true;
+        }
+      }
+
+      // Step 2: Scan Files & Same-Series Conflict Resolution
       const scanRes = await window.pywebview.api.sorting_scan_files(currentMapping, currentRoot);
       if (scanRes.error) {
         window.showToast(scanRes.error, true);
         btnScan.disabled = false;
+        _prefixesConfirmed = false;
+        return;
+      }
+
+      if (scanRes.has_conflict) {
+        btnScan.disabled = false;
+        showCameraRangeModal(scanRes.conflicts, currentMapping, currentRoot);
         return;
       }
       
-      // Transition to analysis screen
+      _prefixesConfirmed = false;
+
+      // Step 3: Transition to analysis screen
       document.getElementById('sort-setup-screen').classList.add('hidden');
       document.getElementById('sort-analysis-screen').classList.remove('hidden');
       
@@ -108,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       window.showToast("An error occurred during scan preparation", true);
       btnScan.disabled = false;
+      _prefixesConfirmed = false;
     }
   });
 
@@ -137,10 +165,173 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-report-done').addEventListener('click', closeReportModal);
   document.getElementById('btn-report-undo').addEventListener('click', undoFromReport);
+
+  // Camera Range Modal events
+  document.getElementById('btn-camera-range-cancel').addEventListener('click', () => {
+    document.getElementById('camera-range-modal').style.display = 'none';
+  });
+  
+  // Camera Prefix Modal events
+  const btnPrefixCancel = document.getElementById('btn-camera-prefix-cancel');
+  if (btnPrefixCancel) {
+    btnPrefixCancel.addEventListener('click', () => {
+      document.getElementById('camera-prefix-modal').style.display = 'none';
+    });
+  }
 });
+
+function showCameraPrefixModal(prefRes, mappingPath = null) {
+  return new Promise((resolve) => {
+    const container = document.getElementById('camera-prefix-inputs-container');
+    container.innerHTML = '';
+
+    const seriesMap = prefRes.contributor_series || {};
+    const contribList = prefRes.ordered_contributors || Object.keys(seriesMap);
+
+    contribList.forEach((cname) => {
+      const key = cname.replace(/\s+/g, '_');
+      const val = seriesMap[cname] || '';
+      
+      const item = document.createElement('div');
+      item.className = 'glass';
+      item.style.display = 'flex';
+      item.style.alignItems = 'center';
+      item.style.justifyContent = 'space-between';
+      item.style.padding = '0.45rem 0.8rem';
+      item.style.background = 'rgba(15,23,42,0.4)';
+      item.style.border = '1px solid var(--border-glass)';
+      item.style.borderRadius = 'var(--radius-sm)';
+
+      item.innerHTML = `
+        <div style="font-weight:700; color:var(--text-primary); font-size:0.9rem; flex:1; margin-right:1rem; word-break:break-word;">
+          ${cname}
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem; justify-content:flex-end;">
+          <input type="text" id="prefix-input-${key}" class="input-glass text-sm" style="width:140px; padding:0.35rem 0.6rem; font-weight:700; color:var(--accent-blue);" value="${val}" placeholder="e.g. C0">
+        </div>
+      `;
+      container.appendChild(item);
+    });
+
+    const modal = document.getElementById('camera-prefix-modal');
+    const confirmBtn = document.getElementById('btn-camera-prefix-confirm');
+    const cancelBtn = document.getElementById('btn-camera-prefix-cancel');
+
+    const newConfirm = confirmBtn.cloneNode(true);
+    const newCancel = cancelBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+    newConfirm.addEventListener('click', async () => {
+      const updatedSeries = {};
+      contribList.forEach(cname => {
+        const key = cname.replace(/\s+/g, '_');
+        const inputEl = document.getElementById(`prefix-input-${key}`);
+        if (inputEl) {
+          updatedSeries[cname] = inputEl.value.trim();
+        }
+      });
+
+      try {
+        const targetMap = mappingPath || currentMapping;
+        const res = await window.pywebview.api.sorting_set_contributor_series(JSON.stringify(updatedSeries), targetMap);
+        if (res && res.error) {
+          window.showToast('Failed to update camera prefixes: ' + res.error, true);
+          resolve(false);
+          return;
+        }
+        if (typeof window.showToast === 'function') {
+          window.showToast('Camera series updated and saved to mapping CSV', false);
+        }
+        modal.style.display = 'none';
+        resolve(true);
+      } catch (err) {
+        console.error("Error updating camera prefixes:", err);
+        const errMsg = (err && err.message) ? err.message : String(err);
+        window.showToast('Failed to update camera prefixes: ' + errMsg, true);
+        resolve(false);
+      }
+    });
+
+    newCancel.addEventListener('click', () => {
+      modal.style.display = 'none';
+      resolve(false);
+    });
+
+    modal.style.display = 'flex';
+  });
+}
+
+let currentConflicts = [];
+function showCameraRangeModal(conflicts, mappingPath, rootPath) {
+  currentConflicts = conflicts;
+  const container = document.getElementById('camera-range-inputs-container');
+  container.innerHTML = '';
+
+  conflicts.forEach(group => {
+    group.cams.forEach(cam => {
+      const key = cam.cam_name.replace(/\s+/g, '_');
+      const item = document.createElement('div');
+      item.className = 'card glass';
+      item.style.padding = '0.8rem 1rem';
+      item.style.background = 'rgba(15,23,42,0.4)';
+      item.style.border = '1px solid var(--border-glass)';
+      item.style.borderRadius = 'var(--radius-sm)';
+
+      item.innerHTML = `
+        <div style="font-weight: 700; color: var(--accent-blue); font-size: 0.95rem; margin-bottom: 0.4rem; display:flex; justify-content:space-between; align-items:center;">
+          <span>${cam.cam_name} — ${cam.contributor}</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Series: ${cam.series} (${cam.file_count} files)</span>
+        </div>
+        <div class="grid-2 gap-2 text-xs">
+          <div>
+            <label style="display:block; margin-bottom:0.25rem; font-weight:600;">Start File Name</label>
+            <input type="text" id="range-start-${key}" class="input-glass w-full" value="${cam.min_file || ''}" placeholder="e.g. C0001.MP4">
+          </div>
+          <div>
+            <label style="display:block; margin-bottom:0.25rem; font-weight:600;">End File Name</label>
+            <input type="text" id="range-end-${key}" class="input-glass w-full" value="${cam.max_file || ''}" placeholder="e.g. C0150.MP4">
+          </div>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  });
+
+  const confirmBtn = document.getElementById('btn-camera-range-confirm');
+  // Clone button to strip previous event listeners
+  const newConfirmBtn = confirmBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+  newConfirmBtn.addEventListener('click', async () => {
+    const ranges = {};
+    conflicts.forEach(group => {
+      group.cams.forEach(cam => {
+        const key = cam.cam_name.replace(/\s+/g, '_');
+        const startVal = (document.getElementById(`range-start-${key}`).value || '').trim();
+        const endVal = (document.getElementById(`range-end-${key}`).value || '').trim();
+        ranges[cam.contributor] = { start: startVal, end: endVal };
+        ranges[cam.cam_name] = { start: startVal, end: endVal };
+      });
+    });
+
+    try {
+      await window.pywebview.api.sorting_set_camera_ranges(JSON.stringify(ranges));
+      document.getElementById('camera-range-modal').style.display = 'none';
+      // Trigger scan again
+      document.getElementById('btn-sort-scan').click();
+    } catch (e) {
+      window.showToast("Failed to save camera range configuration", true);
+    }
+  });
+
+  document.getElementById('camera-range-modal').style.display = 'flex';
+}
+
 
 function addLogEntry(text, type) {
   const log = document.getElementById('activity-log');
+  if (!log) return;
   const entry = document.createElement('div');
   entry.className = 'log-entry';
   
@@ -307,19 +498,20 @@ function updateUndoTransferButtonState(canUndo) {
 
 function undoTransfer() {
   if (confirm("Are you sure you want to undo the last file transfer?")) {
+    if (window.ProgressController) {
+      window.ProgressController.start("Undoing File Transfer...", "Reverting transferred files...", 0);
+    } else {
+      window.showToast("Undoing transfer...");
+    }
+    
     window.pywebview.api.sorting_undo_transfer().then(res => {
-      if (res.success) {
-        updateUndoTransferButtonState(res.can_undo);
-        let msg = `Successfully reverted ${res.count} file(s).`;
-        if (res.errors && res.errors.length > 0) {
-          msg += ` (${res.errors.length} errors occurred)`;
-          window.showToast(msg, 'warning');
-        } else {
-          window.showToast(msg, 'success');
-        }
-      } else {
-        window.showToast("Undo transfer failed: " + res.error, 'error');
+      if (res && res.error) {
+        if (window.ProgressController) window.ProgressController.stop();
+        window.showToast("Undo error: " + res.error, 'error');
       }
+    }).catch(err => {
+      if (window.ProgressController) window.ProgressController.stop();
+      window.showToast("Undo failed: " + err, 'error');
     });
   }
 }
@@ -381,17 +573,102 @@ function getContributorFolderIndices(contributor) {
   return [...indices].sort((a, b) => a - b);
 }
 
-window.toggleFileSelect = function(fileId, checked) {
+let tileClickTimers = {};
+
+window.toggleFileSelect = function(fileId, checked, isShift = false, isCtrl = false, folderIdx = null) {
   const file = sortAppState.files.find(f => f.id === fileId);
-  if (file) {
-    file.selected = checked;
-    const tile = document.getElementById(`tile-${fileId}`);
-    if (tile) {
-      if (checked) tile.classList.add('selected');
-      else tile.classList.remove('selected');
+  if (!file) return;
+
+  const targetFolderIdx = (folderIdx !== null) ? folderIdx : file.folder_index;
+
+  if (isShift && sortAppState.lastSelectedFileId !== null && sortAppState.lastSelectedFileId !== fileId) {
+    const folderFiles = sortAppState.files.filter(f => f.folder_index === targetFolderIdx && !f.is_sidecar);
+    const idx1 = folderFiles.findIndex(f => f.id === sortAppState.lastSelectedFileId);
+    const idx2 = folderFiles.findIndex(f => f.id === fileId);
+    if (idx1 !== -1 && idx2 !== -1) {
+      const start = Math.min(idx1, idx2);
+      const end = Math.max(idx1, idx2);
+      const targetState = (checked !== undefined) ? checked : true;
+      for (let i = start; i <= end; i++) {
+        folderFiles[i].selected = targetState;
+        const t = document.getElementById(`tile-${folderFiles[i].id}`);
+        if (t) {
+          t.classList.toggle('selected', targetState);
+          const cb = t.querySelector('.thumb-tile-checkbox');
+          if (cb) cb.checked = targetState;
+        }
+      }
+      sortAppState.lastSelectedFileId = fileId;
+      updateFolderHeaderButtons(targetFolderIdx);
+      return;
     }
-    updateFolderHeaderButtons(file.folder_index);
   }
+
+  const newState = (checked !== undefined) ? checked : !file.selected;
+  file.selected = newState;
+  sortAppState.lastSelectedFileId = fileId;
+
+  const tile = document.getElementById(`tile-${fileId}`);
+  if (tile) {
+    tile.classList.toggle('selected', newState);
+    const cb = tile.querySelector('.thumb-tile-checkbox');
+    if (cb && cb.checked !== newState) cb.checked = newState;
+  }
+
+  updateFolderHeaderButtons(targetFolderIdx);
+};
+
+window.selectFolderFiles = function(folderIdx, mode) {
+  const folderFiles = sortAppState.files.filter(f => f.folder_index === folderIdx && !f.is_sidecar);
+  if (folderFiles.length === 0) return;
+
+  folderFiles.forEach(f => {
+    const isVideo = f.is_video || (/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(f.filename || f.path || '');
+    if (mode === 'all') f.selected = true;
+    else if (mode === 'none') f.selected = false;
+    else if (mode === 'videos') f.selected = isVideo;
+    else if (mode === 'photos') f.selected = !isVideo;
+    else if (mode === 'invert') f.selected = !f.selected;
+
+    const tile = document.getElementById(`tile-${f.id}`);
+    if (tile) {
+      tile.classList.toggle('selected', f.selected);
+      const cb = tile.querySelector('.thumb-tile-checkbox');
+      if (cb) cb.checked = f.selected;
+    }
+  });
+
+  updateFolderHeaderButtons(folderIdx);
+};
+
+window.selectGlobalMedia = function(type) {
+  sortAppState.files.forEach(f => {
+    if (f.is_sidecar) return;
+    const isVideo = f.is_video || (/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(f.filename || f.path || '');
+    if (type === 'all') f.selected = true;
+    else if (type === 'none') f.selected = false;
+    else if (type === 'all_videos') f.selected = isVideo;
+    else if (type === 'all_photos') f.selected = !isVideo;
+
+    const tile = document.getElementById(`tile-${f.id}`);
+    if (tile) {
+      tile.classList.toggle('selected', f.selected);
+      const cb = tile.querySelector('.thumb-tile-checkbox');
+      if (cb) cb.checked = f.selected;
+    }
+  });
+
+  sortAppState.folders.forEach((_, idx) => updateFolderHeaderButtons(idx));
+};
+
+window.filterMediaType = function(type) {
+  sortAppState.selectedMediaType = type;
+  document.querySelectorAll('#btn-type-all, #btn-type-video, #btn-type-photo').forEach(btn => btn.classList.remove('active'));
+  if (type === 'ALL') { const b = document.getElementById('btn-type-all'); if (b) b.classList.add('active'); }
+  else if (type === 'VIDEO') { const b = document.getElementById('btn-type-video'); if (b) b.classList.add('active'); }
+  else if (type === 'PHOTO') { const b = document.getElementById('btn-type-photo'); if (b) b.classList.add('active'); }
+  renderFolders();
+  lazyLoadThumbnails();
 };
 
 function updateFolderHeaderButtons(folderIdx) {
@@ -403,7 +680,7 @@ function updateFolderHeaderButtons(folderIdx) {
   const allSelectedDontCopy = selectedInFolder > 0 && folderFiles.filter(f => f.selected).every(f => f.dont_copy);
   
   const editBtn = folderCard.querySelector('.edit-btn');
-  if (editBtn) editBtn.disabled = selectedInFolder !== 1;
+  if (editBtn) editBtn.disabled = selectedInFolder === 0;
   
   const dontCopyBtn = folderCard.querySelector('.dontcopy-btn');
   if (dontCopyBtn) {
@@ -578,6 +855,12 @@ function renderFolders() {
     filteredFiles = sortAppState.files.filter(f => f.contributor === sortAppState.selectedContributor);
   }
   
+  if (sortAppState.selectedMediaType === 'VIDEO') {
+    filteredFiles = filteredFiles.filter(f => f.is_video || (/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(f.filename || f.path));
+  } else if (sortAppState.selectedMediaType === 'PHOTO') {
+    filteredFiles = filteredFiles.filter(f => !f.is_video && !(/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(f.filename || f.path));
+  }
+  
   const query = sortAppState.searchQuery || '';
   if (query) {
     filteredFiles = filteredFiles.filter(f => f.filename.toLowerCase().includes(query));
@@ -648,7 +931,7 @@ function renderFolders() {
     const selectedInFolder = folderFiles.filter(f => f.selected).length;
     const allSelectedDontCopy = selectedInFolder > 0 && folderFiles.filter(f => f.selected).every(f => f.dont_copy);
     
-    const editDisabled = selectedInFolder !== 1;
+    const editDisabled = selectedInFolder === 0;
     const dontCopyDisabled = selectedInFolder === 0;
     
     const card = document.createElement('div');
@@ -666,9 +949,15 @@ function renderFolders() {
         <span class="folder-name" title="${folderPath}">${folderPath}</span>
         <span class="folder-file-count">(${folderFiles.length} files)</span>
     `;
-    if (isEmptyGlobally) headerHTML += `<span class="badge" style="background:rgba(239,68,68,0.1); color:var(--accent-red); padding:0.1rem 0.4rem; font-size:0.7rem; border-radius:4px;">Empty</span>`;
+    if (isEmptyGlobally) headerHTML += `<span class="badge" style="background:rgba(239,68,68,0.1); color:var(--accent-red); padding:0.15rem 0.45rem; font-size:0.8rem; border-radius:4px;">Empty</span>`;
     headerHTML += `</div><div class="folder-header-actions">`;
     headerHTML += `
+        <div class="folder-btn-group">
+          <button class="folder-action-btn pill-btn" onclick="event.stopPropagation(); window.selectFolderFiles(${folderIdx}, 'all')">All</button>
+          <button class="folder-action-btn pill-btn" onclick="event.stopPropagation(); window.selectFolderFiles(${folderIdx}, 'videos')">Videos</button>
+          <button class="folder-action-btn pill-btn" onclick="event.stopPropagation(); window.selectFolderFiles(${folderIdx}, 'none')">Clear</button>
+        </div>
+        <div class="folder-btn-divider"></div>
         <button class="folder-action-btn edit-btn" ${editDisabled ? 'disabled' : ''} onclick="event.stopPropagation(); window.openEditForFolder(${folderIdx})">Edit</button>
         <button class="folder-action-btn dontcopy-btn ${allSelectedDontCopy ? 'active-dont-copy' : ''}" ${dontCopyDisabled ? 'disabled' : ''} onclick="event.stopPropagation(); window.toggleDontCopyForFolder(${folderIdx})">Don't Copy</button>
       </div>`;
@@ -692,18 +981,34 @@ function renderFolders() {
         tile.id = `tile-${f.id}`;
         
         const fileName = f.filename || f.path.split(/[\\/]/).pop();
-        // All files reaching here are non-sidecars (media files) - render thumbnail
         const imgHTML = `<img class="thumb-tile-img" data-src="${f.path}" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='100'><rect width='140' height='100' fill='%23ddd'/></svg>">`;
         
-        const isVideo = f.is_video || (/\.(mp4|mov|avi|mkv|wmv)$/i).test(fileName);
+        const isVideo = f.is_video || (/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(fileName);
+        const videoBadge = isVideo ? `<div class="thumb-tile-video-badge"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> VIDEO</div>` : '';
+        const dontCopyBadge = f.dont_copy ? `<div class="thumb-tile-dontcopy-badge"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg> DON'T COPY</div>` : '';
+
+        tile.onclick = (e) => {
+          if (e.target.classList.contains('thumb-tile-checkbox')) return;
+          if (e.detail === 1) {
+            if (tileClickTimers[f.id]) clearTimeout(tileClickTimers[f.id]);
+            tileClickTimers[f.id] = setTimeout(() => {
+              window.toggleFileSelect(f.id, undefined, e.shiftKey, e.ctrlKey || e.metaKey, folderIdx);
+            }, 180);
+          }
+        };
+
         tile.ondblclick = (e) => {
+          if (tileClickTimers[f.id]) clearTimeout(tileClickTimers[f.id]);
+          e.stopPropagation();
           if (!e.target.classList.contains('thumb-tile-checkbox')) {
             if (window.openLightbox) window.openLightbox(f.path, fileName, isVideo);
           }
         };
 
         tile.innerHTML = `
-          <input type="checkbox" class="thumb-tile-checkbox" ${f.selected ? 'checked' : ''} onchange="window.toggleFileSelect(${f.id}, this.checked)">
+          <input type="checkbox" class="thumb-tile-checkbox" ${f.selected ? 'checked' : ''} onchange="window.toggleFileSelect(${f.id}, this.checked, event.shiftKey, event.ctrlKey || event.metaKey, ${folderIdx})">
+          ${videoBadge}
+          ${dontCopyBadge}
           ${imgHTML}
           <div class="thumb-tile-caption" title="${fileName}">${fileName}</div>
         `;
@@ -751,28 +1056,178 @@ function lazyLoadThumbnails() {
   images.forEach(img => observer.observe(img));
 }
 
+// ── Transfer Helper Utilities & Live Progress Listeners ──
+
+function formatTransferBytes(bytes, decimals = 1) {
+  if (!bytes || bytes <= 0) return '0 B';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function formatTransferSpeed(speedBps) {
+  if (!speedBps || speedBps <= 0) return '0 MB/s';
+  return formatTransferBytes(speedBps, 1) + '/s';
+}
+
+function formatTransferEta(seconds) {
+  if (!seconds || seconds <= 0) return 'Almost done...';
+  if (seconds > 60) {
+    const mins = Math.ceil(seconds / 60);
+    return `~${mins} min remaining`;
+  }
+  return `~${Math.ceil(seconds)}s remaining`;
+}
+
 function confirmTransfer(action) {
   if (confirm(`Are you sure you want to ${action} all mapped files to their destination folders?`)) {
-    window.showToast(`Executing ${action}...`);
+    window._lastTransferAction = action;
+    const validFiles = (sortAppState.files || []).filter(f => !f.dont_copy && f.folder_index >= 0);
+    const totalCount = validFiles.length || (sortAppState.files ? sortAppState.files.length : 0);
+    
+    if (window.ProgressController) {
+      const actionText = action === 'move' ? 'Moving' : 'Copying';
+      window.ProgressController.start(
+        `${actionText} Media Files...`,
+        `Preparing ${action} operation...`,
+        totalCount
+      );
+    } else {
+      window.showToast(`Executing ${action}...`);
+    }
+
     window.pywebview.api.sorting_execute_transfer(action, sortAppState.files, sortAppState.folders).then(res => {
-      if (res.success) {
-        updateUndoTransferButtonState(res.can_undo);
-        window.showToast(`Successfully ${action}ed ${res.count} file(s)!`, 'success');
-        const headerActions = document.querySelector('.header-actions');
-        if (headerActions && !document.getElementById('btn-open-sort-output')) {
-          const btnOpen = document.createElement('button');
-          btnOpen.id = 'btn-open-sort-output';
-          btnOpen.className = 'btn btn-select';
-          btnOpen.innerHTML = '📁 Open Output Folder';
-          btnOpen.onclick = () => {
-            const dest = sortAppState.root_dir || (sortAppState.folders[0] ? sortAppState.folders[0] : null);
-            if (dest) window.pywebview.api.open_in_explorer(dest);
-          };
-          headerActions.appendChild(btnOpen);
-        }
-      } else {
-        window.showToast('Transfer failed: ' + res.error, 'error');
+      if (res && res.error) {
+        if (window.ProgressController) window.ProgressController.stop();
+        window.showToast('Transfer error: ' + res.error, 'error');
       }
+    }).catch(err => {
+      if (window.ProgressController) window.ProgressController.stop();
+      window.showToast('Transfer failed: ' + err, 'error');
     });
   }
 }
+
+// Global live transfer progress handler called by Python evaluate_js
+window.updateTransferProgress = function(jsonStr) {
+  try {
+    const data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+    if (!data || data.type !== 'progress') return;
+
+    const actionText = data.action === 'move' ? 'Moving' : 'Copying';
+    const title = `${actionText} Media Files...`;
+    const subtitle = `${actionText} ${data.current_file || ''} → ${data.target_folder || 'Folder'}`;
+    
+    let detailText = `${data.completed_files || 0} / ${data.total_files || 0} files`;
+    if (data.total_bytes && data.total_bytes > 0) {
+      detailText += ` (${formatTransferBytes(data.completed_bytes)} / ${formatTransferBytes(data.total_bytes)})`;
+    }
+    
+    const etaStr = `${formatTransferEta(data.eta_sec)} • ${formatTransferSpeed(data.speed_bps)}`;
+
+    if (window.ProgressController) {
+      if (!window.ProgressController.overlay || window.ProgressController.overlay.style.display === 'none') {
+        window.ProgressController.start(title, subtitle, data.total_files || 0);
+      }
+      window.ProgressController.update(
+        data.completed_files || 0,
+        subtitle,
+        etaStr,
+        detailText,
+        data.percent !== undefined ? data.percent : null
+      );
+    }
+  } catch (err) {
+    console.error('Error updating transfer progress:', err);
+  }
+};
+
+window.onTransferComplete = function(jsonStr) {
+  try {
+    const res = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+    if (window.ProgressController) {
+      window.ProgressController.stop();
+    }
+    
+    if (res.success) {
+      updateUndoTransferButtonState(res.can_undo);
+      const action = window._lastTransferAction || 'transfer';
+      window.showToast(`Successfully ${action}ed ${res.count} file(s)!`, 'success');
+      
+      if (res.mismatches && res.mismatches > 0) {
+        window.showToast(`Notice: ${res.mismatches} file mismatch(es) logged in transfer_log.txt`, 'warning');
+      }
+      
+      const headerActions = document.querySelector('.header-actions');
+      if (headerActions && !document.getElementById('btn-open-sort-output')) {
+        const btnOpen = document.createElement('button');
+        btnOpen.id = 'btn-open-sort-output';
+        btnOpen.className = 'btn btn-select';
+        btnOpen.innerHTML = '📁 Open Output Folder';
+        btnOpen.onclick = () => {
+          const dest = sortAppState.root_dir || (sortAppState.folders[0] ? sortAppState.folders[0] : null);
+          if (dest) window.pywebview.api.open_in_explorer(dest);
+        };
+        headerActions.appendChild(btnOpen);
+      }
+    } else {
+      window.showToast('Transfer failed: ' + (res.error || 'Unknown error'), 'error');
+    }
+  } catch (err) {
+    if (window.ProgressController) window.ProgressController.stop();
+    console.error('Error on transfer complete:', err);
+  }
+};
+
+window.updateUndoTransferProgress = function(jsonStr) {
+  try {
+    const data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+    if (!data || data.type !== 'progress') return;
+
+    const title = "Undoing File Transfer...";
+    const subtitle = `Reverting ${data.current_file || ''}...`;
+    const detailText = `${data.completed_files || 0} / ${data.total_files || 0} files reverted`;
+    
+    if (window.ProgressController) {
+      if (!window.ProgressController.overlay || window.ProgressController.overlay.style.display === 'none') {
+        window.ProgressController.start(title, subtitle, data.total_files || 0);
+      }
+      window.ProgressController.update(
+        data.completed_files || 0,
+        subtitle,
+        "Reverting...",
+        detailText,
+        data.percent !== undefined ? data.percent : null
+      );
+    }
+  } catch (err) {
+    console.error('Error updating undo progress:', err);
+  }
+};
+
+window.onUndoTransferComplete = function(jsonStr) {
+  try {
+    const res = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+    if (window.ProgressController) {
+      window.ProgressController.stop();
+    }
+    
+    if (res.success) {
+      updateUndoTransferButtonState(res.can_undo);
+      let msg = `Successfully reverted ${res.count} file(s).`;
+      if (res.errors && res.errors.length > 0) {
+        msg += ` (${res.errors.length} error(s) occurred)`;
+        window.showToast(msg, 'warning');
+      } else {
+        window.showToast(msg, 'success');
+      }
+    } else {
+      window.showToast("Undo transfer failed: " + (res.error || 'Unknown error'), 'error');
+    }
+  } catch (err) {
+    if (window.ProgressController) window.ProgressController.stop();
+    console.error('Error on undo complete:', err);
+  }
+};

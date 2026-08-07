@@ -8,6 +8,139 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// ── Chrome-Style UI Zoom Controller (Ctrl + +, Ctrl + -, Ctrl + 0, Ctrl + Wheel) ──
+(function initZoomController() {
+  const ZOOM_STEPS = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0];
+  let currentZoom = parseFloat(localStorage.getItem('app_zoom_level')) || 1.0;
+  let badgeTimer = null;
+
+  function showZoomBadge(zoomVal) {
+    let badge = document.getElementById('app-zoom-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'app-zoom-badge';
+      badge.style.position = 'fixed';
+      badge.style.top = '16px';
+      badge.style.right = '24px';
+      badge.style.zIndex = '999999';
+      badge.style.background = 'rgba(15, 23, 42, 0.9)';
+      badge.style.color = '#38bdf8';
+      badge.style.border = '1px solid rgba(56, 189, 248, 0.4)';
+      badge.style.borderRadius = '20px';
+      badge.style.padding = '5px 14px';
+      badge.style.fontSize = '12px';
+      badge.style.fontWeight = '700';
+      badge.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+      badge.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.4)';
+      badge.style.pointerEvents = 'none';
+      badge.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+      badge.style.opacity = '0';
+      badge.style.transform = 'translateY(-6px)';
+      if (document.body) document.body.appendChild(badge);
+    }
+
+    if (badge) {
+      const pct = Math.round(zoomVal * 100);
+      badge.innerHTML = `🔍 ${pct}%`;
+      badge.style.opacity = '1';
+      badge.style.transform = 'translateY(0)';
+
+      if (badgeTimer) clearTimeout(badgeTimer);
+      badgeTimer = setTimeout(() => {
+        badge.style.opacity = '0';
+        badge.style.transform = 'translateY(-6px)';
+      }, 1300);
+    }
+  }
+
+  function applyZoom(newZoom, showToastBadge = true) {
+    const clamped = Math.max(0.5, Math.min(2.0, parseFloat(newZoom.toFixed(2))));
+    currentZoom = clamped;
+
+    document.documentElement.style.setProperty('--app-scale', currentZoom.toString());
+    document.documentElement.style.fontSize = (16 * currentZoom) + 'px';
+
+    // Reset zoom on body/documentElement so native flex coordinates remain intact
+    if (document.body) {
+      document.body.style.zoom = '1';
+    }
+    if (document.documentElement) {
+      document.documentElement.style.zoom = '1';
+    }
+
+    localStorage.setItem('app_zoom_level', currentZoom.toString());
+    if (showToastBadge) {
+      showZoomBadge(currentZoom);
+    }
+  }
+
+  function zoomIn() {
+    let next = ZOOM_STEPS.find(s => s > currentZoom + 0.01);
+    if (!next) next = 2.0;
+    applyZoom(next);
+  }
+
+  function zoomOut() {
+    let prev = [...ZOOM_STEPS].reverse().find(s => s < currentZoom - 0.01);
+    if (!prev) prev = 0.5;
+    applyZoom(prev);
+  }
+
+  function resetZoom() {
+    applyZoom(1.0);
+  }
+
+  // Restore saved zoom level immediately on startup
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => applyZoom(currentZoom, false));
+  } else {
+    applyZoom(currentZoom, false);
+  }
+
+  // Global Keyboard Listener (Ctrl + +, Ctrl + -, Ctrl + 0)
+  window.addEventListener('keydown', (e) => {
+    const isCtrl = e.ctrlKey || e.metaKey;
+    if (!isCtrl) return;
+
+    const key = e.key;
+    const code = e.code;
+
+    // Zoom In: Ctrl + '+' or '=' or NumpadAdd
+    if (key === '+' || key === '=' || code === 'NumpadAdd' || (e.shiftKey && key === '=')) {
+      e.preventDefault();
+      zoomIn();
+    }
+    // Zoom Out: Ctrl + '-' or '_' or NumpadSubtract
+    else if (key === '-' || key === '_' || code === 'NumpadSubtract') {
+      e.preventDefault();
+      zoomOut();
+    }
+    // Zoom Reset: Ctrl + '0' or Numpad0
+    else if (key === '0' || code === 'Numpad0') {
+      e.preventDefault();
+      resetZoom();
+    }
+  }, { passive: false });
+
+  // Global Mouse Wheel Listener (Ctrl + Scroll Up / Down)
+  window.addEventListener('wheel', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        zoomIn();
+      } else if (e.deltaY > 0) {
+        zoomOut();
+      }
+    }
+  }, { passive: false });
+
+  // Expose global zoom helpers
+  window.appZoomIn = zoomIn;
+  window.appZoomOut = zoomOut;
+  window.appResetZoom = resetZoom;
+  window.appApplyZoom = applyZoom;
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   const navBtns = document.querySelectorAll('.nav-btn');
   const views = document.querySelectorAll('.view-panel, .view-section');
@@ -117,7 +250,7 @@ window.showToast = function(msg, type = 'success', duration = 4000, actionButton
       btn.style.borderRadius = '8px';
       btn.style.border = 'none';
       btn.style.fontWeight = '700';
-      btn.style.fontSize = '0.8rem';
+      btn.style.fontSize = '0.88rem';
       btn.style.cursor = 'pointer';
       btn.style.fontFamily = 'Outfit, sans-serif';
       btn.style.background = btnConfig.primary ? '#ffffff' : 'rgba(255,255,255,0.22)';
@@ -252,25 +385,25 @@ window.ProgressController = {
     if (this.detailsContainer) this.detailsContainer.classList.remove('hidden');
   },
 
-  update(current, subtitle = null) {
+  update(current, subtitle = null, customEta = null, customText = null, customPercent = null) {
     if (subtitle && this.subtitleEl) this.subtitleEl.textContent = subtitle;
     
     const now = Date.now();
     this.history.push({ time: now, current: current });
     if (this.history.length > 100) this.history.shift();
     
-    if (this.total > 0) {
+    if (this.total > 0 || customPercent !== null) {
       if (!this.isDeterminateMode) {
         this.switchToDeterminate();
       }
       
-      const pct = Math.min(100, Math.floor((current / this.total) * 100));
+      const pct = customPercent !== null ? Math.min(100, Math.max(0, Math.floor(customPercent))) : Math.min(100, Math.floor((current / this.total) * 100));
       this.setProgress(pct);
       if (this.innerText) this.innerText.textContent = `${pct}%`;
-      if (this.text) this.text.textContent = `${current} / ${this.total}`;
+      if (this.text) this.text.textContent = customText || `${current} / ${this.total}`;
       
-      let calculatedEta = "Almost done...";
-      if (this.history.length > 5) {
+      let calculatedEta = customEta || "Almost done...";
+      if (!customEta && this.history.length > 5) {
         const first = this.history[0];
         const last = this.history[this.history.length - 1];
         const elapsedSec = (last.time - first.time) / 1000;
@@ -391,17 +524,130 @@ window.handleGlobalDrop = function(paths) {
 
 
 // ==============================================================================
-// GITHUB AUTO UPDATE CONTROLLER
+// GITHUB AUTO UPDATE CONTROLLER  (Push-model + 7-state machine)
 // ==============================================================================
+
+// Holds the latest manifest received from either silent check or manual check
 window._latestUpdateInfo = null;
 
+// Current update UI state: idle | checking | available | downloading | ready | uptodate | error
+window._updateState = 'idle';
+
+/**
+ * _setUpdateState — drives the Settings page update button through all 7 states.
+ * @param {string} state
+ * @param {object} [opts]  Optional extra data (version string, error message)
+ */
+window._setUpdateState = function(state, opts = {}) {
+  window._updateState = state;
+  const btn       = document.getElementById('btn-settings-check-updates');
+  const statusEl  = document.getElementById('settings-update-status');
+  const progressEl = document.getElementById('settings-update-progress-row');
+
+  if (!btn) return;
+
+  // Reset common classes
+  btn.disabled = false;
+
+  const icons = {
+    idle:        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    checking:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:rotate 1s linear infinite"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+    available:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    downloading: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:rotate 1s linear infinite"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+    ready:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+    uptodate:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+    error:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  };
+
+  const labels = {
+    idle:        'Check for Updates Now',
+    checking:    'Checking...',
+    available:   `Update v${opts.version || ''} Available — View Details`,
+    downloading: `Downloading...`,
+    ready:       'Install Now & Restart',
+    uptodate:    `Up to Date (v${opts.version || ''})`,
+    error:       'Retry Check',
+  };
+
+  const colors = {
+    idle:        '',
+    checking:    'var(--accent-blue)',
+    available:   '#10b981',
+    downloading: 'var(--accent-blue)',
+    ready:       '#059669',
+    uptodate:    '#6b7280',
+    error:       '#dc2626',
+  };
+
+  btn.innerHTML = `${icons[state] || ''}<span>${labels[state] || state}</span>`;
+  if (colors[state]) btn.style.background = colors[state];
+  else btn.style.background = '';
+
+  if (state === 'checking' || state === 'downloading') {
+    btn.disabled = true;
+  }
+
+  if (statusEl) {
+    const statusMsgs = {
+      idle:        '',
+      checking:    'Connecting to GitHub...',
+      available:   `🚀 New version v${opts.version || ''} is available.`,
+      downloading: `⬇️ Downloading update...`,
+      ready:       '✅ Download complete. Ready to install.',
+      uptodate:    `✅ You are on the latest version.`,
+      error:       `⚠️ ${opts.error || 'Update check failed.'}`,
+    };
+    statusEl.textContent = statusMsgs[state] || '';
+    statusEl.style.color = colors[state] || 'var(--text-muted)';
+  }
+
+  if (progressEl) {
+    progressEl.classList.toggle('hidden', state !== 'downloading');
+  }
+};
+
+/**
+ * PUSH MODEL — called by Python (via window.evaluate_js) when the silent
+ * startup check finds a newer version. The renderer reacts passively;
+ * no user action is needed to trigger this.
+ */
+window.onUpdateAvailable = function(manifest) {
+  window._latestUpdateInfo = manifest;
+  window._setUpdateState('available', { version: manifest.latest_version });
+
+  const badge = document.getElementById('update-nav-badge');
+  if (badge) badge.classList.remove('hidden');
+
+  // Show passive banner with action buttons
+  window.showToast(
+    `✨ <strong>New Update Available (v${manifest.latest_version})!</strong>`,
+    'update',
+    0,
+    [
+      { text: 'View Notes', primary: false, keepOpen: false, onClick: () => window.openUpdateModal() },
+      { text: 'Update Now', primary: true,  keepOpen: false, onClick: () => window.downloadUpdate(manifest.download_url) },
+    ]
+  );
+};
+
+/**
+ * MANUAL CHECK — triggered by user clicking "Check for Updates" in Settings.
+ * Drives the full state machine: idle → checking → available/uptodate/error.
+ */
 window.checkForUpdates = async function(isManual = false) {
   if (!window.pywebview || !window.pywebview.api || !window.pywebview.api.check_for_updates) {
-    if (isManual) window.showToast('Updater service initializing... Please try again.', 'warning');
+    if (isManual) window.showToast('Updater service initializing… Please try again.', 'warning');
     return;
   }
 
-  if (isManual) window.showToast('Checking GitHub for updates...', 'info', 3000);
+  // If we already have a cached update, just open the modal
+  if (isManual && window._latestUpdateInfo && window._latestUpdateInfo.update_available) {
+    window.openUpdateModal();
+    return;
+  }
+
+  window._setUpdateState('checking');
+  if (isManual) window.showToast('Checking GitHub for updates…', 'info', 2500);
 
   try {
     const rawRes = await window.pywebview.api.check_for_updates();
@@ -412,47 +658,31 @@ window.checkForUpdates = async function(isManual = false) {
       window._latestUpdateInfo = data;
 
       if (data.update_available) {
-        const badge = document.getElementById('update-nav-badge');
-        if (badge) badge.classList.remove('hidden');
-
-        // Show update notification Toast with Action buttons
-        window.showToast(
-          `✨ <strong>New Update Available (${data.latest_version})!</strong>`,
-          'update',
-          0,
-          [
-            {
-              text: 'View Notes',
-              primary: false,
-              onClick: () => window.openUpdateModal()
-            },
-            {
-              text: 'Update Now',
-              primary: true,
-              onClick: () => window.downloadUpdate(data.download_url)
-            }
-          ]
-        );
+        window.onUpdateAvailable(data);
       } else {
+        window._setUpdateState('uptodate', { version: data.current_version });
         if (isManual) {
-          window.showToast(`✨ You are running the latest version (${data.current_version}).`, 'success');
+          window.showToast(`✅ You are running the latest version (v${data.current_version}).`, 'success');
         }
       }
+    } else {
+      window._setUpdateState('error', { error: 'Unexpected response from update server.' });
     }
   } catch (err) {
-    console.error('Check update error:', err);
-    if (isManual) window.showToast('Failed to check for updates from GitHub.', 'error');
+    console.error('[Update] Check error:', err);
+    window._setUpdateState('error', { error: 'Network error while checking for updates.' });
+    if (isManual) window.showToast('⚠️ Failed to check for updates from GitHub.', 'error');
   }
 };
 
 window.openUpdateModal = function() {
   const modal = document.getElementById('update-modal');
-  const tag = document.getElementById('update-modal-version-tag');
+  const tag   = document.getElementById('update-modal-version-tag');
   const notes = document.getElementById('update-modal-notes');
-  const data = window._latestUpdateInfo;
+  const data  = window._latestUpdateInfo;
 
   if (modal) {
-    if (tag && data) tag.textContent = `Version ${data.latest_version} Ready`;
+    if (tag   && data) tag.textContent   = `Version ${data.latest_version} Ready`;
     if (notes && data) notes.textContent = data.release_notes || 'Bug fixes and performance enhancements.';
     modal.classList.remove('hidden');
   }
@@ -469,83 +699,147 @@ window.downloadUpdate = async function(downloadUrl = '') {
     return;
   }
 
+  // Resolve URL from cached manifest if not supplied
+  if (!downloadUrl && window._latestUpdateInfo) {
+    downloadUrl = window._latestUpdateInfo.download_url || '';
+  }
+
+  // Show progress box inside modal
   const progressBox = document.getElementById('update-modal-progress-container');
   if (progressBox) progressBox.classList.remove('hidden');
 
-  window.showToast('⬇️ Starting download from GitHub repository...', 'info', 0);
+  window._setUpdateState('downloading');
+  window.showToast('⬇️ Starting download from GitHub repository…', 'info', 0);
 
   try {
     const rawRes = await window.pywebview.api.download_and_install_update(downloadUrl);
     const res = (typeof rawRes === 'string') ? JSON.parse(rawRes) : rawRes;
-
     if (res && res.error) {
+      window._setUpdateState('error', { error: res.error });
       window.showToast(`Update error: ${res.error}`, 'error');
     }
+    // Actual completion is signalled by window.onUpdateReadyToInstall() push
   } catch (err) {
-    console.error('Download update error:', err);
-    window.showToast('Error initiating update download.', 'error');
+    console.error('[Update] Download error:', err);
+    window._setUpdateState('error', { error: 'Download failed. Please retry.' });
+    window.showToast('⚠️ Error initiating update download.', 'error');
   }
 };
 
-// Progress callback from Python AutoUpdater
+// Progress callback — called by Python AutoUpdater via evaluate_js (throttled to 350ms)
 window.onUpdateDownloadProgress = function(percent, downloadedBytes, totalBytes, speedKb) {
-  const mbDownloaded = (downloadedBytes / (1024 * 1024)).toFixed(1);
-  const mbTotal = totalBytes > 0 ? (totalBytes / (1024 * 1024)).toFixed(1) : '?';
-  const speedStr = speedKb > 1024 ? `${(speedKb / 1024).toFixed(1)} MB/s` : `${speedKb.toFixed(0)} KB/s`;
+  const mbDownloaded = (downloadedBytes / 1_048_576).toFixed(1);
+  const mbTotal      = totalBytes > 0 ? (totalBytes / 1_048_576).toFixed(1) : '?';
+  const speedStr     = speedKb > 1024 ? `${(speedKb / 1024).toFixed(1)} MB/s` : `${speedKb.toFixed(0)} KB/s`;
 
-  // Update modal progress bar if open
-  const pctText = document.getElementById('update-progress-pct-text');
-  const fill = document.getElementById('update-progress-bar-fill');
-  const bytesText = document.getElementById('update-progress-bytes');
-  const speedText = document.getElementById('update-progress-speed');
+  // Update modal progress bar
+  const pctText  = document.getElementById('update-progress-pct-text');
+  const fill     = document.getElementById('update-progress-bar-fill');
+  const bytesEl  = document.getElementById('update-progress-bytes');
+  const speedEl  = document.getElementById('update-progress-speed');
 
   if (pctText) pctText.textContent = `${percent}%`;
-  if (fill) fill.style.width = `${percent}%`;
-  if (bytesText) bytesText.textContent = `${mbDownloaded} MB / ${mbTotal} MB`;
-  if (speedText) speedText.textContent = speedStr;
+  if (fill)    fill.style.width    = `${percent}%`;
+  if (bytesEl) bytesEl.textContent = `${mbDownloaded} MB / ${mbTotal} MB`;
+  if (speedEl) speedEl.textContent = speedStr;
 
-  // Update toast
+  // Update Settings progress bar if present
+  const settingsFill = document.getElementById('settings-update-bar-fill');
+  const settingsPct  = document.getElementById('settings-update-bar-pct');
+  if (settingsFill) settingsFill.style.width = `${percent}%`;
+  if (settingsPct)  settingsPct.textContent  = `${percent}%`;
+
   window.showToast(
-    `⬇️ <strong>Downloading Update... ${percent}%</strong> (${mbDownloaded} MB / ${mbTotal} MB @ ${speedStr})`,
-    'info',
-    0
+    `⬇️ <strong>Downloading Update… ${percent}%</strong> (${mbDownloaded} MB / ${mbTotal} MB @ ${speedStr})`,
+    'info', 0
   );
 };
 
-// Ready to install callback from Python AutoUpdater
+// Push from Python: download complete, installer is ready
 window.onUpdateReadyToInstall = function(installerPath, pid) {
+  window._setUpdateState('ready');
   window.showToast(
-    `🚀 <strong>Download complete!</strong> Launching silent update installer & restarting application...`,
-    'update',
-    0
+    `🚀 <strong>Download complete!</strong> Click <strong>Install Now & Restart</strong> to apply the update.`,
+    'update', 0
   );
+
+  // Update the modal button to install
+  const startBtn = document.getElementById('btn-start-update');
+  if (startBtn) {
+    startBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Install Now & Restart</span>`;
+    startBtn.onclick = async () => {
+      window.showToast('🔄 Launching installer & restarting app…', 'info', 0);
+      try {
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.apply_update_now) {
+          await window.pywebview.api.apply_update_now();
+        }
+      } catch (e) {
+        console.error("[Update] Apply error:", e);
+      }
+    };
+  }
 };
 
-// Error callback from Python AutoUpdater
+// Push from Python: download or install error
 window.onUpdateError = function(err) {
-  window.showToast(`⚠️ Update Installation Error: ${err}`, 'error', 6000);
+  window._setUpdateState('error', { error: err });
+  window.showToast(`⚠️ Update Error: ${err}`, 'error', 7000);
 };
+
+// ---------------------------------------------------------------------------
+// SETTINGS AUTO-CHECK TOGGLE helpers
+// ---------------------------------------------------------------------------
+
+window.loadAutoCheckSetting = async function() {
+  try {
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.get_setting) {
+      const raw = await window.pywebview.api.get_setting('auto_check_updates');
+      const res = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+      const val = res.value;
+      // Defaults to true if undefined
+      const enabled = (val === null || val === undefined) ? true : Boolean(val);
+      const toggle = document.getElementById('toggle-auto-check-updates');
+      if (toggle) {
+        toggle.checked = enabled;
+        // Sync visuals only — do NOT dispatch change (avoids re-saving on load)
+        if (window._syncToggleVisual) window._syncToggleVisual(enabled);
+      }
+    }
+  } catch (e) {
+    console.warn('[Update] loadAutoCheckSetting:', e);
+  }
+};
+
+window.saveAutoCheckSetting = async function(enabled) {
+  try {
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.set_setting) {
+      await window.pywebview.api.set_setting('auto_check_updates', enabled);
+    }
+  } catch (e) {
+    console.warn('[Update] saveAutoCheckSetting:', e);
+  }
+};
+
+// ---------------------------------------------------------------------------
+// UI BINDINGS (DOMContentLoaded)
+// ---------------------------------------------------------------------------
 
 window.setAppTheme = function(themeId) {
-  if (themeId !== 'dark' && themeId !== 'light') {
-    themeId = 'dark';
-  }
+  if (themeId !== 'dark' && themeId !== 'light') themeId = 'dark';
   localStorage.setItem('ain53_theme', themeId);
   document.documentElement.setAttribute('data-theme', themeId);
 
-  // Update Settings Page Theme Selection Cards
-  const darkCard = document.getElementById('theme-card-dark');
+  const darkCard  = document.getElementById('theme-card-dark');
   const lightCard = document.getElementById('theme-card-light');
-
   if (darkCard && lightCard) {
     if (themeId === 'dark') {
-      darkCard.style.border = '2px solid #10b981';
+      darkCard.style.border  = '2px solid #10b981';
       lightCard.style.border = '1px solid var(--border-glass)';
       darkCard.querySelector('.theme-check-icon')?.classList.remove('hidden');
       lightCard.querySelector('.theme-check-icon')?.classList.add('hidden');
     } else {
       lightCard.style.border = '2px solid #10b981';
-      darkCard.style.border = '1px solid var(--border-glass)';
+      darkCard.style.border  = '1px solid var(--border-glass)';
       lightCard.querySelector('.theme-check-icon')?.classList.remove('hidden');
       darkCard.querySelector('.theme-check-icon')?.classList.add('hidden');
     }
@@ -559,49 +853,32 @@ window.loadAppVersion = async function() {
       const res = (typeof rawRes === 'string') ? JSON.parse(rawRes) : rawRes;
       if (res && res.version) {
         const vFormatted = `v ${res.version}`;
-        document.querySelectorAll('.app-version-tag').forEach(el => {
-          el.textContent = vFormatted;
-        });
+        document.querySelectorAll('.app-version-tag').forEach(el => { el.textContent = vFormatted; });
       }
     }
   } catch (err) {
-    console.warn('Load app version error:', err);
+    console.warn('[App] Load version error:', err);
   }
 };
 
 window.openLightbox = function(filePath, fileName = '', isVideo = false) {
   const modal = document.getElementById('lightbox-modal');
-  const img = document.getElementById('lightbox-img');
+  const img   = document.getElementById('lightbox-img');
   const video = document.getElementById('lightbox-video');
   const title = document.getElementById('lightbox-title');
-  const path = document.getElementById('lightbox-path');
-
+  const path  = document.getElementById('lightbox-path');
   if (!modal) return;
-
   if (title) title.textContent = fileName || 'Media Preview';
-  if (path) path.textContent = filePath || '';
-
+  if (path)  path.textContent  = filePath || '';
   const cleanPath = filePath.replace(/\\/g, '/');
   const src = cleanPath.startsWith('file://') ? cleanPath : `file:///${cleanPath}`;
-
   if (isVideo) {
-    if (img) img.classList.add('hidden');
-    if (video) {
-      video.src = src;
-      video.classList.remove('hidden');
-      video.play().catch(() => {});
-    }
+    if (img)   img.classList.add('hidden');
+    if (video) { video.src = src; video.classList.remove('hidden'); video.play().catch(() => {}); }
   } else {
-    if (video) {
-      video.pause();
-      video.classList.add('hidden');
-    }
-    if (img) {
-      img.src = src;
-      img.classList.remove('hidden');
-    }
+    if (video) { video.pause(); video.classList.add('hidden'); }
+    if (img)   { img.src = src; img.classList.remove('hidden'); }
   }
-
   modal.classList.remove('hidden');
 };
 
@@ -612,67 +889,104 @@ window.closeLightbox = function() {
   if (modal) modal.classList.add('hidden');
 };
 
-// Bind UI controls for Auto Updater & Settings Page
 document.addEventListener('DOMContentLoaded', () => {
-  const btnCheckUpdates = document.getElementById('btn-check-updates');
+  // Restore theme
+  const savedTheme = localStorage.getItem('ain53_theme') || 'dark';
+  window.setAppTheme(savedTheme);
+
+  // Load version from Python
+  window.loadAppVersion();
+
+  // Load auto-check toggle state from Python settings store
+  window.loadAutoCheckSetting();
+
+  // ── Update UI button bindings ──
   const btnSettingsCheckUpdates = document.getElementById('btn-settings-check-updates');
-  const btnStartUpdate = document.getElementById('btn-start-update');
-  const btnUpdateLater = document.getElementById('btn-update-later');
-  const btnCloseModal = document.getElementById('btn-close-update-modal');
-  const themeCardDark = document.getElementById('theme-card-dark');
-  const themeCardLight = document.getElementById('theme-card-light');
-  const btnCloseLightbox = document.getElementById('btn-close-lightbox');
-  const lightboxModal = document.getElementById('lightbox-modal');
+  const btnStartUpdate          = document.getElementById('btn-start-update');
+  const btnUpdateLater          = document.getElementById('btn-update-later');
+  const btnCloseModal           = document.getElementById('btn-close-update-modal');
+  const themeCardDark           = document.getElementById('theme-card-dark');
+  const themeCardLight          = document.getElementById('theme-card-light');
+  const btnCloseLightbox        = document.getElementById('btn-close-lightbox');
+  const lightboxModal           = document.getElementById('lightbox-modal');
+  const autoCheckToggle         = document.getElementById('toggle-auto-check-updates');
 
-  const triggerUpdateCheck = () => {
-    if (window._latestUpdateInfo && window._latestUpdateInfo.update_available) {
-      window.openUpdateModal();
-    } else {
-      window.checkForUpdates(true);
-    }
-  };
+  // Settings check button — state-aware handler
+  if (btnSettingsCheckUpdates) {
+    btnSettingsCheckUpdates.addEventListener('click', () => {
+      const state = window._updateState;
+      if (state === 'available') {
+        window.openUpdateModal();
+      } else if (state === 'ready') {
+        // Download already done — Python will call os._exit when installer is launched
+        // Just show the modal so user sees Install Now button
+        window.openUpdateModal();
+      } else if (state === 'downloading') {
+        // Ignore clicks while downloading
+      } else {
+        window.checkForUpdates(true);
+      }
+    });
+  }
 
-  if (btnCheckUpdates) btnCheckUpdates.addEventListener('click', triggerUpdateCheck);
-  if (btnSettingsCheckUpdates) btnSettingsCheckUpdates.addEventListener('click', triggerUpdateCheck);
-
-  if (themeCardDark) themeCardDark.addEventListener('click', () => window.setAppTheme('dark'));
+  if (themeCardDark)  themeCardDark.addEventListener('click',  () => window.setAppTheme('dark'));
   if (themeCardLight) themeCardLight.addEventListener('click', () => window.setAppTheme('light'));
 
   if (btnStartUpdate) {
     btnStartUpdate.addEventListener('click', () => {
+      if (window._updateState === 'ready') {
+        window.showToast('🔄 Launching installer… App will restart.', 'info', 0);
+        return; // Installer already spawned by Python
+      }
       const url = window._latestUpdateInfo ? window._latestUpdateInfo.download_url : '';
       window.downloadUpdate(url);
     });
   }
 
-  if (btnUpdateLater) {
-    btnUpdateLater.addEventListener('click', () => window.closeUpdateModal());
-  }
-
-  if (btnCloseModal) {
-    btnCloseModal.addEventListener('click', () => window.closeUpdateModal());
-  }
-
-  if (btnCloseLightbox) {
-    btnCloseLightbox.addEventListener('click', () => window.closeLightbox());
-  }
+  if (btnUpdateLater) btnUpdateLater.addEventListener('click', () => window.closeUpdateModal());
+  if (btnCloseModal)  btnCloseModal.addEventListener('click',  () => window.closeUpdateModal());
+  if (btnCloseLightbox) btnCloseLightbox.addEventListener('click', () => window.closeLightbox());
 
   if (lightboxModal) {
-    lightboxModal.addEventListener('click', (e) => {
+    lightboxModal.addEventListener('click', e => {
       if (e.target === lightboxModal) window.closeLightbox();
     });
   }
 
-  // Close lightbox on ESC key
-  window.addEventListener('keydown', (e) => {
+  if (autoCheckToggle) {
+    // Expose visual sync helper globally so loadAutoCheckSetting can call it
+    window._syncToggleVisual = (checked) => {
+      const track = document.getElementById('auto-check-track');
+      const thumb = document.getElementById('auto-check-thumb');
+      const lbl   = document.getElementById('auto-check-label');
+      if (track) track.style.background = checked ? '#10b981' : 'rgba(156,163,175,0.4)';
+      if (thumb) thumb.style.transform  = checked ? 'translateX(20px)' : 'translateX(0)';
+      if (lbl)   lbl.textContent        = checked ? 'Enabled' : 'Disabled';
+    };
+    // Sync visual on load
+    window._syncToggleVisual(autoCheckToggle.checked);
+
+    autoCheckToggle.addEventListener('change', () => {
+      window._syncToggleVisual(autoCheckToggle.checked);
+      window.saveAutoCheckSetting(autoCheckToggle.checked);
+      window.showToast(
+        autoCheckToggle.checked
+          ? '🔔 Auto-check for updates <strong>enabled</strong>.'
+          : '🔕 Auto-check for updates <strong>disabled</strong>.',
+        'info', 3000
+      );
+    });
+  }
+
+  window.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       window.closeLightbox();
       window.closeUpdateModal();
     }
   });
 
-  // Automatic background update check on app launch after 3.5s delay
-  setTimeout(() => {
-    window.checkForUpdates(false);
-  }, 3500);
+  // NOTE: The startup silent update check is now driven by Python's
+  // silent_check_and_push() (4-second delay from main.py set_window).
+  // Python calls window.onUpdateAvailable() via evaluate_js — fully passive.
 });
+

@@ -300,14 +300,13 @@
 
         <!-- ANALYSIS SCREEN -->
         <div id="sort-analysis-screen" class="card glass hidden">
-          <div class="analysis-header text-center mb-4">
-            <h3 class="card-title">Analysing Media Files</h3>
-            <p id="analysis-subtitle" class="text-muted scanning-pulse">Scanning for sub-event markers in photos &amp;
-              videos…</p>
+          <div class="analysis-header text-center">
+            <h3 class="card-title mb-1">Analysing Media Files</h3>
+            <p id="analysis-subtitle" class="text-muted scanning-pulse mb-0">Scanning for sub-event markers in photos &amp; videos…</p>
           </div>
 
-          <div class="scan-ring-container flex justify-center mb-4">
-            <div class="scan-ring" style="width:120px; height:120px; position:relative;">
+          <div class="scan-ring-container flex justify-center">
+            <div class="scan-ring" style="width:100px; height:100px; position:relative;">
               <svg viewBox="0 0 100 100" style="transform: rotate(-90deg); width:100%; height:100%;">
                 <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="6" />
                 <circle id="ring-progress" cx="50" cy="50" r="45" fill="none" stroke="var(--accent-blue)"
@@ -315,12 +314,12 @@
                   style="transition: stroke-dashoffset 0.3s ease;" />
               </svg>
               <div id="ring-percent"
-                style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:700; color:var(--accent-blue);">
+                style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:700; color:var(--accent-blue); font-size:1.1rem;">
                 0%</div>
             </div>
           </div>
 
-          <div class="progress-section mb-4">
+          <div class="progress-section">
             <div class="progress-bar-bg mb-2">
               <div class="progress-bar-fill" id="analysis-bar"></div>
             </div>
@@ -330,7 +329,7 @@
             </div>
           </div>
 
-          <div class="stats-grid mb-4">
+          <div class="stats-grid">
             <div class="stat-card" id="stat-card-photos">
               <div class="stat-value" id="analysis-photos">0</div>
               <div class="stat-label">Photos</div>
@@ -345,8 +344,8 @@
             </div>
           </div>
 
-          <div class="file-ticker mb-4">
-            <div class="ticker-label text-xs text-muted mb-2">CURRENTLY ANALYSING</div>
+          <div class="file-ticker">
+            <div class="ticker-label text-xs text-muted mb-1">CURRENTLY ANALYSING</div>
             <div class="flex gap-2 align-center">
               <span class="ticker-badge photo" id="ticker-badge">Photo</span>
               <span class="ticker-filename" id="ticker-filename"
@@ -355,43 +354,56 @@
                 style="color:var(--accent-blue); font-weight:600;"></span>
             </div>
           </div>
-
-          <div class="activity-log" id="activity-log">
-            <div class="log-entry"><span style="color:var(--accent-green);">●</span> Analysis engine ready</div>
-          </div>
         </div>
 
         <!-- MAIN WORKSPACE -->
         <div id="sort-main-screen" class="hidden sort-workspace-fill">
           <div class="dashboard-header flex mb-4"
-            style="justify-content: space-between; align-items: center; background:var(--bg-glass); backdrop-filter: blur(10px); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass); flex-shrink: 0;">
+            style="justify-content: space-between; align-items: center; background:var(--bg-glass); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass); flex-shrink: 0;">
             <h3 id="dashboard-title" class="card-title mb-0" style="margin-bottom:0;">Dashboard</h3>
-            <div class="header-actions flex gap-2">
-              <button class="btn btn-secondary" id="btn-undo" disabled>Undo</button>
-              <button class="btn btn-secondary" id="btn-undo-transfer" disabled>Undo Transfer</button>
-              <button class="btn btn-primary" id="btn-copy-all">Copy All</button>
-              <button class="btn btn-success" id="btn-move-all">Move All</button>
+            <div class="header-actions flex gap-2 align-center">
+              <button class="btn btn-secondary" id="btn-undo" disabled style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo</button>
+              <button class="btn btn-secondary" id="btn-undo-transfer" disabled style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo Transfer</button>
+              <div style="width:1px; height:20px; background:var(--border-glass); margin: 0 4px;"></div>
+              <button class="btn btn-primary" id="btn-copy-all" style="padding: 0.45rem 1.15rem; font-size:0.85rem;">Copy All</button>
+              <button class="btn btn-success" id="btn-move-all" style="padding: 0.45rem 1.15rem; font-size:0.85rem;">Move All</button>
             </div>
           </div>
 
           <div class="workspace-layout flex gap-4">
             <!-- Sorting Internal Sidebar -->
-            <div class="sort-sidebar" style="width: 220px; flex-shrink:0; overflow-y: auto;">
-              <div class="card glass" style="padding: 1rem;">
-                <h4 class="text-sm text-muted mb-2">FILTER BY CONTRIBUTOR</h4>
-                <button class="btn btn-secondary w-full mb-2 active" id="btn-filter-all"
-                  style="text-align:left; justify-content:flex-start;">All Contributors</button>
-                <div id="contributor-filters" class="flex flex-col gap-2 mb-4"></div>
+            <div class="sort-sidebar" style="width: 230px; flex-shrink:0; overflow-y: auto;">
+              <div class="card glass" style="padding: 1rem; display:flex; flex-direction:column; gap:0.65rem;">
+                <h4 class="text-sm text-muted mb-1">FILTER BY CONTRIBUTOR</h4>
+                <button class="btn btn-secondary w-full mb-1 active" id="btn-filter-all"
+                  style="text-align:left; justify-content:flex-start; padding: 0.45rem 0.75rem;">All Contributors</button>
+                <div id="contributor-filters" class="flex flex-col gap-1 mb-2"></div>
 
-                <h4 class="text-sm text-muted mb-2">FOLDER TOGGLES</h4>
-                <button class="btn btn-secondary w-full mb-2" id="btn-expand-all">Expand All</button>
-                <button class="btn btn-secondary w-full mb-4" id="btn-collapse-all">Collapse All</button>
+                <h4 class="text-sm text-muted mb-1">FOLDER TOGGLES</h4>
+                <div class="flex gap-2 mb-2">
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-expand-all" style="padding:0.45rem 0.5rem;">Expand All</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-collapse-all" style="padding:0.45rem 0.5rem;">Collapse All</button>
+                </div>
 
-                <h4 class="text-sm text-muted mb-2">STATS</h4>
-                <div class="text-sm flex-col gap-2">
-                  <div>Total Files: <strong id="stat-total-files">0</strong></div>
-                  <div>Excluded: <strong id="stat-excluded">0</strong></div>
-                  <div>Folders: <strong id="stat-total-folders">0</strong></div>
+                <h4 class="text-sm text-muted mb-1">FILTER BY MEDIA TYPE</h4>
+                <div class="flex gap-1 mb-2" style="background:rgba(15,23,42,0.4); padding:3px; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+                  <button class="btn btn-secondary flex-1 text-xs active" id="btn-type-all" onclick="window.filterMediaType('ALL')" style="padding:0.35rem 0.4rem; border:none;">All</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-type-video" onclick="window.filterMediaType('VIDEO')" style="padding:0.35rem 0.4rem; border:none;">Videos</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-type-photo" onclick="window.filterMediaType('PHOTO')" style="padding:0.35rem 0.4rem; border:none;">Photos</button>
+                </div>
+
+                <h4 class="text-sm text-muted mb-1">QUICK SELECTION</h4>
+                <div class="flex flex-col gap-1.5 mb-2">
+                  <button class="btn btn-secondary w-full text-xs justify-center" onclick="window.selectGlobalMedia('all_videos')" style="padding:0.45rem 0.75rem;">Select All Videos</button>
+                  <button class="btn btn-secondary w-full text-xs justify-center" onclick="window.selectGlobalMedia('all_photos')" style="padding:0.45rem 0.75rem;">Select All Photos</button>
+                  <button class="btn btn-secondary w-full text-xs justify-center" onclick="window.selectGlobalMedia('none')" style="padding:0.45rem 0.75rem;">Deselect All</button>
+                </div>
+
+                <h4 class="text-sm text-muted mb-1">STATS</h4>
+                <div class="text-sm flex-col gap-1" style="background:rgba(15,23,42,0.4); padding:0.6rem 0.8rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+                  <div class="flex justify-between"><span>Total Files:</span> <strong id="stat-total-files">0</strong></div>
+                  <div class="flex justify-between"><span>Excluded:</span> <strong id="stat-excluded">0</strong></div>
+                  <div class="flex justify-between"><span>Folders:</span> <strong id="stat-total-folders">0</strong></div>
                 </div>
               </div>
             </div>
@@ -455,6 +467,48 @@
             <div class="flex gap-2">
               <button class="btn btn-primary flex-1" id="btn-report-done">Done</button>
               <button class="btn btn-secondary flex-1" id="btn-report-undo">Undo Changes</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMERA SERIES PREFIX CONFIRMATION MODAL -->
+        <div id="camera-prefix-modal" class="modal sort-modal" style="display: none;">
+          <div class="modal-content glass" style="max-width:520px; width:92%; padding: 1.5rem;">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;">
+              <span>📹</span> Confirm Camera Series Prefixes
+            </h3>
+            <p class="text-muted text-xs mb-3">
+              Verify or edit the series prefix for each cameraman:
+            </p>
+            <div class="flex justify-between text-xs font-bold text-muted mb-2 px-2">
+              <span>CAMERAMAN NAME</span>
+              <span>SERIES PREFIX</span>
+            </div>
+            <div id="camera-prefix-inputs-container" class="flex-col gap-2 mb-4"
+              style="max-height:320px; overflow-y:auto; padding-right:4px;">
+            </div>
+            <div class="flex gap-2 mt-2">
+              <button class="btn btn-primary flex-1" id="btn-camera-prefix-confirm">Confirm Prefixes &amp; Start Analysis</button>
+              <button class="btn btn-secondary flex-1" id="btn-camera-prefix-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SAME SERIES RANGE MODAL -->
+        <div id="camera-range-modal" class="modal sort-modal" style="display: none;">
+          <div class="modal-content glass" style="max-width:580px; width:92%;">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+              <span>📷</span> Same Series Conflict Resolution
+            </h3>
+            <p class="text-muted text-sm mb-4">
+              Multiple cameramen share the same file series prefix. Please specify the <strong>Start File Name</strong> and <strong>End File Name</strong> for each cameraman (applicable to both photos and videos):
+            </p>
+            <div id="camera-range-inputs-container" class="flex-col gap-3 mb-4"
+              style="max-height:340px; overflow-y:auto; padding-right:4px;">
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary flex-1" id="btn-camera-range-confirm">Confirm File Ranges &amp; Continue</button>
+              <button class="btn btn-secondary flex-1" id="btn-camera-range-cancel">Cancel</button>
             </div>
           </div>
         </div>
@@ -580,7 +634,7 @@
               </h2>
               <p style="color: var(--text-muted); font-size: 0.88rem;">Manage theme preferences, application updates, and system version information.</p>
             </div>
-            <span class="app-version-tag" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;">v 1.0.14</span>
+            <span class="app-version-tag" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;">v 1.0.25</span>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 1.8rem;">
@@ -617,10 +671,10 @@
                   <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem;">
                     <span>🚀</span> Software Updates &amp; System Version
                   </h3>
-                  <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Current Installed Version: <strong class="app-version-tag" style="color: #10b981;">v 1.0.14</strong></p>
+                  <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Current Installed Version: <strong class="app-version-tag" style="color: #10b981;">v 1.0.25</strong></p>
                 </div>
                 
-                <button id="btn-settings-check-updates" class="btn btn-primary" style="gap: 8px;">
+                <button id="btn-settings-check-updates" class="btn btn-primary" style="gap: 8px; display: inline-flex; align-items: center;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -629,8 +683,38 @@
                   <span>Check for Updates Now</span>
                 </button>
               </div>
-              
-              <div style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: flex-end; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+
+              <!-- Update state machine status line -->
+              <div id="settings-update-status" style="font-size: 0.83rem; margin-top: 0.85rem; color: var(--text-muted); min-height: 1.2em;"></div>
+
+              <!-- Download progress row (hidden until downloading state) -->
+              <div id="settings-update-progress-row" class="hidden" style="margin-top: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">
+                  <span>Downloading update…</span>
+                  <span id="settings-update-bar-pct">0%</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                  <div id="settings-update-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #059669, #34d399); transition: width 0.2s ease;"></div>
+                </div>
+              </div>
+
+              <!-- Auto-check toggle -->
+              <div style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.15rem;">🔔 Auto-check for updates on startup</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">Silently checks GitHub ~4 seconds after launch. No network call if disabled.</div>
+                </div>
+                <!-- Toggle switch -->
+                <label for="toggle-auto-check-updates" style="display: inline-flex; align-items: center; cursor: pointer; gap: 0.55rem; user-select: none;">
+                  <input type="checkbox" id="toggle-auto-check-updates" style="display: none;" checked>
+                  <span id="auto-check-track" style="display: block; width: 44px; height: 24px; background: #10b981; border-radius: 12px; transition: background 0.2s ease; flex-shrink: 0; position: relative;">
+                    <span id="auto-check-thumb" style="position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.3);"></span>
+                  </span>
+                  <span id="auto-check-label" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap;">Enabled</span>
+                </label>
+              </div>
+
+              <div style="margin-top: 0.8rem; border-top: 1px solid var(--border-glass); padding-top: 0.75rem; display: flex; justify-content: flex-end; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
                 <span>Official Website: <a href="https://ain53.org/" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">ain53.org</a></span>
               </div>
             </div>

@@ -45,7 +45,7 @@ function HeaderBar({ activeTitle, currentTheme, onThemeChange, statusMsg }) {
           display: 'flex',
           alignItems: 'center',
           gap: '0.4rem',
-          fontSize: '0.78rem',
+          fontSize: '0.85rem',
           fontWeight: '700',
           color: 'var(--text-muted)',
           paddingRight: '0.8rem',
@@ -54,7 +54,7 @@ function HeaderBar({ activeTitle, currentTheme, onThemeChange, statusMsg }) {
         }
       },
         e('span', { style: { color: 'var(--accent-blue)', fontWeight: '800', fontFamily: 'Outfit, sans-serif' } }, 'AIN53'),
-        e('span', { className: 'app-version-tag', style: { fontSize: '0.7rem', opacity: 0.85, fontFamily: 'Outfit, sans-serif' } }, 'v 1.0.14')
+        e('span', { className: 'app-version-tag', style: { fontSize: '0.78rem', opacity: 0.85, fontFamily: 'Outfit, sans-serif' } }, 'v 1.0.25')
       ),
       e(ThemeSwitcher, { currentTheme, onThemeChange })
     )
@@ -73,7 +73,7 @@ function LiveProcessDock({ isProcessing, title, subtitle, current, total, percen
         e('span', { style: { color: 'var(--accent-blue)', display: 'inline-block', animation: 'spin 1.5s linear infinite' } }, '⚙'),
         e('span', null, title || 'Processing Task...')
       ),
-      e('span', { style: { fontSize: '0.78rem', fontWeight: '700', color: 'var(--accent-blue)' } }, `${percent}%`)
+      e('span', { style: { fontSize: '0.85rem', fontWeight: '700', color: 'var(--accent-blue)' } }, `${percent}%`)
     ),
     e('div', { className: 'dock-progress-bar' },
       e('div', { className: 'dock-progress-fill', style: { width: `${percent}%` } })
@@ -102,10 +102,10 @@ function FolderTreePreview({ masterFolders }) {
       overflowY: 'auto'
     }
   },
-    e('div', { style: { fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.6rem' } },
+    e('div', { style: { fontSize: '0.88rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.6rem' } },
       '📁 Preview Target Folder Hierarchy'
     ),
-    e('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: '0.82rem', color: 'var(--text-primary)' } },
+    e('div', { style: { fontFamily: 'JetBrains Mono, monospace', fontSize: '0.88rem', color: 'var(--text-primary)' } },
       Object.entries(masterFolders).map(([master, contribs], idx) => 
         e('div', { key: idx, style: { marginBottom: '0.5rem' } },
           e('div', { style: { color: 'var(--accent-blue)', fontWeight: '600' } }, `└── 📂 ${master}`),
@@ -138,7 +138,7 @@ function ColorGradeVisualizer({ activePreset, onSelectPreset }) {
       marginBottom: '1rem'
     }
   },
-    e('div', { style: { fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.6rem' } },
+    e('div', { style: { fontSize: '0.88rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.6rem' } },
       '🎨 Auto Color Grading & LUT Profiles'
     ),
     e('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' } },
@@ -155,8 +155,8 @@ function ColorGradeVisualizer({ activePreset, onSelectPreset }) {
             transition: 'all 0.2s ease'
           }
         },
-          e('div', { style: { fontSize: '0.82rem', fontWeight: '700', color: p.color } }, p.name),
-          e('div', { style: { fontSize: '0.72rem', color: 'var(--text-muted)' } }, p.desc)
+          e('div', { style: { fontSize: '0.88rem', fontWeight: '700', color: p.color } }, p.name),
+          e('div', { style: { fontSize: '0.78rem', color: 'var(--text-muted)' } }, p.desc)
         )
       )
     )

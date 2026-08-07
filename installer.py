@@ -18,16 +18,30 @@ import shutil
 import threading
 import time
 import subprocess
+import ctypes
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageTk
+
+# Set High DPI Awareness on Windows for crisp font and UI rendering
+if sys.platform == 'win32':
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(2) # Per-Monitor DPI Aware v2
+    except Exception:
+        try:
+            ctypes.windll.shcore.SetProcessDpiAwareness(1) # System DPI Aware
+        except Exception:
+            try:
+                ctypes.windll.user32.SetProcessDPIAware()
+            except Exception:
+                pass
 
 # ==============================================================================
 # CONFIGURATION CONSTANTS
 # ==============================================================================
 APP_NAME = "AIN53 Data Management"
 PUBLISHER = "AIN (All Rights Reserved)"
-VERSION = "1.0.0"
+VERSION = "1.0.25"
 DEFAULT_SUBDIR = os.path.join("Programs", APP_NAME)
 
 # Try reading version from sibling version.txt if available
@@ -224,14 +238,14 @@ class InstallerGUI:
         # Configure primary buttons (TButton)
         self.style.configure(
             "TButton",
-            font=("Segoe UI", 9),
+            font=("Segoe UI", 10),
             background=COLOR_PRIMARY,
             foreground="white",
             borderwidth=1,
             bordercolor=COLOR_PRIMARY,
             focusthickness=0,
             focuscolor="none",
-            padding=(15, 5)
+            padding=(15, 6)
         )
         self.style.map(
             "TButton",
@@ -243,14 +257,14 @@ class InstallerGUI:
         # Configure secondary buttons (Secondary.TButton)
         self.style.configure(
             "Secondary.TButton",
-            font=("Segoe UI", 9),
+            font=("Segoe UI", 10),
             background="#e2e8f0",
             foreground=COLOR_TEXT,
             borderwidth=1,
             bordercolor="#cbd5e1",
             focusthickness=0,
             focuscolor="none",
-            padding=(15, 5)
+            padding=(15, 6)
         )
         self.style.map(
             "Secondary.TButton",
@@ -341,13 +355,13 @@ class HeaderPanel(tk.Frame):
         text_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(25, 10))
         
         lbl_title = tk.Label(
-            text_frame, text=title, font=("Segoe UI", 13, "bold"),
+            text_frame, text=title, font=("Segoe UI", 14, "bold"),
             fg=COLOR_WHITE, bg=COLOR_PRIMARY, anchor="w"
         )
         lbl_title.pack(fill=tk.X, pady=(12, 1))
         
         lbl_sub = tk.Label(
-            text_frame, text=subtitle, font=("Segoe UI", 9),
+            text_frame, text=subtitle, font=("Segoe UI", 10),
             fg="#e2e8f0", bg=COLOR_PRIMARY, anchor="w"
         )
         lbl_sub.pack(fill=tk.X)
@@ -375,13 +389,13 @@ class WelcomeFrame(tk.Frame):
             lbl_logo.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
             
             lbl_bar = tk.Label(
-                left_bar, text="AIN53\nData", font=("Segoe UI", 13, "bold"),
+                left_bar, text="AIN53\nData", font=("Segoe UI", 14, "bold"),
                 fg=COLOR_WHITE, bg=COLOR_PRIMARY, justify=tk.CENTER
             )
             lbl_bar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         else:
             lbl_bar = tk.Label(
-                left_bar, text="AIN53\nDATA", font=("Segoe UI", 18, "bold"),
+                left_bar, text="AIN53\nDATA", font=("Segoe UI", 20, "bold"),
                 fg=COLOR_WHITE, bg=COLOR_PRIMARY, justify=tk.CENTER
             )
             lbl_bar.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
@@ -392,7 +406,7 @@ class WelcomeFrame(tk.Frame):
         
         lbl_welcome = tk.Label(
             main_content, text=f"Welcome to the {APP_NAME} Setup Wizard",
-            font=("Segoe UI", 14, "bold"), fg=COLOR_PRIMARY, bg=COLOR_BG,
+            font=("Segoe UI", 15, "bold"), fg=COLOR_PRIMARY, bg=COLOR_BG,
             wraplength=350, justify=tk.LEFT, anchor="w"
         )
         lbl_welcome.pack(fill=tk.X, pady=(10, 15))
@@ -436,7 +450,7 @@ class DirectoryFrame(tk.Frame):
         lbl_prompt = tk.Label(
             content, text="Setup will install the application files in the following folder.\n"
                          "To install to a different folder, click Browse and select another path.",
-            font=("Segoe UI", 9), fg=COLOR_TEXT, bg=COLOR_BG,
+            font=("Segoe UI", 10), fg=COLOR_TEXT, bg=COLOR_BG,
             justify=tk.LEFT, anchor="w"
         )
         lbl_prompt.pack(fill=tk.X, pady=(0, 15))
@@ -445,7 +459,7 @@ class DirectoryFrame(tk.Frame):
         browse_frame = tk.Frame(content, bg=COLOR_BG)
         browse_frame.pack(fill=tk.X, pady=5)
         
-        self.entry_path = ttk.Entry(browse_frame, font=("Segoe UI", 9))
+        self.entry_path = ttk.Entry(browse_frame, font=("Segoe UI", 10))
         self.entry_path.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
         self.entry_path.insert(0, self.controller.install_dir)
         
@@ -453,12 +467,12 @@ class DirectoryFrame(tk.Frame):
         btn_browse.pack(side=tk.RIGHT)
         
         # Checkboxes Frame
-        opts_frame = tk.LabelFrame(content, text="Shortcut Preferences", bg=COLOR_BG, font=("Segoe UI", 9, "bold"), padx=15, pady=10)
+        opts_frame = tk.LabelFrame(content, text="Shortcut Preferences", bg=COLOR_BG, font=("Segoe UI", 10, "bold"), padx=15, pady=10)
         opts_frame.pack(fill=tk.X, pady=20)
         
         cb_menu = tk.Checkbutton(
             opts_frame, text="Create folder & shortcut in Windows Start Menu",
-            variable=self.controller.var_startmenu, font=("Segoe UI", 9),
+            variable=self.controller.var_startmenu, font=("Segoe UI", 10),
             bg=COLOR_BG, activebackground=COLOR_BG, fg=COLOR_TEXT,
             selectcolor="white", activeforeground=COLOR_PRIMARY
         )
@@ -466,7 +480,7 @@ class DirectoryFrame(tk.Frame):
         
         cb_desk = tk.Checkbutton(
             opts_frame, text="Create shortcut icon on Desktop",
-            variable=self.controller.var_desktop, font=("Segoe UI", 9),
+            variable=self.controller.var_desktop, font=("Segoe UI", 10),
             bg=COLOR_BG, activebackground=COLOR_BG, fg=COLOR_TEXT,
             selectcolor="white", activeforeground=COLOR_PRIMARY
         )
@@ -522,7 +536,7 @@ class ProgressFrame(tk.Frame):
         
         self.lbl_status = tk.Label(
             content, text="Initializing installation process...",
-            font=("Segoe UI", 9), fg=COLOR_TEXT, bg=COLOR_BG,
+            font=("Segoe UI", 10), fg=COLOR_TEXT, bg=COLOR_BG,
             anchor="w", justify=tk.LEFT
         )
         self.lbl_status.pack(fill=tk.X, pady=(10, 5))
@@ -609,7 +623,7 @@ class SuccessFrame(tk.Frame):
             lbl_logo.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
             
             lbl_bar = tk.Label(
-                left_bar, text="Success", font=("Segoe UI", 13, "bold"),
+                left_bar, text="Success", font=("Segoe UI", 14, "bold"),
                 fg=COLOR_WHITE, bg=COLOR_PRIMARY, justify=tk.CENTER
             )
             lbl_bar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -625,7 +639,7 @@ class SuccessFrame(tk.Frame):
         
         lbl_success = tk.Label(
             main_content, text="Completing the AIN53 Data Management Installation",
-            font=("Segoe UI", 13, "bold"), fg=COLOR_PRIMARY, bg=COLOR_BG,
+            font=("Segoe UI", 14, "bold"), fg=COLOR_PRIMARY, bg=COLOR_BG,
             wraplength=350, justify=tk.LEFT, anchor="w"
         )
         lbl_success.pack(fill=tk.X, pady=(10, 15))
@@ -908,20 +922,18 @@ def perform_silent_update(wait_pid=None, dest_dir=None):
 def main():
     args = [a.lower() for a in sys.argv]
     
-    # Silent / Auto Update Mode
-    if "--silent" in args or "--update" in args:
+    # Silent / Auto Update Mode (supports --silent, --update, /s, /silent)
+    if "--silent" in args or "--update" in args or "/s" in args or "/silent" in args:
         wait_pid = None
         dest_dir = None
-        if "--wait-pid" in sys.argv:
-            try:
-                idx = sys.argv.index("--wait-pid")
-                wait_pid = sys.argv[idx + 1]
-            except Exception: pass
-        if "--dest" in sys.argv:
-            try:
-                idx = sys.argv.index("--dest")
-                dest_dir = sys.argv[idx + 1]
-            except Exception: pass
+        
+        for i, arg in enumerate(sys.argv):
+            arg_lower = arg.lower()
+            if arg_lower in ("--wait-pid", "/wait-pid") and i + 1 < len(sys.argv):
+                wait_pid = sys.argv[i + 1]
+            elif arg_lower in ("--dest", "/dest") and i + 1 < len(sys.argv):
+                dest_dir = sys.argv[i + 1]
+
         perform_silent_update(wait_pid=wait_pid, dest_dir=dest_dir)
         return
 
