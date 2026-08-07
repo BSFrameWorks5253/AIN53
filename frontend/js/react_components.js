@@ -54,7 +54,7 @@ function HeaderBar({ activeTitle, currentTheme, onThemeChange, statusMsg }) {
         }
       },
         e('span', { style: { color: 'var(--accent-blue)', fontWeight: '800', fontFamily: 'Outfit, sans-serif' } }, 'AIN53'),
-        e('span', { className: 'app-version-tag', style: { fontSize: '0.78rem', opacity: 0.85, fontFamily: 'Outfit, sans-serif' } }, 'v 1.0.26')
+        e('span', { className: 'app-version-tag', style: { fontSize: '0.78rem', opacity: 0.85, fontFamily: 'Outfit, sans-serif' } }, 'v 1.0.27')
       ),
       e(ThemeSwitcher, { currentTheme, onThemeChange })
     )

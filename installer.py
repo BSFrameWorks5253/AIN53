@@ -41,7 +41,7 @@ if sys.platform == 'win32':
 # ==============================================================================
 APP_NAME = "AIN53 Data Management"
 PUBLISHER = "AIN (All Rights Reserved)"
-VERSION = "1.0.26"
+VERSION = "1.0.27"
 DEFAULT_SUBDIR = os.path.join("Programs", APP_NAME)
 
 # Try reading version from sibling version.txt if available
