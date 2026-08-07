@@ -50,6 +50,37 @@ SIDECAR_EXTENSIONS = (
     '.json', '.ini', '.log', '.txt'
 )
 
+# Photo-only folder suffixes (MQ, H, MF, TQ) that cannot contain video files
+PHOTO_ONLY_SUFFIX_REGEX = re.compile(r'(?:^|[\s\-_/])(MQ|H|MF|TQ)(?:[\s\-_/.]|$)', re.IGNORECASE)
+
+def is_photo_only_folder(folder_path):
+    if not folder_path:
+        return False
+    return bool(PHOTO_ONLY_SUFFIX_REGEX.search(folder_path))
+
+def get_target_slot_for_group(idx, assigned_slots, has_video=False):
+    if idx >= len(assigned_slots):
+        return "Unmapped - Exceeds Limit"
+    
+    target_slot = assigned_slots[idx]
+    if has_video and is_photo_only_folder(target_slot):
+        # Search forward for first non-photo-only slot
+        found_slot = None
+        for s_idx in range(idx, len(assigned_slots)):
+            if not is_photo_only_folder(assigned_slots[s_idx]):
+                found_slot = assigned_slots[s_idx]
+                break
+        if found_slot is None:
+            # Search backward if no forward slot found
+            for s_idx in range(idx - 1, -1, -1):
+                if not is_photo_only_folder(assigned_slots[s_idx]):
+                    found_slot = assigned_slots[s_idx]
+                    break
+        if found_slot is not None:
+            target_slot = found_slot
+
+    return target_slot
+
 
 # ==============================================================================
 # OPENCV COVERED-LENS / BLACK MARKER DETECTION
@@ -1076,10 +1107,8 @@ class SortingApi:
 
                     # Map analyzed file groups to destination folders.
                     for idx, gp in enumerate(groups):
-                        if idx < len(assigned_slots):
-                            target_folder_path = assigned_slots[idx]
-                        else:
-                            target_folder_path = "Unmapped - Exceeds Limit"
+                        has_vid = any(os.path.splitext(f)[1].lower() in VIDEO_EXTENSIONS for f in gp)
+                        target_folder_path = get_target_slot_for_group(idx, assigned_slots, has_video=has_vid)
 
                         if target_folder_path not in self.folders:
                             self.folders.append(target_folder_path)
@@ -1193,10 +1222,8 @@ class SortingApi:
                 groups = group_files_by_indicator(flist)
                 
                 for idx, gp in enumerate(groups):
-                    if idx < len(assigned_slots):
-                        target_folder_path = assigned_slots[idx]
-                    else:
-                        target_folder_path = "Unmapped - Exceeds Limit"
+                    has_vid = any(os.path.splitext(f)[1].lower() in VIDEO_EXTENSIONS for f in gp)
+                    target_folder_path = get_target_slot_for_group(idx, assigned_slots, has_video=has_vid)
                         
                     if target_folder_path not in self.folders:
                         self.folders.append(target_folder_path)

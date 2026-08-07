@@ -157,7 +157,10 @@ class DriveInventoryApi:
             return json.dumps({"error": "No window"})
         
         result = self._window.create_file_dialog(webview.FileDialog.FOLDER)
-        return json.dumps({"path": result[0]} if result else {"error": "Cancelled"})
+        if result:
+            path_val = result[0] if isinstance(result, (list, tuple)) else result
+            return json.dumps({"path": path_val})
+        return json.dumps({"error": "Cancelled"})
 
     def inventory_select_save_file(self, default_name):
         """Opens native save dialog to specify target Excel filepath."""
@@ -170,7 +173,8 @@ class DriveInventoryApi:
             file_types=("Excel Files (*.xlsx)",)
         )
         if result:
-            return json.dumps({"path": result[0] if isinstance(result, list) else result})
+            path_val = result[0] if isinstance(result, (list, tuple)) else result
+            return json.dumps({"path": path_val})
         return json.dumps({"error": "Cancelled"})
 
     def _process_folder_files(self, folder_path, files):
@@ -327,6 +331,11 @@ class DriveInventoryApi:
         4. 'Contributor' (listing files found in dedicated contributor uploads)
         5. 'Issues' (system logs representing small sizes or unknown files)
         """
+        if isinstance(root_directory, (list, tuple)) and len(root_directory) > 0:
+            root_directory = root_directory[0]
+        if isinstance(output_excel_path, (list, tuple)) and len(output_excel_path) > 0:
+            output_excel_path = output_excel_path[0]
+
         self.issues_log = []
         all_folders = []
         contributor_files = []
@@ -373,6 +382,10 @@ class DriveInventoryApi:
         try:
             # Initialize openpyxl excel writer context
             with pd.ExcelWriter(output_excel_path, engine='openpyxl') as writer:
+                # Remove default empty sheet created by openpyxl if present
+                if 'Sheet' in writer.book.sheetnames:
+                    writer.book.remove(writer.book['Sheet'])
+
                 # Custom cell styles and fills
                 red_fill = PatternFill(start_color='FFFFC7CE', end_color='FFFFC7CE', fill_type='solid')
                 red_font = Font(color='9C0006', bold=True)
@@ -413,8 +426,8 @@ class DriveInventoryApi:
                 
                 # Build tree columns layout
                 for col_idx, parent_path in enumerate(sorted_parent_paths, start=1):
-                    if parent_path == '.':
-                        parent_display_name = os.path.basename(root_directory.rstrip('/'))
+                    if parent_path in ('.', '..'):
+                        parent_display_name = os.path.basename(root_directory.rstrip('/\\'))
                         if not parent_display_name:
                             parent_display_name = "Root"
                     else:
@@ -523,9 +536,8 @@ class DriveInventoryApi:
                 else:
                     pd.DataFrame(columns=['Path', 'Issue Type', 'Description']).to_excel(writer, sheet_name='Issues', index=False)
 
-                # Auto-adjust column widths dynamically based on length of maximum string values
-                for sheet_name in writer.sheets:
-                    ws = writer.sheets[sheet_name]
+                # Auto-adjust column widths dynamically based on length of maximum string values for all worksheets
+                for ws in writer.book.worksheets:
                     for col in ws.columns:
                         max_len = 0
                         for cell in col:

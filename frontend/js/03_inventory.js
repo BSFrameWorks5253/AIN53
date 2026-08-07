@@ -30,8 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       if (data.path) {
-        currentDrive = data.path;
+        currentDrive = Array.isArray(data.path) ? data.path[0] : data.path;
         pathDrive.value = currentDrive;
+
+        // Auto-suggest default save path inside selected drive
+        let defaultName = currentDrive.split(/[\\/]/).filter(Boolean).pop();
+        if (!defaultName) defaultName = "Drive_Inventory_Report";
+        else defaultName = `${defaultName}_Inventory_Report`;
+
+        currentSave = `${currentDrive}\\${defaultName}.xlsx`;
+        pathSave.value = currentSave;
+
         checkReady();
       }
     } catch (e) { console.error(e); }
@@ -46,13 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
   btnSave.addEventListener('click', async () => {
     try {
       // Extract a default name from the drive path
-      let defaultName = currentDrive.split(/[\\/]/).pop();
+      let defaultName = currentDrive.split(/[\\/]/).filter(Boolean).pop();
       if (!defaultName) defaultName = "Drive_Inventory_Report";
       
       const resp = await window.pywebview.api.inventory_select_save_file(defaultName);
       const data = JSON.parse(resp);
       if (data.path) {
-        currentSave = data.path;
+        currentSave = Array.isArray(data.path) ? data.path[0] : data.path;
         pathSave.value = currentSave;
         checkReady();
       }

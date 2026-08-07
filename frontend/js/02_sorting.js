@@ -733,6 +733,43 @@ function closeModal() {
   sortAppState.activeShiftFolderId = null;
 }
 
+function isPhotoOnlyFolder(folderNameOrPath) {
+  if (!folderNameOrPath) return false;
+  return /(?:^|[\s\-_/])(MQ|H|MF|TQ)(?:[\s\-_/.]|$)/i.test(folderNameOrPath);
+}
+
+function getNextFolderIndexForFile(file, currentFolderIdx, contribFolderIndices) {
+  const isVideo = file.is_video || (/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(file.filename || file.path || '');
+  const curPos = contribFolderIndices.indexOf(currentFolderIdx);
+  if (curPos === -1) return currentFolderIdx;
+
+  for (let p = curPos + 1; p < contribFolderIndices.length; p++) {
+    const fIdx = contribFolderIndices[p];
+    const folderName = sortAppState.folders[fIdx] || '';
+    if (isVideo && isPhotoOnlyFolder(folderName)) {
+      continue; // Skip photo-only folders (MQ, H, MF, TQ) for video files
+    }
+    return fIdx;
+  }
+  return currentFolderIdx;
+}
+
+function getPrevFolderIndexForFile(file, currentFolderIdx, contribFolderIndices) {
+  const isVideo = file.is_video || (/\.(mp4|mov|avi|mkv|wmv|mts|m2ts|m4v|webm|flv|3gp)$/i).test(file.filename || file.path || '');
+  const curPos = contribFolderIndices.indexOf(currentFolderIdx);
+  if (curPos === -1) return currentFolderIdx;
+
+  for (let p = curPos - 1; p >= 0; p--) {
+    const fIdx = contribFolderIndices[p];
+    const folderName = sortAppState.folders[fIdx] || '';
+    if (isVideo && isPhotoOnlyFolder(folderName)) {
+      continue; // Skip photo-only folders (MQ, H, MF, TQ) for video files
+    }
+    return fIdx;
+  }
+  return currentFolderIdx;
+}
+
 function previewShift(actionType) {
   const folderIdx = sortAppState.activeShiftFolderId;
   if (folderIdx === null) return;
@@ -744,39 +781,34 @@ function previewShift(actionType) {
   const contribFolderIndices = getContributorFolderIndices(contrib);
   const previewFiles = JSON.parse(JSON.stringify(sortAppState.files));
   const previewContribFiles = previewFiles.filter(f => f.contributor === contrib);
-  const currentPosInContrib = contribFolderIndices.indexOf(folderIdx);
   
   if (actionType === 'shift-down') {
     const firstSelectedId = selectedFiles[0].id;
     const activeIdx = previewContribFiles.findIndex(f => f.id === firstSelectedId);
     for (let i = activeIdx; i < previewContribFiles.length; i++) {
       let f = previewContribFiles[i];
-      const curPos = contribFolderIndices.indexOf(f.folder_index);
-      if (curPos !== -1 && curPos < contribFolderIndices.length - 1) {
-        f.folder_index = contribFolderIndices[curPos + 1];
-      }
+      f.folder_index = getNextFolderIndexForFile(f, f.folder_index, contribFolderIndices);
     }
   } else if (actionType === 'shift-up') {
     const lastSelectedId = selectedFiles[selectedFiles.length - 1].id;
     const activeIdx = previewContribFiles.findIndex(f => f.id === lastSelectedId);
     for (let i = 0; i <= activeIdx; i++) {
       let f = previewContribFiles[i];
-      const curPos = contribFolderIndices.indexOf(f.folder_index);
-      if (curPos !== -1 && curPos > 0) {
-        f.folder_index = contribFolderIndices[curPos - 1];
-      }
+      f.folder_index = getPrevFolderIndexForFile(f, f.folder_index, contribFolderIndices);
     }
   } else if (actionType === 'move-down') {
-    const nextFolderIdx = (currentPosInContrib < contribFolderIndices.length - 1) ? contribFolderIndices[currentPosInContrib + 1] : folderIdx;
     selectedFiles.forEach(sf => {
       const pf = previewFiles.find(f => f.id === sf.id);
-      if (pf) pf.folder_index = nextFolderIdx;
+      if (pf) {
+        pf.folder_index = getNextFolderIndexForFile(pf, pf.folder_index, contribFolderIndices);
+      }
     });
   } else if (actionType === 'move-up') {
-    const prevFolderIdx = (currentPosInContrib > 0) ? contribFolderIndices[currentPosInContrib - 1] : folderIdx;
     selectedFiles.forEach(sf => {
       const pf = previewFiles.find(f => f.id === sf.id);
-      if (pf) pf.folder_index = prevFolderIdx;
+      if (pf) {
+        pf.folder_index = getPrevFolderIndexForFile(pf, pf.folder_index, contribFolderIndices);
+      }
     });
   }
   
