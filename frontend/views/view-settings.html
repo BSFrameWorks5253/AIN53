@@ -1,0 +1,131 @@
+<!-- SETTINGS VIEW PANEL -->
+<div id="view-settings" class="view-panel hidden">
+  <div class="card glass">
+    <div class="settings-header-banner">
+      <div>
+        <h2 class="card-title" style="font-size: 1.6rem; margin-bottom: 0.2rem;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          <span>Application Settings</span>
+        </h2>
+        <p>Manage theme preferences, application updates, and system version information.</p>
+      </div>
+      <span class="app-version-badge">v 1.0.32</span>
+    </div>
+
+    <div class="settings-cards-stack">
+      <!-- Theme Settings Card -->
+      <div class="settings-section-card">
+        <h3>
+          <span>🎨</span> Appearance &amp; Theme Selection
+        </h3>
+        <p>Choose your preferred color theme. Your selection is automatically saved and remembered across application launches.</p>
+
+        <div class="theme-options-grid">
+          <div id="theme-card-dark" class="theme-select-card" data-theme-id="dark"
+            style="background: rgba(4, 28, 19, 0.7); border: 1px solid var(--border-glass);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+              <span style="font-weight: 700; font-size: 1rem; color: #f8fafc;">🌙 Dark Emerald</span>
+              <span class="theme-check-icon hidden" style="color: #10b981; font-weight: 800;">✓ Selected</span>
+            </div>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Deep Forest Emerald &amp; Imperial Gold</p>
+          </div>
+
+          <div id="theme-card-light" class="theme-select-card active" data-theme-id="light"
+            style="background: rgba(255, 249, 230, 0.85); border: 2px solid #10b981;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+              <span style="font-weight: 700; font-size: 1rem; color: #072a1c;">☀️ Imperial Alabaster</span>
+              <span class="theme-check-icon" style="color: #10b981; font-weight: 800;">✓ Selected</span>
+            </div>
+            <p style="font-size: 0.8rem; color: #856404; margin: 0;">Warm Cream &amp; Alabaster Light Mode matching ain53.org (Default Theme)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Working & Downloads Directory Card -->
+      <div class="settings-section-card">
+        <h3>
+          <span>📁</span> Working &amp; Temporary Downloads Directory
+        </h3>
+        <p>Intermediate event PDFs and extracted CSV files are stored in this workspace folder before being automatically compiled into the target media drive's <strong>Document</strong> folder.</p>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem;">
+          <input type="text" id="settings-downloads-path" class="input-glass" readonly placeholder="Default: Downloads\AIN53_Working_Docs" style="flex: 1; min-width: 260px; font-family: monospace; font-size: 0.88rem; padding: 0.7rem 1rem;">
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btn-settings-change-downloads" class="btn btn-select" style="padding: 0.65rem 1.1rem; font-size: 0.88rem; white-space: nowrap;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Change Folder
+            </button>
+            <button id="btn-settings-open-downloads" class="btn btn-secondary" style="padding: 0.65rem 1.1rem; font-size: 0.88rem; white-space: nowrap;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              Open Folder
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Software Updates & Version Card -->
+      <div class="settings-section-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3>
+              <span>🚀</span> Software Updates &amp; System Version
+            </h3>
+            <p style="margin: 0;">Current Installed Version: <strong class="app-version-tag" style="color: #10b981;">v 1.0.32</strong></p>
+          </div>
+
+          <button id="btn-settings-check-updates" class="btn btn-primary" style="gap: 8px; display: inline-flex; align-items: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Check for Updates Now</span>
+          </button>
+        </div>
+
+        <div id="settings-update-status" style="font-size: 0.83rem; margin-top: 0.85rem; color: var(--text-muted); min-height: 1.2em;"></div>
+
+        <div id="settings-update-progress-row" class="hidden" style="margin-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">
+            <span>Downloading update…</span>
+            <span id="settings-update-bar-pct">0%</span>
+          </div>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+            <div id="settings-update-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #059669, #34d399); transition: width 0.2s ease;"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.15rem;">🔔 Auto-check for updates on startup</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Silently checks GitHub ~4 seconds after launch. No network call if disabled.</div>
+          </div>
+          <label for="toggle-auto-check-updates" style="display: inline-flex; align-items: center; cursor: pointer; gap: 0.55rem; user-select: none;">
+            <input type="checkbox" id="toggle-auto-check-updates" style="display: none;" checked>
+            <span id="auto-check-track" style="display: block; width: 44px; height: 24px; background: #10b981; border-radius: 12px; transition: background 0.2s ease; flex-shrink: 0; position: relative;">
+              <span id="auto-check-thumb" style="position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.3);"></span>
+            </span>
+            <span id="auto-check-label" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap;">Enabled</span>
+          </label>
+        </div>
+
+        <div style="margin-top: 0.8rem; border-top: 1px solid var(--border-glass); padding-top: 0.75rem; display: flex; justify-content: flex-end; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+          <span>Official Website: <a href="https://ain53.org/" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">ain53.org</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

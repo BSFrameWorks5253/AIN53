@@ -11,4 +11,13 @@ scratch/
 
 # Ignore large build artifacts from git history (they get uploaded to GitHub Releases instead)
 _All Builds/
+logs/
+portable_debug.log
 
+# Databases & local user files
+*.db
+*.db.bak
+.DS_Store
+*.DS_Store
+/*.csv
+/*.xlsx

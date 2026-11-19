@@ -1,0 +1,872 @@
+/* ==============================================================================
+   AIN53 Data Management — PDF to CSV View Stylesheet (view-pdf.css)
+   ============================================================================== */
+
+/* ── Hero Dropzone Container (Normal: Light, Hover: Dark) ── */
+/* ── Hero Dropzone Container ── */
+.dropzone {
+  border: 2px dashed rgba(16, 185, 129, 0.4);
+  border-radius: var(--radius-md);
+  padding: 2.25rem 1.5rem;
+  min-height: 180px;
+  text-align: center;
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.95rem;
+  position: relative;
+  overflow: visible;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.dropzone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.dropzone-icon-svg {
+  width: 52px;
+  height: 52px;
+  color: var(--accent-blue);
+  filter: drop-shadow(0 2px 10px rgba(16, 185, 129, 0.25));
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dropzone-text h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  transition: color 0.22s ease;
+}
+
+.dropzone-text p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  transition: color 0.22s ease;
+}
+
+/* Hover & Dragover States */
+.dropzone:hover, .dropzone.dragover, .dropzone.drag-over {
+  border-color: var(--accent-green);
+  background: var(--bg-glass-hover);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15), 0 0 24px rgba(16, 185, 129, 0.25);
+  transform: translateY(-2px);
+}
+
+.dropzone:hover::before, .dropzone.dragover::before, .dropzone.drag-over::before {
+  opacity: 1;
+}
+
+.dropzone:hover .dropzone-icon-svg,
+.dropzone.dragover .dropzone-icon-svg,
+.dropzone.drag-over .dropzone-icon-svg {
+  color: #34d399;
+  transform: translateY(-3px) scale(1.08);
+  filter: drop-shadow(0 6px 16px rgba(16, 185, 129, 0.45));
+}
+
+/* ── Active File Control Card (Modern Replacement for Giant Dropzone Once Loaded) ── */
+.pdf-active-file-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.12);
+  transition: all 0.25s ease;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.pdf-file-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.pdf-file-icon-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(5, 150, 105, 0.12));
+  border: 1.5px solid rgba(52, 211, 153, 0.4);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+}
+
+.pdf-file-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pdf-file-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.pdf-file-meta {
+  font-size: 0.82rem;
+  color: #10b981;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.pdf-file-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+/* ── PDF Workspace & Side-by-Side Split Screen Layout ── */
+.pdf-workspace-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pdf-pane-controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+/* Split Screen Mode Active */
+.pdf-workspace-container.split-mode {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 1.35rem !important;
+  min-height: calc(100vh - 170px);
+}
+
+.pdf-workspace-container.split-mode .pdf-pane-controls {
+  flex: 1 1 50%;
+  min-width: 480px;
+  max-height: calc(100vh - 170px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.pdf-workspace-container.split-mode .pdf-pane-preview {
+  flex: 1 1 50%;
+  min-width: 380px;
+  max-width: 80%;
+  height: calc(100vh - 170px);
+  max-height: calc(100vh - 170px);
+  display: flex !important;
+  flex-direction: column;
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid var(--border-glass-hover);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+}
+
+/* ── Draggable Splitter Divider (Resizable Sidebar/Slider) ── */
+.pdf-split-resizer {
+  width: 14px;
+  cursor: col-resize;
+  background: transparent;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 15;
+  user-select: none;
+  margin: 0 -7px;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.pdf-workspace-container.split-mode .pdf-split-resizer {
+  display: flex !important;
+}
+
+.pdf-split-resizer:hover,
+.pdf-split-resizer.dragging {
+  background: rgba(16, 185, 129, 0.18);
+}
+
+.resizer-handle {
+  width: 4px;
+  height: 44px;
+  border-radius: 4px;
+  background: var(--border-glass-hover);
+  transition: all 0.2s ease;
+}
+
+.pdf-split-resizer:hover .resizer-handle,
+.pdf-split-resizer.dragging .resizer-handle {
+  background: #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
+  height: 64px;
+}
+
+/* ── Hint Badge & Width Presets in Header ── */
+.pdf-hint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--input-bg);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-glass);
+  cursor: help;
+  margin-left: 0.5rem;
+}
+
+.pdf-hint-badge:hover {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.pdf-width-presets {
+  display: inline-flex;
+  align-items: center;
+  background: var(--input-bg);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+  margin-right: 0.35rem;
+}
+
+.btn-width-preset {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-width-preset:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass-hover);
+}
+
+.btn-width-preset.active {
+  color: #fff;
+  background: #10b981;
+}
+
+/* ── Embedded PDF Viewer Toolbar & Frame ── */
+.pdf-pane-preview {
+  display: none;
+}
+
+.pdf-preview-header {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: var(--bg-glass-hover);
+  border-bottom: 1px solid var(--border-glass);
+  flex-shrink: 0;
+}
+
+.pdf-preview-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pdf-preview-title svg {
+  color: #10b981;
+}
+
+.pdf-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-icon-sm {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid var(--border-glass);
+  background: var(--input-bg);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-icon-sm:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.pdf-frame-wrapper {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  height: calc(100% - 46px);
+  position: relative;
+  background: #2b2e31;
+  overflow: hidden;
+}
+
+.pdf-viewer-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Legacy File Info Banner Fallback ── */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+}
+
+.file-info .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px #34d399;
+  flex-shrink: 0;
+}
+
+/* ── Column Mapping Grid & Cards ── */
+.mapping-container {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1.35rem 1.5rem;
+  margin-top: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.mapping-container h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mapping-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.9rem;
+}
+
+.mapping-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.95rem;
+  transition: all var(--transition);
+}
+
+.mapping-row.mapped {
+  border-color: rgba(52, 211, 153, 0.45);
+  background: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.1);
+}
+
+.mapping-row.mapped label > small, .mapping-row.mapped > span > small {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+.mapping-row label, .mapping-row > span {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mapping-row select, .mapping-select {
+  width: 100%;
+  padding: 0.6rem 2.2rem 0.6rem 0.85rem !important;
+  background-color: var(--bg-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2334d399' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 14px 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.mapping-row select:focus, .mapping-select:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 14px var(--border-accent-glow);
+  background-color: var(--bg-glass-hover);
+}
+
+.mapping-row select option, .mapping-select option {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* ── Table Glass Preview ── */
+.preview-wrapper {
+  margin-top: 1.5rem;
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass-hover);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+}
+
+.table-container {
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  overflow-x: auto;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: var(--input-bg);
+}
+
+.table-glass {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
+}
+
+.table-glass th {
+  background: var(--bg-glass-hover);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border-glass-hover);
+  white-space: nowrap;
+}
+
+.table-glass td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  vertical-align: middle;
+  transition: background var(--transition);
+}
+
+.table-glass tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table-glass tbody tr:hover {
+  background: var(--bg-glass-hover);
+}
+
+.table-glass tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.table-glass .col-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.table-glass .col-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.table-glass .col-location {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge-seq {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: #34d399;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+.badge-sticker {
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+}
+
+.badge-event {
+  background: rgba(52, 211, 153, 0.16);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: #34d399;
+}
+
+.badge-ev-z {
+  background: rgba(52, 211, 153, 0.25);
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  color: #a7f3d0;
+}
+
+.badge-ev-q {
+  background: rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  color: #38bdf8;
+}
+
+.badge-ev-n {
+  background: rgba(250, 204, 21, 0.25);
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  color: #fde047;
+}
+
+.badge-ev-m {
+  background: rgba(192, 132, 252, 0.25);
+  border: 1px solid rgba(192, 132, 252, 0.55);
+  color: #c084fc;
+}
+
+.badge-ev-h {
+  background: rgba(236, 72, 153, 0.25);
+  border: 1px solid rgba(244, 114, 182, 0.55);
+  color: #fbcfe8;
+}
+
+/* ── Part Divider Row & Badges in Preview Table ── */
+.part-divider-row {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(168, 85, 247, 0.14) 50%, rgba(99, 102, 241, 0.06) 100%) !important;
+  border-top: 1px solid rgba(139, 92, 246, 0.4) !important;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.4) !important;
+}
+
+.part-divider-row td {
+  padding: 0.65rem 1rem !important;
+}
+
+.part-divider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.95rem;
+  background: rgba(99, 102, 241, 0.28);
+  border: 1px solid rgba(129, 140, 248, 0.55);
+  border-radius: 6px;
+  color: #e0e7ff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25);
+}
+
+.part-divider-badge svg {
+  color: #a5b4fc;
+}
+
+/* ── Part Configuration UI in Settings ── */
+.pdf-parts-section {
+  background: var(--bg-glass-card);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.35rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.section-subtitle-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pdf-part-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.85rem;
+  padding: 0.75rem 0.95rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+
+.part-badge-tag {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.16);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+
+.btn-part-action {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: 1px;
+  flex-shrink: 0;
+}
+
+.btn-part-action:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--accent-blue);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-part-remove:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-outline-accent {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #059669;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-outline-accent:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #10b981;
+  color: #047857;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── High-Contrast Light Theme Overrides ── */
+[data-theme="light"] .table-glass {
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+[data-theme="light"] .table-glass th {
+  background: #F8FAFC !important;
+  color: #334155 !important;
+  border-bottom: 1.5px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .table-glass td {
+  border-bottom: 1px solid #F1F5F9 !important;
+  color: #0A0F1D !important;
+}
+
+[data-theme="light"] .table-glass tbody tr:hover td {
+  background: rgba(16, 185, 129, 0.04) !important;
+}
+
+[data-theme="light"] .mapping-card,
+[data-theme="light"] .mapping-row {
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .mapping-row.mapped {
+  border-color: #10B981 !important;
+  background: #F0FDF4 !important;
+}
+
+[data-theme="light"] .mapping-row select,
+[data-theme="light"] .mapping-select {
+  background-color: #F8FAFC !important;
+  border: 1.5px solid #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .mapping-row select:focus,
+[data-theme="light"] .mapping-select:focus {
+  border-color: #10B981 !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+[data-theme="light"] .pdf-part-card,
+[data-theme="light"] .pdf-part-row {
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .pdf-active-file-card {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.08) !important;
+}
+
+[data-theme="light"] .pdf-file-icon-badge {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #059669 !important;
+}
+
+[data-theme="light"] .pdf-file-name {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .pdf-pane-preview {
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .pdf-preview-header {
+  background: #F8FAFC !important;
+  border-bottom: 1.5px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .pdf-preview-title {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .pdf-modal-window {
+  background: #FFFFFF !important;
+  border: 1.5px solid #E2E8F0 !important;
+  color: #0F172A !important;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25) !important;
+}
+
+[data-theme="light"] .pdf-modal-header {
+  border-bottom: 1.5px solid #E2E8F0 !important;
+}
+

@@ -1,0 +1,140 @@
+/* ==============================================================================
+   AIN53 Data Management — CUSTOM FOLDER UI COLOR CONFIGURATION FILE
+   File Path: frontend/css/views/custom-folder-theme.css
+   
+   CUSTOMIZE ALL FOLDER COLORS, TEXT COLORS, EMPTY FOLDER STYLES, AND NAME BARS HERE!
+   You can easily edit any color value below to change the appearance of folders across
+   the Main Sorting View, Drag Drop Grid Overlay, and "Move Here" Context Menu Popup.
+   ============================================================================== */
+
+:root {
+  /* --------------------------------------------------------------------------
+     1. EMPTY FOLDER COLOR CONFIGURATION (Clean Bright Light Slate UI)
+     -------------------------------------------------------------------------- */
+  --empty-folder-bg: #f8fafc;                         /* Bright light slate background for empty folders */
+  --empty-folder-border: rgba(0, 0, 0, 0.08);        /* Border color of empty folders */
+  --empty-folder-text-color: #475569;                 /* Crisp dark slate text for empty folders */
+  --empty-folder-icon-color: #64748b;                 /* SVG Folder Icon stroke/fill color */
+  --empty-folder-badge-bg: rgba(0, 0, 0, 0.04);       /* "Empty" status badge background */
+  --empty-folder-badge-text: #475569;                 /* "Empty" status badge text color */
+  --empty-folder-header-bg: #f1f5f9;                /* Header ("Name Bar") background for empty folders */
+
+  /* --------------------------------------------------------------------------
+     2. NON-EMPTY FOLDER & NAME BAR CONFIGURATION
+     -------------------------------------------------------------------------- */
+  --folder-header-bg: #ffffff;                        /* Background of the Top Folder Header ("Name Bar") */
+  --folder-header-border-width: 2px;                  /* Thickness of the header bottom border line */
+  --folder-file-count-color: #475569;                 /* Text color for "(12 files)" label */
+  --folder-files-badge-bg: rgba(0, 0, 0, 0.05);       /* Background of the "12 FILES" count badge */
+  --folder-files-badge-text: #0f172a;                 /* Text color of the "12 FILES" count badge */
+  --folder-files-badge-border: rgba(0, 0, 0, 0.12);   /* Border of the count badge */
+
+  /* --------------------------------------------------------------------------
+     3. "MOVE HERE" CONTEXT MENU POPUP FOLDER COLORS
+     -------------------------------------------------------------------------- */
+  --ctx-modal-bg: #ffffff;                            /* Context menu modal backdrop color */
+  --ctx-modal-border: rgba(99, 102, 241, 0.25);       /* Context menu modal border color */
+  --ctx-list-path-color-filled: #0f172a;             /* Path text color for non-empty folders in Move Here list */
+  --ctx-list-path-color-empty: #475569;              /* Path text color for empty folders in Move Here list */
+}
+
+/* Light Theme Overrides (Clean, bright light slate UI) */
+[data-theme="light"] {
+  --empty-folder-bg: #f8fafc;
+  --empty-folder-border: rgba(0, 0, 0, 0.08);
+  --empty-folder-text-color: #475569;
+  --empty-folder-icon-color: #64748b;
+  --empty-folder-badge-bg: rgba(0, 0, 0, 0.04);
+  --empty-folder-badge-text: #475569;
+  --empty-folder-header-bg: #f1f5f9;
+
+  --folder-header-bg: #ffffff;
+  --folder-file-count-color: #475569;
+  --folder-files-badge-bg: rgba(0, 0, 0, 0.05);
+  --folder-files-badge-text: #0f172a;
+  --folder-files-badge-border: rgba(0, 0, 0, 0.12);
+
+  --ctx-modal-bg: #ffffff;
+  --ctx-modal-border: rgba(99, 102, 241, 0.25);
+  --ctx-list-path-color-filled: #0f172a;
+  --ctx-list-path-color-empty: #475569;
+}
+
+
+/* ==============================================================================
+   DIRECT CSS RULES APPLYING THE VARIABLES
+   ============================================================================== */
+
+/* 1. Main Sorting Dashboard — Empty Folders */
+.folder-card.empty-folder,
+.folder-card.folder-empty {
+  background: var(--empty-folder-bg) !important;
+  border-color: var(--empty-folder-border) !important;
+}
+
+.folder-card.empty-folder .folder-card-header,
+.folder-card.folder-empty .folder-card-header {
+  background: var(--empty-folder-header-bg) !important;
+  border-bottom: 1px solid var(--empty-folder-border) !important;
+}
+
+.folder-name {
+  text-shadow: none !important;
+}
+
+.folder-card.empty-folder .folder-name,
+.folder-card.folder-empty .folder-name {
+  color: var(--empty-folder-text-color) !important;
+  text-shadow: none !important;
+}
+
+.folder-card.empty-folder .folder-file-count,
+.folder-card.folder-empty .folder-file-count {
+  color: var(--empty-folder-text-color) !important;
+}
+
+/* 2. Drag-Drop Grid Overlay — Empty Folders */
+.drag-folder-card.empty-folder {
+  background: var(--empty-folder-bg) !important;
+  border-color: var(--empty-folder-border) !important;
+}
+
+.drag-folder-card .folder-event-text-overlay,
+.folder-event-text-overlay,
+.ctx-grid-event-text {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+/* 3. Context Menu "Move Here" Popup — Empty Folders */
+.ctx-folder-list-item.empty-folder,
+.ctx-folder-grid-item.empty-folder {
+  background: var(--empty-folder-bg) !important;
+  border-color: var(--empty-folder-border) !important;
+}
+
+.ctx-folder-list-item.empty-folder .ctx-list-folder-path,
+.ctx-folder-grid-item.empty-folder .ctx-grid-folder-path {
+  color: var(--empty-folder-text-color) !important;
+}
+
+/* 4. Non-Empty Folder Header ("Name Bar") Styling */
+.folder-card:not(.empty-folder) .folder-card-header {
+  border-bottom-width: var(--folder-header-border-width);
+}
+
+.folder-card:not(.empty-folder) .folder-file-count {
+  color: var(--folder-file-count-color) !important;
+}
+
+.folder-card:not(.empty-folder) .badge-count {
+  background: var(--folder-files-badge-bg) !important;
+  color: var(--folder-files-badge-text) !important;
+  border: 1px solid var(--folder-files-badge-border) !important;
+}
+
+/* 5. Non-Empty Move-Here Context Menu List Path Text */
+.ctx-folder-list-item:not(.empty-folder) .ctx-list-folder-path,
+.ctx-folder-grid-item:not(.empty-folder) .ctx-grid-folder-path {
+  color: var(--ctx-list-path-color-filled) !important;
+}

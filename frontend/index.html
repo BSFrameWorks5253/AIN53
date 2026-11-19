@@ -3,78 +3,131 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b1120">
   <title>AIN53 Data Management</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/layout.css">
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/core/theme.css">
+  <link rel="stylesheet" href="css/core/layout.css">
+
+  <!-- UI Components & Modals -->
+  <link rel="stylesheet" href="css/components/components.css">
+  <link rel="stylesheet" href="css/components/modals.css">
+
+  <!-- View Stylesheets -->
+  <link rel="stylesheet" href="css/views/view-pdf.css">
+  <link rel="stylesheet" href="css/views/view-events.css">
+  <link rel="stylesheet" href="css/views/view-sorting.css">
+  <link rel="stylesheet" href="css/views/view-sorting-dragdrop.css">
+  <link rel="stylesheet" href="css/views/view-sorting-contextmenu.css">
+  <link rel="stylesheet" href="css/views/custom-folder-theme.css">
+  <link rel="stylesheet" href="css/views/view-settings.css">
 
   <script>
     (function () {
-      const savedTheme = localStorage.getItem('ain53_theme') || 'dark';
+      const savedTheme = localStorage.getItem('ain53_theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
-  <!-- React 18 & ReactDOM 18 UMD (Zero Build Overhead) -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- React 18 & ReactDOM 18 UMD (Zero Build Overhead, Offline-first) -->
+  <script src="js/libs/react.production.min.js"></script>
+  <script src="js/libs/react-dom.production.min.js"></script>
 </head>
 
-<body>
+<body class="is-standard-edition">
 
   <!-- Startup Loading Screen Overlay -->
   <div id="loading-screen" class="loading-screen">
-    <!-- Overlay Background Mesh -->
-    <div class="mesh-bg"></div>
+    <!-- Ambient Backdrop Effects -->
+    <div class="splash-ambient-mesh"></div>
+    <div class="splash-grid-pattern"></div>
+    <div class="splash-glow-orb splash-glow-emerald"></div>
+    <div class="splash-glow-orb splash-glow-gold"></div>
 
-    <!-- Glassmorphic Card -->
+    <!-- Studio Glassmorphic Console Card -->
     <div class="loader-card">
-      <div class="visual-container">
-        <!-- Glow sphere -->
-        <div class="icon-glow-soft"></div>
+      <div class="loader-card-border-glow"></div>
 
-        <!-- Tech Hologram Dashed Ring -->
-        <div class="hologram-ring"></div>
-
-        <!-- Outer SVG Progress Circle -->
-        <svg class="svg-ring-container" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="loaderRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#d4a44a" />
-              <stop offset="100%" stop-color="#10b981" />
-            </linearGradient>
-          </defs>
-          <!-- Background track -->
-          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0, 0, 0, 0.03)" stroke-width="3" />
-          <!-- Progress bar -->
-          <circle id="progress-circle" cx="50" cy="50" r="44" fill="none" stroke="url(#loaderRingGrad)"
-            stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276.4" stroke-dashoffset="276.4"
-            style="transition: stroke-dashoffset 0.15s cubic-bezier(0.4, 0, 0.2, 1);" />
-        </svg>
-
-        <!-- App Icon Centerpiece -->
-        <div class="icon-box">
-          <img class="app-icon" src="./ICON.png" alt="App Icon"
+      <!-- Hero Visual Centerpiece -->
+      <div class="splash-hero-emblem">
+        <div class="emblem-halo"></div>
+        <div class="emblem-orbit-outer"></div>
+        <div class="emblem-orbit-inner"></div>
+        
+        <div class="emblem-badge">
+          <img class="app-icon" src="./ICON.png" alt="AIN53 Logo"
             onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';">
+          <div class="emblem-sheen"></div>
+          <span class="emblem-beacon"></span>
         </div>
       </div>
 
       <!-- Typography Branding -->
-      <div class="title-text">AIN53</div>
-      <div class="subtitle-text">Data Management</div>
-
-      <!-- Status Tracking -->
-      <div class="status-panel">
-        <div class="percent-indicator"><span id="pct-val">0</span><span>%</span></div>
-        <div class="console-message">
-          <span id="log-msg">Initializing core components</span><span class="terminal-cursor"></span>
+      <div class="splash-brand-group">
+        <h1 class="splash-brand-title">AIN53</h1>
+        <div class="splash-brand-subtitle">DATA MANAGEMENT SUITE</div>
+        
+        <div class="splash-badges-row">
+          <span class="splash-badge"><span class="badge-dot"></span>v 1.0.60</span>
+          <span class="splash-badge-divider">•</span>
+          <span class="splash-badge splash-badge-subtle">OFFLINE WORKFLOW ENGINE</span>
         </div>
+      </div>
+
+      <!-- Telemetry Progress & Status System -->
+      <div class="splash-telemetry-panel">
+        <div class="splash-telemetry-header">
+          <div class="splash-status-wrapper">
+            <span class="status-pulse-dot"></span>
+            <span id="log-msg" class="splash-status-text">Initializing core system...</span>
+          </div>
+          <div class="splash-percent-wrapper">
+            <span id="pct-val" class="splash-percent-value">0</span><span class="splash-percent-sign">%</span>
+          </div>
+        </div>
+
+        <!-- Sleek Linear Progress Track -->
+        <div class="splash-progress-track">
+          <div id="splash-progress-bar" class="splash-progress-bar">
+            <div class="splash-progress-shimmer"></div>
+            <div class="splash-progress-glow-head"></div>
+          </div>
+        </div>
+
+        <!-- Hidden SVG Circle for Backward Compatibility -->
+        <svg class="splash-compat-svg" style="display:none" viewBox="0 0 100 100">
+          <circle id="progress-circle" cx="50" cy="50" r="44" stroke-dasharray="276.4" stroke-dashoffset="276.4" />
+        </svg>
+
+        <!-- Subsystem Initialization Telemetry Indicators -->
+        <div class="splash-subsystems-row">
+          <div class="subsystem-pill" id="subsys-core">
+            <span class="subsystem-dot"></span><span class="subsystem-label">CORE</span>
+          </div>
+          <div class="subsystem-pill" id="subsys-db">
+            <span class="subsystem-dot"></span><span class="subsystem-label">DATABASE</span>
+          </div>
+          <div class="subsystem-pill" id="subsys-media">
+            <span class="subsystem-dot"></span><span class="subsystem-label">MEDIA FS</span>
+          </div>
+          <div class="subsystem-pill" id="subsys-ready">
+            <span class="subsystem-dot"></span><span class="subsystem-label">RUNTIME</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security / Footer Micro-Attribution -->
+      <div class="splash-footer-note">
+        <span>High-Throughput Media Orchestration</span>
       </div>
     </div>
   </div>
@@ -82,82 +135,128 @@
   <!-- Background Mesh -->
   <div class="mesh-bg"></div>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <a href="https://ain53.org/" target="_blank" rel="noopener noreferrer" class="sidebar-logo-container"
-        title="Visit ain53.org">
-        <img class="sidebar-logo" src="./ICON.png" alt="Logo"
-          onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';">
-        <div class="sidebar-title-wrapper">
-          <h2>AIN53</h2>
-          <p>Data Management</p>
+  <!-- Sidebar (Modern Pill Navigation) -->
+  <aside class="sidebar" id="app-sidebar">
+    <!-- Top Brand & Collapse Header -->
+    <div class="sidebar-header-row">
+      <a href="https://ain53.org/" target="_blank" rel="noopener noreferrer" class="sidebar-brand" title="Visit ain53.org">
+        <div class="sidebar-logo">
+          <img src="./ICON.png" alt="Logo" style="width: 24px; height: 24px; object-fit: contain;"
+            onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';">
+        </div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">AIN53</span>
+          <span class="sidebar-brand-version">Data Suite</span>
         </div>
       </a>
+      <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-toggle" title="Collapse / Expand Sidebar" aria-label="Toggle navigation bar">
+        <svg class="collapse-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
     </div>
+
+    <!-- Core Tools Section Label -->
+    <div class="sidebar-section-label">
+      <span>Menu</span>
+    </div>
+
+    <!-- Primary Navigation -->
     <nav class="sidebar-nav">
-      <button class="nav-btn active" data-view="view-pdf">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
+      <button class="nav-btn active" data-view="view-pdf" title="PDF to CSV">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
           <line x1="16" y1="13" x2="8" y2="13"></line>
           <line x1="16" y1="17" x2="8" y2="17"></line>
-          <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
-        <span>PDF to CSV</span>
+        <span class="nav-label">PDF to CSV</span>
       </button>
-      <button class="nav-btn" data-view="view-csv">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
+
+      <button class="nav-btn" data-view="view-events" title="Event Creation">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+          <circle cx="8" cy="14" r="1"></circle>
+          <circle cx="12" cy="14" r="1"></circle>
+          <circle cx="16" cy="14" r="1"></circle>
+          <circle cx="8" cy="18" r="1"></circle>
+          <circle cx="12" cy="18" r="1"></circle>
+          <circle cx="16" cy="18" r="1"></circle>
+        </svg>
+        <span class="nav-label">Event Creation</span>
+      </button>
+
+      <button class="nav-btn" data-view="view-csv" title="CSV to Folders">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
-        <span>CSV to Folders</span>
+        <span class="nav-label">CSV to Folders</span>
       </button>
-      <button class="nav-btn" data-view="view-sorting">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <circle cx="8.5" cy="8.5" r="1.5"></circle>
-          <polyline points="21 15 16 10 5 21"></polyline>
+
+      <button class="nav-btn" data-view="view-sorting" title="Media Sorting">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="2"></rect>
         </svg>
-        <span>Media Sorting</span>
+        <span class="nav-label">Media Sorting</span>
       </button>
-      <button class="nav-btn" data-view="view-inventory">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-          <line x1="6" y1="6" x2="6.01" y2="6"></line>
-          <line x1="6" y1="18" x2="6.01" y2="18"></line>
+
+      <button class="nav-btn" data-view="view-inventory" title="Drive Inventory">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="6" rx="2"></rect>
+          <rect x="3" y="14" width="18" height="6" rx="2"></rect>
+          <circle cx="7" cy="7" r="1"></circle>
+          <circle cx="7" cy="17" r="1"></circle>
         </svg>
-        <span>Drive Inventory</span>
+        <span class="nav-label">Drive Inventory</span>
       </button>
+
     </nav>
 
     <!-- Bottom Navigation Section -->
-    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.55rem; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
-      <button class="nav-btn" data-view="view-settings">
-        <div style="display: flex; align-items: center; gap: 0.85rem; width: 100%;">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-          <span>Settings</span>
-        </div>
-        <span id="update-nav-badge" class="hidden" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+    <div class="sidebar-bottom">
+      <button class="nav-btn" data-view="view-settings" title="Settings">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+        <span class="nav-label">Settings</span>
+        <span id="update-nav-badge" class="hidden"
+          style="margin-left: auto; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
       </button>
 
-      <button class="nav-btn more-info-btn" id="btn-more-info">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
+      <button class="nav-btn more-info-btn" id="btn-more-info" title="User Guide">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="16" x2="12" y2="12"></line>
           <line x1="12" y1="8" x2="12.01" y2="8"></line>
         </svg>
-        <span>User Guide</span>
+        <span class="nav-label">User Guide</span>
       </button>
+
+      <!-- Sidebar Zoom Controls Widget -->
+      <div class="sidebar-zoom-widget">
+        <span
+          style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; display: flex; align-items: center; gap: 0.35rem; font-family: var(--font-main);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span class="zoom-text-label">Zoom</span>
+        </span>
+        <div style="display: flex; align-items: center; gap: 0.3rem;">
+          <button type="button" onclick="window.appZoomOut()" title="Zoom Out (Ctrl -)" class="zoom-btn">−</button>
+          <button type="button" onclick="window.appResetZoom()" title="Reset Zoom to 80% (Ctrl 0)" id="sidebar-zoom-level-text" class="zoom-level-pill">80%</button>
+          <button type="button" onclick="window.appZoomIn()" title="Zoom In (Ctrl +)" class="zoom-btn">+</button>
+        </div>
+      </div>
     </div>
   </aside>
 
@@ -175,67 +274,393 @@
       <!-- ── View: PDF to CSV ── -->
       <section id="view-pdf" class="view-section active">
         <div class="card glass">
-          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
-              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> PDF to CSV Extractor</h3>
-          <p class="text-muted">Extract tables from event PDFs, map columns, and export to CSV.</p>
-
-          <div class="dropzone" id="pdf-dropzone">
-            <div class="dropzone-text">
-              <h4>Select PDF File</h4>
-              <p>Click here to choose a file</p>
+          <div class="view-header-strip">
+            <div class="view-header-info">
+              <span class="view-tag-pill">PDF EXTRACTION SUITE</span>
+              <h2 class="view-primary-title">Extract &amp; Map Event Schedule</h2>
+              <p class="view-subtitle-desc">Import event rosters, configure sequence ranges and sub-event divisions, and generate standardized CSV mappings.</p>
             </div>
-            <button id="btn-pick-pdf" class="btn btn-select">Browse PDF</button>
+            <!-- Header Action Controls (Visible when PDF is loaded) -->
+            <div class="view-header-actions" id="pdf-header-actions" style="display: none;">
+              <button type="button" id="btn-toggle-split-pdf" class="btn btn-secondary btn-sm flex align-center gap-1" title="Toggle Split-Screen Side-by-Side View">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="12" y1="3" x2="12" y2="21"></line>
+                </svg>
+                <span id="header-split-btn-text">Split View</span>
+              </button>
+              <button type="button" id="btn-open-pdf-modal" class="btn btn-primary btn-sm flex align-center gap-1" title="Open Interactive Fullscreen PDF Viewer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>View PDF</span>
+              </button>
+            </div>
           </div>
 
-          <div id="pdf-settings" class="hidden mt-4">
-            <div class="file-info mb-4" id="pdf-file-info"></div>
-
-            <div class="input-group mb-3">
-              <label>Mauze</label>
-              <input type="text" id="pdf-mauze" placeholder="Enter Mauze (Optional)" class="input-glass">
-            </div>
-
-            <div class="grid-2 mb-3">
-              <div class="input-group">
-                <label>Start Sr Number</label>
-                <input type="number" id="pdf-sr-start" placeholder="Min" class="input-glass">
+          <div class="pdf-workspace-container" id="pdf-workspace-container">
+            <!-- Left Pane: Extraction Controls -->
+            <div class="pdf-pane-controls" id="pdf-pane-controls">
+              
+              <!-- Dropzone (Shown initially when no file is loaded) -->
+              <div class="dropzone" id="pdf-dropzone">
+                <svg class="dropzone-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M12 18v-6"></path>
+                  <path d="m9 15 3 3 3-3"></path>
+                </svg>
+                <div class="dropzone-text">
+                  <h4 style="font-family: var(--font-main); font-size: 1.15rem; font-weight: 700;">Select PDF File</h4>
+                  <p>Drag & drop your PDF file here, or click to browse</p>
+                </div>
+                <button id="btn-pick-pdf" class="btn btn-primary" type="button" style="padding: 0.65rem 1.6rem; border-radius: 12px; font-weight: 700;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 6px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                  <span id="btn-pick-pdf-text">Browse PDF File</span>
+                </button>
               </div>
-              <div class="input-group">
-                <label>End Sr Number</label>
-                <input type="number" id="pdf-sr-end" placeholder="Max" class="input-glass">
+
+              <!-- Active File Control Bar (Shown when a PDF is loaded) -->
+              <div id="pdf-active-file-card" class="pdf-active-file-card hidden">
+                <div class="pdf-file-card-info">
+                  <div class="pdf-file-icon-badge">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <div class="pdf-file-details">
+                    <div class="pdf-file-name" id="pdf-loaded-filename">Document.pdf</div>
+                    <div class="pdf-file-meta" id="pdf-loaded-meta">32 rows detected • Ready to map</div>
+                  </div>
+                </div>
+                <div class="pdf-file-card-actions">
+                  <button type="button" id="btn-view-pdf-main" class="btn btn-primary btn-sm flex align-center gap-1" title="View PDF Document">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>View PDF</span>
+                  </button>
+                  <button type="button" id="btn-toggle-split-btn" class="btn btn-secondary btn-sm flex align-center gap-1" title="Toggle Split Screen Layout">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="12" y1="3" x2="12" y2="21"></line>
+                    </svg>
+                    <span id="split-btn-text">Split View</span>
+                  </button>
+                  <button type="button" id="btn-open-external-pdf" class="btn btn-secondary btn-sm flex align-center" title="Open in System PDF Reader (Adobe Acrobat / Edge)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  </button>
+                  <button type="button" id="btn-change-pdf" class="btn btn-secondary btn-sm flex align-center gap-1" title="Select a different PDF file">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                    </svg>
+                    <span>Change</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- PDF Extraction Settings -->
+              <div id="pdf-settings" class="hidden mt-3">
+                <div class="file-info mb-3 hidden" id="pdf-file-info"></div>
+
+                <div style="margin-bottom: 1.25rem;">
+                  <div class="input-group">
+                    <label>Mauze Location</label>
+                    <input type="text" id="pdf-mauze" placeholder="e.g. Raipur (Optional)" class="input-glass">
+                  </div>
+                </div>
+
+                <div class="pdf-parts-section mb-4">
+                  <div class="flex align-center justify-between mb-3">
+                    <label class="section-subtitle-label">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                      </svg>
+                      Sequence Ranges &amp; Part Dividers
+                    </label>
+                    <button type="button" id="btn-add-part" class="btn-outline-accent flex align-center gap-1" title="Add another Part divider">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      <span>Add Part</span>
+                    </button>
+                  </div>
+                  <div id="pdf-parts-list" class="flex flex-col gap-2"></div>
+                </div>
+
+                <div class="mapping-container mb-4">
+                  <h4>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                      <line x1="4" y1="22" x2="4" y2="15"></line>
+                    </svg>
+                    Column Mapping
+                  </h4>
+                  <div id="pdf-mapping-grid" class="mapping-grid"></div>
+                </div>
+
+                <div class="flex gap-3 align-center" style="margin-top: 1.5rem;">
+                  <button id="btn-pdf-preview" class="btn btn-secondary" style="padding: 0.85rem 1.6rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      style="margin-right: 0.5rem;">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    Preview Data
+                  </button>
+                  <button id="btn-pdf-download" class="btn btn-primary" style="padding: 0.85rem 1.8rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      style="margin-right: 0.5rem;">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download CSV
+                  </button>
+                </div>
+
+                <div class="preview-wrapper mt-4 hidden" id="pdf-preview-wrapper" style="margin-top: 1.5rem;">
+                  <div class="status-bar info mb-3" id="pdf-status">Rows found: 0</div>
+                  <div class="table-container" style="max-height: 420px; overflow-y: auto;">
+                    <table class="table-glass" id="pdf-table">
+                      <thead style="position: sticky; top: 0; z-index: 5;">
+                        <tr>
+                          <th>Seq</th>
+                          <th>Event</th>
+                          <th>Sticker</th>
+                          <th>Name</th>
+                          <th>ITS</th>
+                          <th>Location</th>
+                          <th>Mobile</th>
+                          <th>Mauze</th>
+                          <th>Sub Event</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="mapping-container mb-4">
-              <h4>Column Mapping</h4>
-              <div id="pdf-mapping-grid" class="mapping-grid"></div>
+            <!-- Draggable Splitter Divider (Resizable Sidebar/Slider) -->
+            <div id="pdf-split-resizer" class="pdf-split-resizer hidden" title="Drag to resize PDF view">
+              <div class="resizer-handle"></div>
             </div>
 
-            <div class="flex gap-2">
-              <button id="btn-pdf-preview" class="btn btn-secondary">Preview Data</button>
-              <button id="btn-pdf-download" class="btn btn-success">Download CSV</button>
-            </div>
-
-            <div class="preview-wrapper mt-4 hidden" id="pdf-preview-wrapper">
-              <div class="status-bar info" id="pdf-status">Rows found: 0</div>
-              <div class="table-container">
-                <table class="table-glass" id="pdf-table">
-                  <thead>
-                    <tr>
-                      <th>Seq</th>
-                      <th>Event</th>
-                      <th>Sticker</th>
-                      <th>Name</th>
-                      <th>ITS</th>
-                      <th>Location</th>
-                      <th>Mobile</th>
-                      <th>Mauze</th>
-                      <th>Sub Event</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+            <!-- Right Pane: Live Embedded PDF Viewer (Visible in Split Mode) -->
+            <div class="pdf-pane-preview hidden" id="pdf-pane-preview">
+              <div class="pdf-preview-header">
+                <div class="pdf-preview-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <span id="pdf-split-preview-filename">Document Preview</span>
+                  <span class="pdf-hint-badge" title="Hold Shift while rolling your mouse wheel to scroll left/right horizontally, or right-click the PDF for Hand Tool (drag-to-pan).">
+                    💡 Shift+Wheel = ↔ Pan
+                  </span>
+                </div>
+                <div class="pdf-preview-actions">
+                  <!-- Quick Width Presets -->
+                  <div class="pdf-width-presets" title="Quick adjust PDF width">
+                    <button type="button" class="btn-width-preset" data-width="40" title="40% Width">40%</button>
+                    <button type="button" class="btn-width-preset active" data-width="50" title="50% Width">50%</button>
+                    <button type="button" class="btn-width-preset" data-width="65" title="65% Width">65%</button>
+                  </div>
+                  <button type="button" id="btn-split-fullscreen" class="btn-icon-sm" title="Expand to Fullscreen Modal">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <polyline points="9 21 3 21 3 15"></polyline>
+                      <line x1="21" y1="3" x2="14" y2="10"></line>
+                      <line x1="3" y1="21" x2="10" y2="14"></line>
+                    </svg>
+                  </button>
+                  <button type="button" id="btn-close-split" class="btn-icon-sm" title="Close Split View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
               </div>
+              <div class="pdf-frame-wrapper">
+                <iframe id="pdf-split-iframe" class="pdf-viewer-frame" title="PDF Split Viewer" src="about:blank"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── View: Event Creation & Management ── -->
+      <!-- ── View: Event Creation & Management (AIN53 Coordinator) ── -->
+      <section id="view-events" class="view-section hidden">
+        <!-- Coordinator Top Header Bar matching official coordinator layout -->
+        <div class="coordinator-top-header">
+          <div class="coordinator-brand" id="btn-hidden-safars-grid" onclick="window.toggleSafarsGridPage(event)" title="Click to view all Safars in Grid">
+            <span>AIN53 Coordinator</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.4; margin-left:2px;">
+              <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </div>
+          <div class="coordinator-safar-dropdown-wrap">
+            <button type="button" class="btn-coordinator-safar" id="btn-safar-selector-pill">
+              <span id="active-safar-label">Khandala</span>
+              <svg class="safar-pill-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="safar-floating-menu hidden" id="safar-floating-menu">
+              <div class="safar-menu-items" id="safar-menu-items">
+                <!-- Dynamically populated Safar items with "Ongoing" badge -->
+              </div>
+              <div class="safar-menu-divider"></div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+                <div class="safar-menu-action" id="safar-menu-add-btn" style="flex: 1;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>New Safar...</span>
+                </div>
+                <button type="button" id="safar-menu-clear-all-btn" title="Clear all Safars and events" style="display: none; background: none; border: none; font-size: 0.76rem; color: #ef4444; font-weight: 700; cursor: pointer; padding: 6px 10px; border-radius: 6px; transition: background 0.15s ease;">
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-safar-folder" id="btn-safar-folder-picker" title="Configure Safar Root Folder">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            <span>Safar Folder</span>
+          </button>
+          <button type="button" class="btn-safar-folder" id="btn-import-safar-crew" title="Manage Crew Roster &amp; Camera Series for this Safar" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.35); color: var(--color-emerald-light, #34d399);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <polyline points="17 11 19 13 23 9"></polyline>
+            </svg>
+            <span>Crew &amp; Series</span>
+          </button>
+          <div class="coordinator-header-right-actions">
+            <button type="button" class="btn-safar-folder btn-safar-download-ain53-top" id="btn-export-safar-ain53" title="Download complete Safar data package (.AIN53) for website sync">
+              <img src="ICON.png" alt="AIN53" style="width: 16px; height: 16px; border-radius: 3px; object-fit: contain;">
+              <span>Download Safar (.AIN53)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="coordinator-main-container">
+          <!-- View 1: Events Schedule Full Page -->
+          <div id="coordinator-schedule-page" class="coordinator-page-container">
+            <!-- Title Row: Events Schedule, Counts, Legend, Density Switcher, Create Event -->
+            <div class="events-title-row">
+              <div class="events-title-info">
+                <div class="events-title-header-line">
+                  <h2 class="events-main-heading">Events Schedule</h2>
+                  <div class="events-sub-heading-pill" id="events-summary-stats">
+                    4 events across 1 city
+                  </div>
+                </div>
+                <div class="events-status-legend-bar">
+                  <span class="legend-item"><span class="legend-dot green"></span> All Submitted</span>
+                  <span class="legend-item"><span class="legend-dot yellow"></span> Partial</span>
+                  <span class="legend-item"><span class="legend-dot red"></span> No Submission</span>
+                  <span class="legend-item"><span class="legend-dot gray"></span> Event Not Ended</span>
+                </div>
+              </div>
+
+              <div class="events-top-actions">
+                <!-- Density Switcher: Comfortable | Cozy | Compact -->
+                <div class="density-switch-pill" id="events-density-switcher">
+                  <button type="button" class="density-btn active" data-density="comfortable">Comfortable</button>
+                  <button type="button" class="density-btn" data-density="cozy">Cozy</button>
+                  <button type="button" class="density-btn" data-density="compact">Compact</button>
+                </div>
+
+                <button id="btn-open-manage-cities" class="btn btn-secondary flex align-center gap-1" style="font-size: 0.85rem; padding: 0.5rem 0.95rem;" title="Manage Contributors &amp; Cities">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  <span>Crew &amp; Cities</span>
+                </button>
+
+                <button id="btn-open-create-event" class="btn btn-primary btn-emerald-action flex align-center gap-1">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Create Event</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline Create Event(s) Form matching Video (sec_112 - sec_192) -->
+            <div id="create-event-inline-card" class="create-event-inline-card hidden"></div>
+
+            <!-- Accordion Events List Container -->
+            <div id="events-accordion-container" class="events-accordion-list" data-density="comfortable">
+              <div class="text-muted" style="padding: 2.5rem 1rem; text-align: center; font-size: 0.9rem;">
+                Loading events schedule...
+              </div>
+            </div>
+          </div>
+
+          <!-- View 2: All Safars Full Page Grid (Not a Popup) -->
+          <div id="coordinator-safars-grid-page" class="coordinator-page-container hidden">
+            <!-- Full Page Header -->
+            <div class="safars-page-header">
+              <div class="safars-page-header-left">
+                <button type="button" class="btn-back-to-schedule" id="btn-back-to-schedule" onclick="window.showEventsSchedulePage()" title="Back to Events Schedule">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  <span>Events Schedule</span>
+                </button>
+                <div class="safars-page-titles">
+                  <div class="safars-title-row-flex">
+                    <h2 class="events-main-heading">All Safars</h2>
+                    <span class="events-sub-heading-pill" id="safars-page-count-pill">1 Safar</span>
+                  </div>
+                  <p class="safars-page-subtitle">Manage, browse, and switch across all registered Safars in full grid form.</p>
+                </div>
+              </div>
+
+              <div class="safars-page-header-right">
+                <button type="button" class="btn btn-primary btn-emerald-action" id="btn-grid-page-new-safar">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ New Safar...</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Search & Toolbar -->
+            <div class="safars-page-toolbar">
+              <div class="safars-search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="safars-page-search-input" placeholder="Search Safars by name or directory path...">
+              </div>
+              <div class="safars-count-summary" id="safars-page-count-label">1 Safar registered</div>
+            </div>
+
+            <!-- Full-Width Cards Grid -->
+            <div class="safars-cards-grid full-page-cards-grid" id="safars-page-cards-container">
+              <!-- Rendered dynamically -->
             </div>
           </div>
         </div>
@@ -244,27 +669,89 @@
       <!-- ── View: CSV to Folders ── -->
       <section id="view-csv" class="view-section hidden">
         <div class="card glass">
-          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
-              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> CSV to Folders</h3>
-          <p class="text-muted">Create master and leaf folder structures directly from a CSV.</p>
-
-          <div class="input-group mb-3 mt-4">
-            <label>Input CSV File (Drag &amp; Drop Supported)</label>
-            <div class="flex gap-2" id="csv-input-container">
-              <input type="text" id="csv-input-path" class="input-glass" readonly placeholder="No file selected">
-              <button id="btn-csv-input" class="btn btn-select">Select File</button>
+          <div class="view-header-strip">
+            <div class="view-header-info">
+              <span class="view-tag-pill">HIERARCHY AUTOMATION</span>
+              <h2 class="view-primary-title">Generate Event Folder Structure</h2>
+              <p class="view-subtitle-desc">Automatically build structured Master &amp; Leaf event directories, sub-event leaf folders, and Document archives directly from your schedule CSV.</p>
             </div>
           </div>
 
-          <div class="input-group mb-4">
-            <label>Destination Folder (Drag &amp; Drop Supported)</label>
-            <div class="flex gap-2" id="csv-dest-container">
-              <input type="text" id="csv-dest-path" class="input-glass" readonly placeholder="No folder selected">
-              <button id="btn-csv-dest" class="btn btn-select">Select Folder</button>
+          <div class="grid-2 gap-4 setup-steps-grid">
+            <!-- Step 1: Input CSV File Card -->
+            <div class="card setup-step-card">
+              <div>
+                <div class="setup-step-heading">
+                  <span class="setup-step-number">1</span>
+                  <h4 class="setup-step-title">Source Schedule CSV</h4>
+                </div>
+                <p class="setup-step-desc">
+                  Drop or browse your event mapping CSV containing sequence and location definitions.
+                </p>
+              </div>
+
+              <div class="input-group" style="margin-top: 0.5rem;">
+                <div class="flex gap-2" id="csv-input-container">
+                  <input type="text" id="csv-input-path" class="input-glass setup-path-input" readonly placeholder="Drop .csv file here, or browse...">
+                  <button id="btn-csv-input" class="btn btn-select setup-browse-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Browse CSV
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Target Media Directory Card -->
+            <div class="card setup-step-card">
+              <div>
+                <div class="setup-step-heading">
+                  <span class="setup-step-number">2</span>
+                  <h4 class="setup-step-title">Target Destination Folder</h4>
+                </div>
+                <p class="setup-step-desc">
+                  Choose the external drive or destination root where folders should be established.
+                </p>
+              </div>
+
+              <div class="input-group" style="margin-top: 0.5rem;">
+                <div class="flex gap-2" id="csv-dest-container">
+                  <input type="text" id="csv-dest-path" class="input-glass setup-path-input" readonly placeholder="Drop destination folder, or browse...">
+                  <button id="btn-csv-dest" class="btn btn-select setup-browse-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Select Folder
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <button id="btn-csv-process" class="btn btn-primary" disabled>Generate Folders</button>
+          <!-- Step 3: Execution & Features Banner -->
+          <div class="setup-action-banner">
+            <div class="setup-banner-left">
+              <h4 class="setup-banner-title">
+                <span class="setup-banner-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </span>
+                Generate Folders
+              </h4>
+            </div>
+
+            <button id="btn-csv-process" class="btn btn-primary setup-start-btn" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                <line x1="12" y1="11" x2="12" y2="17"></line>
+                <line x1="9" y1="14" x2="15" y2="14"></line>
+              </svg>
+              <span>Generate Folders</span>
+            </button>
+          </div>
 
           <div id="csv-result" class="mt-4 hidden status-bar success"></div>
         </div>
@@ -274,84 +761,202 @@
       <section id="view-sorting" class="view-section hidden">
 
         <!-- SETUP SCREEN -->
-        <div id="sort-setup-screen" class="card glass h-full flex-col">
-          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
-              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> Media Sorting</h3>
-          <p class="text-muted mb-4">Sort photos and videos into event folders using CSV mapping.</p>
+        <div id="sort-setup-screen" class="card glass flex-col sort-setup-card">
+          <div class="view-header-strip">
+            <div class="view-header-info">
+              <span class="view-tag-pill">EXIFTOOL &amp; ATOM ENGINE</span>
+              <h2 class="view-primary-title">Sort &amp; Organize Event Media</h2>
+              <p class="view-subtitle-desc">Analyze high-resolution RAW photos, 4K/8K video, and audio sidecars to match files chronologically into sequence folders with sequence reset immunity.</p>
+            </div>
+          </div>
 
-          <div class="grid-2 gap-4 mt-4">
-            <div class="input-group">
-              <label>1. Mapping CSV File (Drag &amp; Drop Supported)</label>
-              <div class="flex gap-2" id="sort-mapping-container">
-                <input type="text" id="sort-mapping-path" class="input-glass" readonly placeholder="No mapping file">
-                <button id="btn-sort-mapping" class="btn btn-select">Browse</button>
+          <div class="grid-2 gap-4 setup-steps-grid">
+            <!-- Step 1: Mapping CSV -->
+            <div class="card setup-step-card">
+              <div>
+                <div class="setup-step-heading">
+                  <span class="setup-step-number">1</span>
+                  <h4 class="setup-step-title">Mapping CSV Schedule</h4>
+                </div>
+                <p class="setup-step-desc">
+                  Drag &amp; drop or browse the event mapping CSV defining folder sequences.
+                </p>
+              </div>
+
+              <div class="input-group">
+                <div class="flex gap-2" id="sort-mapping-container">
+                  <input type="text" id="sort-mapping-path" class="input-glass setup-path-input" readonly placeholder="No mapping file selected...">
+                  <button id="btn-sort-mapping" class="btn btn-select setup-browse-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Browse CSV
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="input-group">
-              <label>2. Root Source Directory (Drag &amp; Drop Supported)</label>
-              <div class="flex gap-2" id="sort-root-container">
-                <input type="text" id="sort-root-path" class="input-glass" readonly placeholder="No root directory">
-                <button id="btn-sort-root" class="btn btn-select">Browse</button>
+
+            <!-- Step 2: Root Source Directory -->
+            <div class="card setup-step-card">
+              <div>
+                <div class="setup-step-heading">
+                  <span class="setup-step-number">2</span>
+                  <h4 class="setup-step-title">Root Source Directory</h4>
+                </div>
+                <p class="setup-step-desc">
+                  Drag &amp; drop or select the drive root containing raw media cards/folders.
+                </p>
+              </div>
+
+              <div class="input-group">
+                <div class="flex gap-2" id="sort-root-container">
+                  <input type="text" id="sort-root-path" class="input-glass setup-path-input" readonly placeholder="No root directory selected...">
+                  <button id="btn-sort-root" class="btn btn-select setup-browse-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Browse Root
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-          <button id="btn-sort-scan" class="btn btn-primary mt-4 w-full" disabled>Start Sorting Files</button>
+
+          <!-- Bottom Action Banner -->
+          <div class="setup-action-banner">
+            <div class="setup-banner-left">
+              <h4 class="setup-banner-title">
+                <span class="setup-banner-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </span>
+                Sort Media
+              </h4>
+            </div>
+
+            <button id="btn-sort-scan" class="btn btn-primary setup-start-btn" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Start Sorting Files</span>
+            </button>
+          </div>
         </div>
 
         <!-- ANALYSIS SCREEN -->
-        <div id="sort-analysis-screen" class="card glass hidden">
-          <div class="analysis-header text-center">
-            <h3 class="card-title mb-1">Analysing Media Files</h3>
-            <p id="analysis-subtitle" class="text-muted scanning-pulse mb-0">Scanning for sub-event markers in photos &amp; videos…</p>
+        <div id="sort-analysis-screen" class="card glass hidden analysis-container" style="display: none;">
+          <div class="analysis-header text-center flex-col align-center">
+            <div class="analysis-badge-pill mb-2">
+              <span class="pulse-live-dot"></span>
+              <span class="analysis-badge-text">SCANNING IN PROGRESS</span>
+            </div>
+            <h3 class="card-title mb-1 flex justify-center align-center gap-2">
+              <svg class="analysis-title-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              Analyzing Media Files
+            </h3>
+            <p id="analysis-subtitle" class="text-muted scanning-pulse mb-0">Scanning for sub-event markers in photos
+              &amp; videos…</p>
           </div>
 
-          <div class="scan-ring-container flex justify-center">
-            <div class="scan-ring" style="width:100px; height:100px; position:relative;">
-              <svg viewBox="0 0 100 100" style="transform: rotate(-90deg); width:100%; height:100%;">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="6" />
-                <circle id="ring-progress" cx="50" cy="50" r="45" fill="none" stroke="var(--accent-blue)"
-                  stroke-width="6" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="283"
-                  style="transition: stroke-dashoffset 0.3s ease;" />
+          <div class="scan-ring-container flex justify-center my-3">
+            <div class="scan-ring">
+              <svg viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="ringGradientIndex" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8" />
+                    <stop offset="50%" stop-color="#818cf8" />
+                    <stop offset="100%" stop-color="#c084fc" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" class="ring-bg" />
+                <circle id="ring-progress" cx="50" cy="50" r="45" class="ring-active" stroke-dasharray="283"
+                  stroke-dashoffset="283" />
               </svg>
-              <div id="ring-percent"
-                style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:700; color:var(--accent-blue); font-size:1.1rem;">
-                0%</div>
+              <div class="ring-center-content">
+                <div id="ring-percent" class="ring-percent-val">0%</div>
+                <div class="ring-subtext">COMPLETE</div>
+              </div>
             </div>
           </div>
 
           <div class="progress-section">
             <div class="progress-bar-bg mb-2">
-              <div class="progress-bar-fill" id="analysis-bar"></div>
+              <div class="progress-bar-fill" id="analysis-bar">
+                <div class="progress-shimmer"></div>
+              </div>
             </div>
-            <div class="flex" style="justify-content: space-between;">
-              <span class="text-sm font-bold" id="analysis-progress-text">0 / 0 files</span>
-              <span class="text-muted text-sm" id="analysis-eta">Starting analysis…</span>
+            <div class="flex align-center justify-between">
+              <span class="text-sm font-bold flex align-center gap-1.5">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="analysis-progress-text">0 / 0 files</span>
+              </span>
+              <span class="text-muted text-sm flex align-center gap-1">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="analysis-eta">Starting analysis…</span>
+              </span>
             </div>
           </div>
 
           <div class="stats-grid">
             <div class="stat-card" id="stat-card-photos">
-              <div class="stat-value" id="analysis-photos">0</div>
-              <div class="stat-label">Photos</div>
+              <div class="stat-icon-wrapper photo-icon-bg">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value" id="analysis-photos">0</div>
+                <div class="stat-label">Photos</div>
+              </div>
             </div>
             <div class="stat-card" id="stat-card-videos">
-              <div class="stat-value" id="analysis-videos">0</div>
-              <div class="stat-label">Videos</div>
+              <div class="stat-icon-wrapper video-icon-bg">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value" id="analysis-videos">0</div>
+                <div class="stat-label">Videos</div>
+              </div>
             </div>
             <div class="stat-card" id="stat-card-markers">
-              <div class="stat-value" id="analysis-markers">0</div>
-              <div class="stat-label">Markers</div>
+              <div class="stat-icon-wrapper marker-icon-bg">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                </svg>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value" id="analysis-markers">0</div>
+                <div class="stat-label">Markers</div>
+              </div>
             </div>
           </div>
 
           <div class="file-ticker">
-            <div class="ticker-label text-xs text-muted mb-1">CURRENTLY ANALYSING</div>
+            <div class="flex align-center justify-between mb-1">
+              <div class="ticker-label text-xs text-muted flex align-center gap-1">
+                <span class="ticker-live-dot"></span>
+                CURRENTLY ANALYZING
+              </div>
+            </div>
             <div class="flex gap-2 align-center">
               <span class="ticker-badge photo" id="ticker-badge">Photo</span>
-              <span class="ticker-filename" id="ticker-filename"
-                style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px;">Waiting…</span>
-              <span class="ticker-contributor text-xs" id="ticker-contributor"
-                style="color:var(--accent-blue); font-weight:600;"></span>
+              <span class="ticker-filename" id="ticker-filename" title="Waiting…">Waiting…</span>
+              <span class="ticker-contributor text-xs" id="ticker-contributor"></span>
             </div>
           </div>
         </div>
@@ -359,14 +964,23 @@
         <!-- MAIN WORKSPACE -->
         <div id="sort-main-screen" class="hidden sort-workspace-fill">
           <div class="dashboard-header flex mb-4"
-            style="justify-content: space-between; align-items: center; background:var(--bg-glass); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass); flex-shrink: 0;">
-            <h3 id="dashboard-title" class="card-title mb-0" style="margin-bottom:0;">Dashboard</h3>
+            style="justify-content: space-between; align-items: center; background:var(--bg-glass); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass); flex-shrink: 0; gap: 1rem;">
+            <div class="flex align-center gap-3" style="flex: 1; min-width: 0;">
+              <h3 id="dashboard-title" class="mb-0" style="margin-bottom:0; flex-shrink:0;"><span style="font-size:1.15rem;">🗂️</span> Media Workspace</h3>
+              <div class="dashboard-search-wrapper" style="position:relative; width: 240px; max-width: 100%; display:inline-flex; align-items:center;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position:absolute; left:10px; color:#818cf8; pointer-events:none;"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="dashboard-folder-search" class="input-glass" placeholder="Search folders or files..." style="width:100%; padding-left:30px; padding-right:24px; font-size:0.8rem; height:32px; border-radius:8px;" autocomplete="off">
+                <button id="dashboard-folder-search-clear" class="hidden" style="position:absolute; right:8px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">✕</button>
+              </div>
+            </div>
             <div class="header-actions flex gap-2 align-center">
-              <button class="btn btn-secondary" id="btn-undo" disabled style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo</button>
-              <button class="btn btn-secondary" id="btn-undo-transfer" disabled style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo Transfer</button>
+              <button class="btn btn-secondary" id="btn-undo" disabled
+                style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo</button>
+              <button class="btn btn-secondary" id="btn-undo-transfer" disabled
+                style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo Transfer</button>
               <div style="width:1px; height:20px; background:var(--border-glass); margin: 0 4px;"></div>
-              <button class="btn btn-primary" id="btn-copy-all" style="padding: 0.45rem 1.15rem; font-size:0.85rem;">Copy All</button>
-              <button class="btn btn-success" id="btn-move-all" style="padding: 0.45rem 1.15rem; font-size:0.85rem;">Move All</button>
+              <button class="btn btn-primary" id="btn-move-all"
+                style="padding: 0.45rem 1.25rem; font-size:0.85rem; font-weight: 700;">Move All</button>
             </div>
           </div>
 
@@ -376,40 +990,98 @@
               <div class="card glass" style="padding: 1rem; display:flex; flex-direction:column; gap:0.65rem;">
                 <h4 class="text-sm text-muted mb-1">FILTER BY CONTRIBUTOR</h4>
                 <button class="btn btn-secondary w-full mb-1 active" id="btn-filter-all"
-                  style="text-align:left; justify-content:flex-start; padding: 0.45rem 0.75rem;">All Contributors</button>
+                  style="text-align:left; justify-content:flex-start; padding: 0.45rem 0.75rem;">All
+                  Contributors</button>
                 <div id="contributor-filters" class="flex flex-col gap-1 mb-2"></div>
 
                 <h4 class="text-sm text-muted mb-1">FOLDER TOGGLES</h4>
                 <div class="flex gap-2 mb-2">
-                  <button class="btn btn-secondary flex-1 text-xs" id="btn-expand-all" style="padding:0.45rem 0.5rem;">Expand All</button>
-                  <button class="btn btn-secondary flex-1 text-xs" id="btn-collapse-all" style="padding:0.45rem 0.5rem;">Collapse All</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-expand-all"
+                    style="padding:0.45rem 0.5rem;">Expand All</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-collapse-all"
+                    style="padding:0.45rem 0.5rem;">Collapse All</button>
                 </div>
 
                 <h4 class="text-sm text-muted mb-1">FILTER BY MEDIA TYPE</h4>
-                <div class="flex gap-1 mb-2" style="background:rgba(15,23,42,0.4); padding:3px; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
-                  <button class="btn btn-secondary flex-1 text-xs active" id="btn-type-all" onclick="window.filterMediaType('ALL')" style="padding:0.35rem 0.4rem; border:none;">All</button>
-                  <button class="btn btn-secondary flex-1 text-xs" id="btn-type-video" onclick="window.filterMediaType('VIDEO')" style="padding:0.35rem 0.4rem; border:none;">Videos</button>
-                  <button class="btn btn-secondary flex-1 text-xs" id="btn-type-photo" onclick="window.filterMediaType('PHOTO')" style="padding:0.35rem 0.4rem; border:none;">Photos</button>
+                <div class="flex gap-1 mb-2"
+                  style="background:var(--input-bg); padding:3px; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+                  <button class="btn btn-secondary flex-1 text-xs active" id="btn-type-all"
+                    onclick="window.filterMediaType('ALL')" style="padding:0.35rem 0.4rem; border:none;">All</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-type-video"
+                    onclick="window.filterMediaType('VIDEO')"
+                    style="padding:0.35rem 0.4rem; border:none;">Videos</button>
+                  <button class="btn btn-secondary flex-1 text-xs" id="btn-type-photo"
+                    onclick="window.filterMediaType('PHOTO')"
+                    style="padding:0.35rem 0.4rem; border:none;">Photos</button>
                 </div>
 
                 <h4 class="text-sm text-muted mb-1">QUICK SELECTION</h4>
                 <div class="flex flex-col gap-1.5 mb-2">
-                  <button class="btn btn-secondary w-full text-xs justify-center" onclick="window.selectGlobalMedia('all_videos')" style="padding:0.45rem 0.75rem;">Select All Videos</button>
-                  <button class="btn btn-secondary w-full text-xs justify-center" onclick="window.selectGlobalMedia('all_photos')" style="padding:0.45rem 0.75rem;">Select All Photos</button>
-                  <button class="btn btn-secondary w-full text-xs justify-center" onclick="window.selectGlobalMedia('none')" style="padding:0.45rem 0.75rem;">Deselect All</button>
+                  <button class="btn btn-secondary w-full text-xs justify-center"
+                    onclick="window.selectGlobalMedia('all_videos')" style="padding:0.45rem 0.75rem;">Select All
+                    Videos</button>
+                  <button class="btn btn-secondary w-full text-xs justify-center"
+                    onclick="window.selectGlobalMedia('all_photos')" style="padding:0.45rem 0.75rem;">Select All
+                    Photos</button>
+                  <button class="btn btn-secondary w-full text-xs justify-center"
+                    onclick="window.selectGlobalMedia('none')" style="padding:0.45rem 0.75rem;">Deselect All</button>
                 </div>
 
                 <h4 class="text-sm text-muted mb-1">STATS</h4>
-                <div class="text-sm flex-col gap-1" style="background:rgba(15,23,42,0.4); padding:0.6rem 0.8rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
-                  <div class="flex justify-between"><span>Total Files:</span> <strong id="stat-total-files">0</strong></div>
+                <div class="text-sm flex-col gap-1"
+                  style="background:var(--input-bg); padding:0.6rem 0.8rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+                  <div class="flex justify-between"><span>Total Files:</span> <strong id="stat-total-files">0</strong>
+                  </div>
                   <div class="flex justify-between"><span>Excluded:</span> <strong id="stat-excluded">0</strong></div>
-                  <div class="flex justify-between"><span>Folders:</span> <strong id="stat-total-folders">0</strong></div>
+                  <div class="flex justify-between"><span>Folders:</span> <strong id="stat-total-folders">0</strong>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Viewer Area -->
-            <div class="sort-viewer flex-1" style="min-width:0; padding-right: 0.5rem;">
+            <div class="sort-viewer flex-1" style="min-width:0; padding-right: 0.5rem; position: relative;">
+              <!-- Floating Selection Action Dock (Inside Viewer Page Div) -->
+              <div id="floating-selection-bar" class="floating-selection-bar hidden" style="display: none;">
+                <div class="floating-bar-info">
+                  <div class="floating-bar-meta">
+                    <span class="floating-bar-badge" id="floating-selection-count">0 items selected</span>
+                    <span class="floating-bar-dot hidden" id="floating-selection-dot">•</span>
+                    <span class="floating-bar-subtext" id="floating-selection-details"></span>
+                  </div>
+                  <div class="floating-bar-folder-line hidden" id="floating-selection-folder-line">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                    <span id="floating-selection-foldername" class="floating-bar-foldername" title=""></span>
+                  </div>
+                </div>
+                <div class="floating-bar-divider"></div>
+                <div class="floating-bar-actions">
+                  <button class="floating-bar-btn dont-copy-btn" id="floating-btn-dont-copy" onclick="window.toggleSelectedDontCopy()" title="Exclude from moving">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                    <span id="floating-btn-dont-copy-text">Don't Move</span>
+                  </button>
+                  <button class="floating-bar-btn edit-btn" id="floating-btn-edit" onclick="window.openEditForSelected()">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    <span>Edit</span>
+                  </button>
+                  <div class="floating-bar-divider"></div>
+                  <button class="floating-bar-btn pill-btn" onclick="window.selectGlobalMedia('all_videos')">Select Videos</button>
+                  <button class="floating-bar-btn pill-btn clear-btn" onclick="window.selectGlobalMedia('none')">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span>Deselect</span>
+                  </button>
+                </div>
+              </div>
+
               <div class="search-bar mb-4 relative">
                 <input type="text" id="file-search-input" class="input-glass w-full"
                   placeholder="Search files by name…">
@@ -420,127 +1092,97 @@
             </div>
           </div>
         </div>
-
-        <!-- MODALS -->
-        <div id="edit-modal" class="modal sort-modal" style="display: none;">
-          <div class="modal-content glass">
-            <h3 id="modal-title" class="card-title">Shift File Assignment</h3>
-            <p id="modal-desc" class="text-muted mb-4">Shift or move file sequencing for selected files.</p>
-            <div class="flex-col gap-2">
-              <button class="btn btn-primary flex justify-between" id="btn-shift-down">
-                <span>Shift All Down</span><span class="text-xs" style="opacity:0.8;">Selected + below shift</span>
-              </button>
-              <button class="btn btn-primary flex justify-between" id="btn-shift-up">
-                <span>Shift All Up</span><span class="text-xs" style="opacity:0.8;">Selected + above shift</span>
-              </button>
-              <button class="btn btn-secondary flex justify-between" id="btn-move-down">
-                <span>Move to Next Folder</span><span class="text-xs" style="opacity:0.8;">Move only</span>
-              </button>
-              <button class="btn btn-secondary flex justify-between" id="btn-move-up">
-                <span>Move to Previous Folder</span><span class="text-xs" style="opacity:0.8;">Move only</span>
-              </button>
-              <button class="btn btn-secondary mt-2 text-center justify-center" id="btn-edit-cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="preview-modal" class="modal sort-modal" style="display: none;">
-          <div class="modal-content glass">
-            <h3 class="card-title">Sequence Change Preview</h3>
-            <p class="text-muted text-sm mb-4">Review the following changes before applying:</p>
-            <div id="preview-modal-body" class="report-body text-left text-sm mb-4"
-              style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
-            </div>
-            <div class="flex gap-2">
-              <button class="btn btn-success flex-1" id="btn-preview-confirm">Confirm</button>
-              <button class="btn btn-secondary flex-1" id="btn-preview-cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="report-modal" class="modal sort-modal" style="display: none;">
-          <div class="modal-content glass">
-            <h3 class="card-title">Sequence Change Summary</h3>
-            <div id="report-modal-body" class="report-body text-left text-sm mb-4"
-              style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
-            </div>
-            <div class="flex gap-2">
-              <button class="btn btn-primary flex-1" id="btn-report-done">Done</button>
-              <button class="btn btn-secondary flex-1" id="btn-report-undo">Undo Changes</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- CAMERA SERIES PREFIX CONFIRMATION MODAL -->
-        <div id="camera-prefix-modal" class="modal sort-modal" style="display: none;">
-          <div class="modal-content glass" style="max-width:520px; width:92%; padding: 1.5rem;">
-            <h3 class="card-title" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;">
-              <span>📹</span> Confirm Camera Series Prefixes
-            </h3>
-            <p class="text-muted text-xs mb-3">
-              Verify or edit the series prefix for each cameraman:
-            </p>
-            <div class="flex justify-between text-xs font-bold text-muted mb-2 px-2">
-              <span>CAMERAMAN NAME</span>
-              <span>SERIES PREFIX</span>
-            </div>
-            <div id="camera-prefix-inputs-container" class="flex-col gap-2 mb-4"
-              style="max-height:320px; overflow-y:auto; padding-right:4px;">
-            </div>
-            <div class="flex gap-2 mt-2">
-              <button class="btn btn-primary flex-1" id="btn-camera-prefix-confirm">Confirm Prefixes &amp; Start Analysis</button>
-              <button class="btn btn-secondary flex-1" id="btn-camera-prefix-cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- SAME SERIES RANGE MODAL -->
-        <div id="camera-range-modal" class="modal sort-modal" style="display: none;">
-          <div class="modal-content glass" style="max-width:580px; width:92%;">
-            <h3 class="card-title" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
-              <span>📷</span> Same Series Conflict Resolution
-            </h3>
-            <p class="text-muted text-sm mb-4">
-              Multiple cameramen share the same file series prefix. Please specify the <strong>Start File Name</strong> and <strong>End File Name</strong> for each cameraman (applicable to both photos and videos):
-            </p>
-            <div id="camera-range-inputs-container" class="flex-col gap-3 mb-4"
-              style="max-height:340px; overflow-y:auto; padding-right:4px;">
-            </div>
-            <div class="flex gap-2">
-              <button class="btn btn-primary flex-1" id="btn-camera-range-confirm">Confirm File Ranges &amp; Continue</button>
-              <button class="btn btn-secondary flex-1" id="btn-camera-range-cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-      </section>
+    </section>
 
       <!-- ── View: Drive Inventory ── -->
       <section id="view-inventory" class="view-section hidden">
         <div class="card glass">
-          <h3 class="card-title"><img src="./ICON.png" class="card-title-icon" alt="Logo"
-              onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> Drive Inventory</h3>
-          <p class="text-muted">Scan a drive and generate an Excel report of folder structures and missing sequence
-            gaps.</p>
-
-          <div class="input-group mb-3 mt-4">
-            <label>Target Drive / Folder (Drag &amp; Drop Supported)</label>
-            <div class="flex gap-2" id="inv-drive-container">
-              <input type="text" id="inv-drive-path" class="input-glass" readonly placeholder="No folder selected">
-              <button id="btn-inv-drive" class="btn btn-select">Select Drive</button>
+          <div class="view-header-strip">
+            <div class="view-header-info">
+              <span class="view-tag-pill">AUDIT &amp; INTEGRITY SCANNER</span>
+              <h2 class="view-primary-title">Drive Inventory &amp; Sequence Gap Audit</h2>
+              <p class="view-subtitle-desc">Scan external drives or event master directories to verify file census, detect missing sequence gaps, and generate multi-sheet Excel reports.</p>
             </div>
           </div>
 
-          <div class="input-group mb-4">
-            <label>Save Report As</label>
-            <div class="flex gap-2">
-              <input type="text" id="inv-save-path" class="input-glass" readonly
-                placeholder="No save location selected">
-              <button id="btn-inv-save" class="btn btn-select" disabled>Select Location</button>
+          <div class="grid-2 gap-4 setup-steps-grid">
+            <!-- Step 1: Target Drive / Folder -->
+            <div class="card setup-step-card">
+              <div>
+                <div class="setup-step-heading">
+                  <span class="setup-step-number">1</span>
+                  <h4 class="setup-step-title">Target Drive or Event Root</h4>
+                </div>
+                <p class="setup-step-desc">
+                  Drag &amp; drop or select the drive root to scan for sequence folders.
+                </p>
+              </div>
+
+              <div class="input-group" style="margin-top: 0.5rem;">
+                <div class="flex gap-2" id="inv-drive-container">
+                  <input type="text" id="inv-drive-path" class="input-glass setup-path-input" readonly placeholder="Drop drive root here, or browse...">
+                  <button id="btn-inv-drive" class="btn btn-select setup-browse-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                      <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    </svg>
+                    Select Drive
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Save Report Destination -->
+            <div class="card setup-step-card">
+              <div>
+                <div class="setup-step-heading">
+                  <span class="setup-step-number">2</span>
+                  <h4 class="setup-step-title">Excel Output Location</h4>
+                </div>
+                <p class="setup-step-desc">
+                  Saved automatically inside the target drive's <code style="color: #059669; font-weight: 600;">\Document\</code> directory.
+                </p>
+              </div>
+
+              <div class="input-group" style="margin-top: 0.5rem;">
+                <div class="flex gap-2">
+                  <input type="text" id="inv-save-path" class="input-glass setup-path-input" readonly placeholder="Output report path will appear here...">
+                  <button id="btn-inv-save" class="btn btn-select setup-browse-btn" disabled>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    </svg>
+                    Change Path
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <button id="btn-inv-generate" class="btn btn-primary w-full" disabled>Generate Excel Report</button>
+          <!-- Execution Banner -->
+          <div class="setup-action-banner">
+            <div class="setup-banner-left">
+              <h4 class="setup-banner-title">
+                <span class="setup-banner-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </span>
+                Inventory Audit
+              </h4>
+            </div>
+
+            <button id="btn-inv-generate" class="btn btn-primary setup-start-btn" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Generate Excel Report</span>
+            </button>
+          </div>
 
           <div id="inv-result" class="mt-4 hidden status-bar info"></div>
         </div>
@@ -623,59 +1265,111 @@
       <!-- SETTINGS VIEW PANEL -->
       <div id="view-settings" class="view-panel hidden">
         <div class="card glass">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
             <div>
               <h2 class="card-title" style="font-size: 1.6rem; margin-bottom: 0.2rem;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue);">
                   <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                  </path>
                 </svg>
                 <span>Application Settings</span>
               </h2>
-              <p style="color: var(--text-muted); font-size: 0.88rem;">Manage theme preferences, application updates, and system version information.</p>
+              <p style="color: var(--text-muted); font-size: 0.88rem;">Manage theme preferences, application updates,
+                and system version information.</p>
             </div>
-            <span class="app-version-tag" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;">v 1.0.27</span>
+            <span class="app-version-tag"
+              style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 700; font-family: 'JetBrains Mono', monospace; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;">v 1.0.60</span>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 1.8rem;">
+          <div class="settings-cards-stack">
             <!-- Theme Settings Card -->
-            <div style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
-              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div class="settings-section-card">
+              <h3>
                 <span>🎨</span> Appearance &amp; Theme Selection
               </h3>
-              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.2rem;">Choose your preferred color theme. Your selection is automatically saved and remembered across application launches.</p>
-              
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div id="theme-card-dark" class="theme-select-card active" data-theme-id="dark" style="background: rgba(4, 28, 19, 0.7); border: 2px solid #10b981; border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all var(--transition);">
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
-                    <span style="font-weight: 700; font-size: 1rem; color: #f8fafc;">🌙 Dark Emerald</span>
-                    <span class="theme-check-icon" style="color: #10b981; font-weight: 800;">✓ Selected</span>
+              <p>Choose your preferred color theme. Your selection is automatically saved and remembered across application launches.</p>
+
+              <div class="theme-options-grid">
+                <div id="theme-card-dark" class="theme-select-card active" data-theme-id="dark">
+                  <div class="theme-card-header">
+                    <span class="theme-card-title">🌙 Dark Emerald</span>
+                    <span class="theme-check-icon">✓ Selected</span>
                   </div>
-                  <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Deep Forest Emerald &amp; Imperial Gold (Default Theme)</p>
+                  <p class="theme-card-desc">Deep Forest Emerald &amp; Imperial Gold (Default Theme)</p>
+                  <div class="theme-palette-preview">
+                    <span class="palette-swatch" style="background: #059669;" title="Emerald Accent"></span>
+                    <span class="palette-swatch" style="background: #041c13;" title="Forest Dark"></span>
+                    <span class="palette-swatch" style="background: #d97706;" title="Imperial Gold"></span>
+                    <span class="palette-swatch" style="background: #0f2d22;" title="Deep Jade"></span>
+                  </div>
                 </div>
 
-                <div id="theme-card-light" class="theme-select-card" data-theme-id="light" style="background: rgba(255, 249, 230, 0.85); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all var(--transition);">
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
-                    <span style="font-weight: 700; font-size: 1rem; color: #072a1c;">☀️ Imperial Alabaster</span>
-                    <span class="theme-check-icon hidden" style="color: #10b981; font-weight: 800;">✓ Selected</span>
+                <div id="theme-card-light" class="theme-select-card" data-theme-id="light">
+                  <div class="theme-card-header">
+                    <span class="theme-card-title">☀️ Imperial Alabaster</span>
+                    <span class="theme-check-icon hidden">✓ Selected</span>
                   </div>
-                  <p style="font-size: 0.8rem; color: #856404; margin: 0;">Warm Cream &amp; Alabaster Light Mode matching ain53.org</p>
+                  <p class="theme-card-desc">Warm Cream &amp; Alabaster Light Mode matching ain53.org</p>
+                  <div class="theme-palette-preview">
+                    <span class="palette-swatch" style="background: #059669;" title="Emerald Accent"></span>
+                    <span class="palette-swatch" style="background: #fcfbf7;" title="Alabaster Cream"></span>
+                    <span class="palette-swatch" style="background: #f5efe6;" title="Warm Sand"></span>
+                    <span class="palette-swatch" style="background: #072a1c;" title="Dark Green Text"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Working & Downloads Directory Card -->
+            <div class="settings-section-card">
+              <h3>
+                <span>📁</span> Working &amp; Temporary Downloads Directory
+              </h3>
+              <p>
+                Intermediate event PDFs and extracted CSV files are stored in this workspace folder before being automatically compiled into the target media drive's <strong>Document</strong> folder.
+              </p>
+
+              <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem;">
+                <input type="text" id="settings-downloads-path" class="input-glass" placeholder="No working directory configured — Click Change Folder" style="flex: 1; min-width: 260px; font-family: monospace; font-size: 0.88rem; padding: 0.7rem 1rem;">
+                <div style="display: flex; gap: 0.5rem;">
+                  <button id="btn-settings-change-downloads" class="btn btn-select" style="padding: 0.65rem 1.1rem; font-size: 0.88rem; white-space: nowrap;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Change Folder
+                  </button>
+                  <button id="btn-settings-open-downloads" class="btn btn-secondary" style="padding: 0.65rem 1.1rem; font-size: 0.88rem; white-space: nowrap;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Open Folder
+                  </button>
                 </div>
               </div>
             </div>
 
             <!-- Software Updates & Version Card -->
-            <div style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.5rem;">
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div class="settings-section-card">
+              <div
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                  <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem;">
+                  <h3 style="margin-bottom: 0.3rem;">
                     <span>🚀</span> Software Updates &amp; System Version
                   </h3>
-                  <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Current Installed Version: <strong class="app-version-tag" style="color: #10b981;">v 1.0.27</strong></p>
+                  <p style="margin: 0;">Current Installed Version: <strong
+                      class="app-version-tag">v 1.0.60</strong></p>
                 </div>
-                
-                <button id="btn-settings-check-updates" class="btn btn-primary" style="gap: 8px; display: inline-flex; align-items: center;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+                <button id="btn-settings-check-updates" class="btn btn-primary"
+                  style="gap: 8px; display: inline-flex; align-items: center;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -685,37 +1379,52 @@
               </div>
 
               <!-- Update state machine status line -->
-              <div id="settings-update-status" style="font-size: 0.83rem; margin-top: 0.85rem; color: var(--text-muted); min-height: 1.2em;"></div>
+              <div id="settings-update-status"
+                style="font-size: 0.83rem; margin-top: 0.85rem; color: var(--text-muted); min-height: 1.2em;"></div>
 
               <!-- Download progress row (hidden until downloading state) -->
               <div id="settings-update-progress-row" class="hidden" style="margin-top: 0.75rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">
                   <span>Downloading update…</span>
                   <span id="settings-update-bar-pct">0%</span>
                 </div>
-                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                  <div id="settings-update-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #059669, #34d399); transition: width 0.2s ease;"></div>
+                <div
+                  style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                  <div id="settings-update-bar-fill"
+                    style="width: 0%; height: 100%; background: linear-gradient(90deg, #059669, #34d399); transition: width 0.2s ease;">
+                  </div>
                 </div>
               </div>
 
               <!-- Auto-check toggle -->
-              <div style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+              <div
+                style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
                 <div>
-                  <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.15rem;">🔔 Auto-check for updates on startup</div>
-                  <div style="font-size: 0.78rem; color: var(--text-muted);">Silently checks GitHub ~4 seconds after launch. No network call if disabled.</div>
+                  <div
+                    style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.15rem;">🔔
+                    Auto-check for updates on startup</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">Silently checks GitHub ~4 seconds after
+                    launch. No network call if disabled.</div>
                 </div>
                 <!-- Toggle switch -->
-                <label for="toggle-auto-check-updates" style="display: inline-flex; align-items: center; cursor: pointer; gap: 0.55rem; user-select: none;">
+                <label for="toggle-auto-check-updates"
+                  style="display: inline-flex; align-items: center; cursor: pointer; gap: 0.55rem; user-select: none;">
                   <input type="checkbox" id="toggle-auto-check-updates" style="display: none;" checked>
-                  <span id="auto-check-track" style="display: block; width: 44px; height: 24px; background: #10b981; border-radius: 12px; transition: background 0.2s ease; flex-shrink: 0; position: relative;">
-                    <span id="auto-check-thumb" style="position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.3);"></span>
+                  <span id="auto-check-track"
+                    style="display: block; width: 44px; height: 24px; background: #10b981; border-radius: 12px; transition: background 0.2s ease; flex-shrink: 0; position: relative;">
+                    <span id="auto-check-thumb"
+                      style="position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.3);"></span>
                   </span>
-                  <span id="auto-check-label" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap;">Enabled</span>
+                  <span id="auto-check-label"
+                    style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap;">Enabled</span>
                 </label>
               </div>
 
-              <div style="margin-top: 0.8rem; border-top: 1px solid var(--border-glass); padding-top: 0.75rem; display: flex; justify-content: flex-end; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
-                <span>Official Website: <a href="https://ain53.org/" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">ain53.org</a></span>
+              <div
+                style="margin-top: 0.8rem; border-top: 1px solid var(--border-glass); padding-top: 0.75rem; display: flex; justify-content: flex-end; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Official Website: <a href="https://ain53.org/" target="_blank"
+                    style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">ain53.org</a></span>
               </div>
             </div>
           </div>
@@ -727,167 +1436,6 @@
 
   <!-- Floating React Live Process Dock -->
   <div id="react-live-dock-root"></div>
-
-  <!-- Scripts -->
-  <script src="js/app.js"></script>
-  <script src="js/react_components.js"></script>
-  <script src="js/00_pdf.js"></script>
-  <script src="js/01_csv.js"></script>
-  <script src="js/02_sorting.js"></script>
-  <script src="js/03_inventory.js"></script>
-  <!-- Startup Loader Logic -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Boot steps simulation
-      const bootSteps = [
-        { progress: 0, text: "Initializing core system..." },
-        { progress: 15, text: "Verifying secure protocols..." },
-        { progress: 30, text: "Loading modules and libraries..." },
-        { progress: 50, text: "Establishing database handshake..." },
-        { progress: 70, text: "Optimizing sorting indexes..." },
-        { progress: 85, text: "Mounting user interfaces..." },
-        { progress: 100, text: "Ready to launch" }
-      ];
-
-      const circle = document.getElementById('progress-circle');
-      const pctVal = document.getElementById('pct-val');
-      const logMsg = document.getElementById('log-msg');
-      const loaderScreen = document.getElementById('loading-screen');
-
-      // Circ length = 2 * PI * R = 2 * 3.14159 * 44 = 276.46
-      const strokeDash = 276.46;
-
-      function setProgress(percent) {
-        const offset = strokeDash - (percent / 100) * strokeDash;
-        if (circle) circle.style.strokeDashoffset = offset;
-        if (pctVal) pctVal.textContent = percent;
-      }
-
-      let stepIndex = 0;
-      let currentPercent = 0;
-
-      function runSimulation() {
-        if (currentPercent >= 100) {
-          setTimeout(() => {
-            if (loaderScreen) {
-              loaderScreen.classList.add('fade-out');
-              setTimeout(() => {
-                loaderScreen.style.display = 'none';
-              }, 400);
-            }
-          }, 300);
-          return;
-        }
-
-        const targetStep = bootSteps[stepIndex];
-        if (currentPercent >= targetStep.progress && stepIndex < bootSteps.length - 1) {
-          stepIndex++;
-        }
-
-        if (logMsg) logMsg.textContent = bootSteps[stepIndex].text;
-
-        // Quick randomized increment (makes it look real, fast, and completes in ~1 second)
-        currentPercent += Math.floor(Math.random() * 8) + 6;
-        if (currentPercent > 100) currentPercent = 100;
-
-        setProgress(currentPercent);
-
-        // Fast randomized delay (between 50ms and 120ms)
-        const nextDelay = Math.floor(Math.random() * 70) + 50;
-        setTimeout(runSimulation, nextDelay);
-      }
-
-      // Start the simulation with a tiny entry delay
-      setTimeout(runSimulation, 200);
-
-      // User Guide Modal Logic
-      const guideBtn = document.getElementById('btn-more-info');
-      const guideModal = document.getElementById('guide-modal');
-      const guideCloseBtn = document.getElementById('btn-guide-close');
-      const guideModalContent = document.getElementById('guide-modal-content');
-
-      if (guideBtn && guideModal && guideCloseBtn) {
-        guideBtn.addEventListener('click', () => {
-          guideModal.style.display = 'flex';
-        });
-
-        guideCloseBtn.addEventListener('click', () => {
-          guideModal.style.display = 'none';
-        });
-
-        guideModal.addEventListener('click', (e) => {
-          if (e.target === guideModal) {
-            guideModal.style.display = 'none';
-          }
-        });
-
-        // Anchors scroll inside the modal content box smoothly
-        const guideLinks = document.querySelectorAll('.guide-nav-links a');
-        guideLinks.forEach(link => {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-            const targetEl = document.getElementById(targetId);
-            if (targetEl && guideModalContent) {
-              const containerTop = guideModalContent.getBoundingClientRect().top;
-              const targetTop = targetEl.getBoundingClientRect().top;
-              const scrollOffset = targetTop - containerTop + guideModalContent.scrollTop - 20;
-
-              guideModalContent.scrollTo({
-                top: scrollOffset,
-                behavior: 'smooth'
-              });
-            }
-          });
-        });
-
-        // Navigation buttons inside each section
-        const guideNavBtns = document.querySelectorAll('.btn-guide-nav');
-        guideNavBtns.forEach(btn => {
-          btn.addEventListener('click', () => {
-            const targetView = btn.getAttribute('data-target-view');
-            // Hide the user guide modal
-            guideModal.style.display = 'none';
-            // Click the corresponding nav button
-            const sidebarBtn = document.querySelector(`.sidebar-nav .nav-btn[data-view="${targetView}"]`);
-            if (sidebarBtn) {
-              sidebarBtn.click();
-            }
-          });
-        });
-      }
-
-      // Global Drag and Drop Overlay Logic
-      const dragOverlay = document.getElementById('drag-drop-overlay');
-      window._dragCounter = 0;
-
-      window.addEventListener('dragenter', (e) => {
-        e.preventDefault();
-        window._dragCounter++;
-        if (window._dragCounter === 1) {
-          dragOverlay.classList.remove('hidden');
-        }
-      });
-
-      window.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        window._dragCounter--;
-        if (window._dragCounter === 0) {
-          dragOverlay.classList.add('hidden');
-        }
-      });
-
-      window.addEventListener('dragover', (e) => {
-        e.preventDefault();
-      });
-
-      window.addEventListener('drop', (e) => {
-        e.preventDefault();
-        window._dragCounter = 0;
-        dragOverlay.classList.add('hidden');
-      });
-    });
-  </script>
 
   <!-- USER GUIDE MODAL -->
   <div id="guide-modal" class="modal"
@@ -920,14 +1468,17 @@
           <a href="#guide-pdf"
             style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">1.
             PDF Extractor</a>
-          <a href="#guide-folders"
+          <a href="#guide-events"
             style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">2.
+            Event Creation</a>
+          <a href="#guide-folders"
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">3.
             Folder Creator</a>
           <a href="#guide-sorting"
-            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">3.
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">4.
             Media Sorter</a>
           <a href="#guide-inventory"
-            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">4.
+            style="color: #047857; text-decoration: none; font-weight: 600; font-size: 0.78rem; background: rgba(6, 95, 70, 0.08); padding: 6px 14px; border-radius: 20px; transition: all var(--transition);">5.
             Drive Inventory</a>
         </div>
       </div>
@@ -982,13 +1533,61 @@
           </div>
         </section>
 
+        <!-- SECTION: Event Creation -->
+        <section id="guide-events"
+          style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+          <h3
+            style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
+            <span class="step-badge"
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">2</span>
+            Event Creation &amp; Architecture
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Manage Standard, QMZ, and Bethak event lifecycles, round-robin team rotation, ceremony routing, and direct folder structure generation.</p>
+          <h4
+            style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+            How to Use:</h4>
+          <ul
+            style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); padding-left: 0;">
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Create New Event(s)</strong> to batch create events with deterministic sequence numbering.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>For <strong>Standard</strong> events, assign primary crew, camera setups, and inline sub-segments.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>For <strong>QMZ</strong> events, configure multi-team round-robin rotation, insert rows, or paste from Excel with standardized abbreviations (<strong>Z</strong> = Ziyafat, <strong>Q</strong> = Qadam, <strong>M</strong> = Majlis, <strong>ZO</strong> = Zafaf Olda).</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>For <strong>Bethak</strong> events, configure ceremony segment counts with automated Misaq and Haddiyat crew rules.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Click <strong>Export Folders</strong> to generate the physical directory hierarchy directly formatted for downstream Media Sorting: <code>{TargetDir} / {Date} _{SlotCode}</code> (e.g. <code>1448-06-09 _02E</code>) containing <code>Contributor / Cam 01, Cam 02</code> and leaf event directories without needing a CSV file.</span>
+            </li>
+            <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
+              <span>Optionally click <strong>Export CSV</strong> if you need an offline spreadsheet archive of the ceremony assignments.</span>
+            </li>
+          </ul>
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button class="btn btn-select btn-guide-nav" data-target-view="view-events"
+              style="gap: 8px; font-size: 0.85rem; padding: 0.6rem 1.2rem; display: inline-flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Go to Event Creation</span>
+            </button>
+          </div>
+        </section>
+
         <!-- SECTION: Folder Creator -->
         <section id="guide-folders"
           style="background: rgba(255,255,255,0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
           <h3
             style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
             <span class="step-badge"
-              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">2</span>
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">3</span>
             CSV to Folders
           </h3>
           <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Generates
@@ -1033,7 +1632,7 @@
           <h3
             style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
             <span class="step-badge"
-              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">3</span>
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">4</span>
             Media Sorting
           </h3>
           <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Scans
@@ -1045,19 +1644,16 @@
           <ul
             style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); padding-left: 0;">
             <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
-              <span>Select the Mapping CSV File and the Root Source Directory of your files (Clicking selection buttons
-                or using Drag &amp; Drop are supported).</span>
+              <span>Navigate to the <strong>Media Sorting</strong> tab.</span>
             </li>
             <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
-              <span>Click <strong>Start Sorting Files</strong>. The app will scan and analyze the files.</span>
+              <span>Select your template mapping CSV and root directory containing media.</span>
             </li>
             <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
-              <span>Review groups in the visual dashboard. Toggle checkboxes to <strong>Edit</strong> (shift sequences)
-                or <strong>Don't Copy</strong> (exclude items).</span>
+              <span>Review camera prefix mappings per contributor.</span>
             </li>
             <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color:#10b981;">•</span>
-              <span>Verify actions in the preview window, then click <strong>Copy All</strong> or <strong>Move
-                  All</strong> to run file transfers.</span>
+              <span>Start file scan and analysis, then execute copy or move transfer actions.</span>
             </li>
           </ul>
           <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
@@ -1080,7 +1676,7 @@
           <h3
             style="font-size: 1.15rem; font-weight: 700; color: #047857; border-bottom: 1px solid rgba(16,185,129,0.15); padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
             <span class="step-badge"
-              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">4</span>
+              style="width: 22px; height: 22px; background-color: #10b981; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">5</span>
             Drive Inventory
           </h3>
           <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 15px; line-height: 1.5;">Performs
@@ -1208,25 +1804,58 @@
   </div>
 
   <!-- MEDIA LIGHTBOX PREVIEW MODAL -->
-  <div id="lightbox-modal" class="modal hidden" style="background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 999999; display: flex; align-items: center; justify-content: center;">
-    <div class="modal-content glass" style="max-width: 920px; width: 92%; padding: 24px; border-radius: 20px; position: relative; display: flex; flex-direction: column; gap: 14px; align-items: center; border: 1px solid var(--border-glass-hover); box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
-      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">
-        <div style="display: flex; align-items: center; gap: 0.6rem;">
-          <span style="font-size: 1.2rem;">🖼️</span>
-          <span id="lightbox-title" style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">Media Preview</span>
+  <div id="lightbox-modal" class="modal hidden"
+    style="background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 999999; display: none;">
+    <div class="modal-content glass"
+      style="max-width: 960px; width: 94%; padding: 22px; border-radius: 20px; position: relative; display: flex; flex-direction: column; gap: 14px; align-items: center; border: 1px solid var(--border-glass-hover); box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0; flex: 1;">
+          <span id="lightbox-icon" style="font-size: 1.25rem;">🖼️</span>
+          <span id="lightbox-title"
+            style="font-family: var(--font-main); font-weight: 700; font-size: 1.05rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px;">Media
+            Preview</span>
+          <span id="lightbox-counter" class="lightbox-counter-pill hidden"></span>
+          <span id="lightbox-folder-badge" class="lightbox-folder-pill hidden"></span>
         </div>
-        <button id="btn-close-lightbox" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="lightbox-kbd-hint" title="Use Arrow Keys to navigate, Esc to close">
+            <kbd>←</kbd> <kbd>→</kbd> Navigate &bull; <kbd>Esc</kbd> Close
+          </span>
+          <button id="btn-close-lightbox" title="Close and select item (Esc)"
+            style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="lightbox-media-container"
+        style="width: 100%; max-height: 70vh; min-height: 300px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.65); border-radius: 12px; border: 1px solid var(--border-glass);">
+        <button id="lightbox-btn-prev" class="lightbox-nav-btn lightbox-prev" title="Previous item (Left Arrow)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <img id="lightbox-img" src="" alt="Preview" class="hidden"
+          style="max-width: 100%; max-height: 70vh; object-fit: contain; user-select: none;">
+        <video id="lightbox-video" controls class="hidden"
+          style="max-width: 100%; max-height: 70vh; outline: none;"></video>
+
+        <button id="lightbox-btn-next" class="lightbox-nav-btn lightbox-next" title="Next item (Right Arrow)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
 
-      <div style="width: 100%; max-height: 70vh; min-height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.6); border-radius: 12px; border: 1px solid var(--border-glass);">
-        <img id="lightbox-img" src="" alt="Preview" class="hidden" style="max-width: 100%; max-height: 70vh; object-fit: contain;">
-        <video id="lightbox-video" controls class="hidden" style="max-width: 100%; max-height: 70vh; outline: none;"></video>
-      </div>
-
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.2); padding: 8px 14px; border-radius: 8px;">
-        <span id="lightbox-path" style="max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.25); padding: 8px 14px; border-radius: 8px;">
+        <span id="lightbox-path"
+          style="max-width: 75%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
         <span id="lightbox-meta" style="color: var(--accent-blue); font-weight: 600;">High-Res View</span>
       </div>
     </div>
@@ -1243,6 +1872,368 @@
       <p>Drop PDF or CSV files here to load them into the highlighted dropzone</p>
     </div>
   </div>
+
+  <!-- FIRST BOOT WORKING DIRECTORY SETUP MODAL -->
+  <div id="setup-workspace-modal" class="modal hidden" style="background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 999999; display: none; align-items: center; justify-content: center;">
+    <div class="modal-content glass" style="max-width: 560px; width: 92%; padding: 28px; border-radius: 20px; border: 1px solid var(--border-glass-hover); box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <div style="width: 44px; height: 44px; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #818cf8; font-size: 1.4rem;">
+            📁
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Configure Working Directory</h3>
+            <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted);">Set up your workspace for temporary files &amp; intermediate exports</p>
+          </div>
+        </div>
+        <button type="button" class="btn-modal-close" onclick="window.closeFirstBootSetupModal()" title="Close" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div style="margin-bottom: 1.4rem;">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1rem;">
+          Please select a base directory on your computer. A dedicated <strong>AIN53_Workspace</strong> folder will be created inside it automatically to store your event files, intermediate PDFs, and extracted CSV data. You can always change this location later in the <strong>Settings</strong> page.
+        </p>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" id="setup-workspace-path" class="input-glass" readonly placeholder="No folder selected — Click Browse to choose" style="flex: 1; font-family: monospace; font-size: 0.85rem; padding: 0.75rem 1rem;">
+          <button id="btn-setup-browse-workspace" class="btn btn-select" style="padding: 0.75rem 1.2rem; font-size: 0.88rem; white-space: nowrap;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Browse
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; align-items: center;">
+        <button type="button" id="btn-setup-skip-workspace" class="btn btn-secondary" style="padding: 0.65rem 1.2rem; font-size: 0.88rem;">Skip for Now</button>
+        <button type="button" id="btn-setup-confirm-workspace" class="btn btn-primary" style="padding: 0.65rem 1.5rem; font-size: 0.88rem; font-weight: 700;" disabled>Confirm &amp; Proceed</button>
+      </div>
+    </div>
+  </div>
+  <!-- ── IN-APP PDF VIEWER FULLSCREEN MODAL ── -->
+  <div id="modal-pdf-viewer" class="modal hidden" style="z-index: 999999; display: none;">
+    <div class="modal-content glass pdf-modal-window" style="max-width: 95vw; width: 95vw; height: 92vh; max-height: 92vh; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; border-radius: 18px; border: 1.5px solid var(--border-glass-hover); box-shadow: 0 25px 70px rgba(0,0,0,0.6);">
+      <div class="pdf-modal-header" style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.9rem; border-bottom: 1px solid var(--border-glass); margin-bottom: 0.85rem; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); display: flex; align-items: center; justify-content: center; color: #10b981;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3 id="pdf-modal-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em;">PDF Document Viewer</h3>
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Inspection &amp; Page Verification (Use toolbar to zoom, rotate, search or navigate pages)</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <button type="button" id="btn-pdf-modal-external" class="btn btn-secondary btn-sm flex align-center gap-1" title="Open with Default System Viewer (Adobe Acrobat / Edge)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>Open in External App</span>
+          </button>
+          <button type="button" id="btn-close-pdf-modal" class="btn btn-secondary btn-sm flex align-center" style="padding: 0.4rem 0.65rem; border-radius: 8px;" title="Close Viewer (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="pdf-modal-body" style="flex: 1; width: 100%; height: 100%; min-height: 0; border-radius: 12px; overflow: hidden; background: #323639; position: relative; box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);">
+        <iframe id="pdf-modal-iframe" class="pdf-viewer-frame" title="In-App Fullscreen PDF Viewer" src="about:blank" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMERA SERIES PREFIX CONFIRMATION MODAL (Root Level for Perfect Centering & No Outer Scroll) -->
+  <div id="camera-prefix-modal" class="modal sort-modal hidden" style="display: none;">
+    <div class="modal-content glass camera-prefix-modal-content">
+      <div class="camera-prefix-modal-header">
+        <div class="prefix-header-icon-box">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="prefix-header-text">
+          <h3 class="prefix-modal-title">Camera Series Prefixes</h3>
+          <p class="prefix-modal-desc">Configure or confirm the file prefix code for each assigned cameraman to accurately group their media cards.</p>
+        </div>
+      </div>
+
+      <div class="prefix-table-header">
+        <span class="prefix-th-col">CAMERAMAN</span>
+        <span class="prefix-th-col text-right">SERIES PREFIX</span>
+      </div>
+
+      <div id="camera-prefix-inputs-container" class="prefix-inputs-list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="prefix-modal-footer">
+        <button class="btn btn-secondary prefix-cancel-btn" id="btn-camera-prefix-cancel">Cancel</button>
+        <button class="btn btn-primary prefix-confirm-btn" id="btn-camera-prefix-confirm">
+          <span>Confirm &amp; Start Analysis</span>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAME SERIES RANGE MODAL (Root Level for Viewport Centering) -->
+  <div id="camera-range-modal" class="modal sort-modal hidden" style="display: none;">
+    <div class="modal-content glass" style="max-width:580px; width:92%;">
+      <h3 class="card-title" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+        <span>📷</span> Same Series Conflict Resolution
+      </h3>
+      <p class="text-muted text-sm mb-4">
+        Multiple cameramen share the same file series prefix. Please specify the <strong>Start File Name</strong>
+        and <strong>End File Name</strong> for each cameraman (applicable to both photos and videos):
+      </p>
+      <div id="camera-range-inputs-container" class="flex-col gap-3 mb-4"
+        style="max-height:340px; overflow-y:auto; padding-right:4px;">
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" id="btn-camera-range-confirm">Confirm File Ranges &amp;
+          Continue</button>
+        <button class="btn btn-secondary flex-1" id="btn-camera-range-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT / REASSIGN MODAL (Root Level for Perfect Centering) -->
+  <div id="edit-modal" class="modal sort-modal hidden" style="display: none;">
+    <div class="modal-content glass edit-modal-content">
+      <div class="edit-modal-header">
+        <div class="edit-modal-title-group">
+          <div class="edit-modal-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="modal-title" class="edit-modal-title">Shift File Assignment</h3>
+            <p id="modal-desc" class="edit-modal-desc">Reassign folder sequencing for selected items</p>
+          </div>
+        </div>
+        <button class="edit-modal-close-btn" id="btn-edit-close" onclick="window.closeEditModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="edit-modal-body">
+        <!-- Section 1: Sequence Shift (Ripple) -->
+        <div class="edit-modal-section">
+          <div class="edit-section-label">
+            <span class="edit-section-tag shift-tag">⚡ Sequence Shift (Ripple Effect)</span>
+          </div>
+          <div class="edit-card-grid">
+            <button class="edit-action-card shift-down-card" id="btn-shift-down">
+              <div class="edit-card-left">
+                <div class="edit-card-icon shift-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M12 5v14M19 12l-7 7-7-7" />
+                  </svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Shift All Down</span>
+                  <span class="edit-card-sub">Shift selected clip &amp; following clips down to next contributor folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Cascade Down</span>
+            </button>
+
+            <button class="edit-action-card shift-up-card" id="btn-shift-up">
+              <div class="edit-card-left">
+                <div class="edit-card-icon shift-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M12 19V5M5 12l7-7 7 7" />
+                  </svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Shift All Up</span>
+                  <span class="edit-card-sub">Shift preceding clips &amp; selected clip up to previous contributor folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Cascade Up</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Isolated Move -->
+        <div class="edit-modal-section">
+          <div class="edit-section-label">
+            <span class="edit-section-tag move-tag">🔀 Isolated Move (Only Selected Items)</span>
+          </div>
+          <div class="edit-card-grid">
+            <button class="edit-action-card move-next-card" id="btn-move-down">
+              <div class="edit-card-left">
+                <div class="edit-card-icon move-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Move to Next Folder</span>
+                  <span class="edit-card-sub">Move selected file &amp; remaining files down into contributor's next folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Move Only</span>
+            </button>
+
+            <button class="edit-action-card move-prev-card" id="btn-move-up">
+              <div class="edit-card-left">
+                <div class="edit-card-icon move-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Move to Previous Folder</span>
+                  <span class="edit-card-sub">Move files from start up to selected file into contributor's previous folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Move Only</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-modal-footer">
+        <button class="btn btn-secondary edit-cancel-btn" id="btn-edit-cancel" onclick="window.closeEditModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEQUENCE PREVIEW MODAL -->
+  <div id="preview-modal" class="modal sort-modal hidden" style="display: none;">
+    <div class="modal-content glass">
+      <h3 class="card-title">Sequence Change Preview</h3>
+      <p class="text-muted text-sm mb-4">Review the following changes before applying:</p>
+      <div id="preview-modal-body" class="report-body text-left text-sm mb-4"
+        style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-success flex-1" id="btn-preview-confirm">Confirm</button>
+        <button class="btn btn-secondary flex-1" id="btn-preview-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEQUENCE REPORT MODAL -->
+  <div id="report-modal" class="modal sort-modal hidden" style="display: none;">
+    <div class="modal-content glass">
+      <h3 class="card-title">Sequence Change Summary</h3>
+      <div id="report-modal-body" class="report-body text-left text-sm mb-4"
+        style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" id="btn-report-done">Done</button>
+        <button class="btn btn-secondary flex-1" id="btn-report-undo">Undo Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAG & DROP FOLDER GRID OVERLAY -->
+  <div id="drag-folder-grid-overlay" class="modal sort-modal drag-overlay-modal hidden" style="display: none;">
+    <div class="modal-content glass drag-grid-content">
+      <div class="drag-grid-header">
+        <div class="flex align-center gap-3">
+          <div class="drag-grid-icon">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="drag-grid-title" id="drag-grid-title">Relocate Media Files</h3>
+            <p class="drag-grid-subtitle" id="drag-grid-subtitle">Select or drop clips onto a target folder to move them</p>
+          </div>
+        </div>
+        <div class="flex align-center gap-3">
+          <div id="drag-grid-cameraman-badge" class="contributor-badge-tag"></div>
+          <button class="edit-modal-close-btn" id="btn-drag-grid-close" onclick="window.closeDragFolderGridOverlay()" title="Close (Esc)">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="drag-grid-body" id="drag-folder-grid-container">
+        <!-- Big Folder Cards rendered dynamically -->
+      </div>
+      <div class="drag-grid-footer flex justify-between align-center">
+        <div class="drag-grid-info-pill">
+          <span class="info-pulse-dot"></span>
+          <span class="text-xs" id="drag-grid-info-text">Select or drop on a folder card to move selected clips</span>
+        </div>
+        <button class="btn btn-secondary drag-cancel-btn" onclick="window.closeDragFolderGridOverlay()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOVE CONFIRMATION MODAL -->
+  <div id="move-confirm-modal" class="modal sort-modal drag-overlay-modal hidden" style="display: none;">
+    <div class="modal-content glass move-confirm-content">
+      <div class="move-confirm-icon-box">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="move-confirm-title">Folder Already Contains Files</h3>
+      <p id="move-confirm-message" class="move-confirm-text">
+        Are you sure you want to add these files to this folder? This folder already contains existing files.
+      </p>
+      <div class="move-confirm-actions flex gap-3">
+        <button class="btn move-confirm-cancel-btn flex-1" id="btn-move-confirm-cancel">Cancel</button>
+        <button class="btn move-confirm-ok-btn flex-1" id="btn-move-confirm-ok">Yes, Move Files</button>
+      </div>
+    </div>
+  </div>
+
+
+  <button id="btn-sorting-scroll-top" class="sorting-scroll-top-btn hidden" title="Scroll to top" aria-label="Scroll to top">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path d="M18 15l-6-6-6 6"/>
+    </svg>
+    <span>Top</span>
+  </button>
+
+  <!-- Scripts (Loaded at bottom so all DOM elements & modals exist) -->
+  <!-- Core Scripts -->
+  <script src="js/core/app.js"></script>
+  <script src="js/core/boot_loader.js"></script>
+
+  <!-- React Components & UI Modals -->
+  <script src="js/components/react_components.js"></script>
+  <script src="js/components/modal_dialogs.js"></script>
+  <script src="js/components/guide_modal.js"></script>
+  <script src="js/components/drag_drop.js"></script>
+
+  <!-- View Controllers & Modules -->
+  <script src="js/views/001_pdf.js"></script>
+  <script src="js/views/001b_events.js"></script>
+  <script src="js/views/002_csv.js"></script>
+  <script src="js/views/003_sorting.js"></script>
+  <script src="js/views/003_sorting_drag_drop.js"></script>
+  <script src="js/views/003_sorting_context_menu.js"></script>
+  <script src="js/views/004_inventory.js"></script>
 </body>
 
 </html>

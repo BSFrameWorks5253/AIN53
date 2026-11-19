@@ -1,0 +1,162 @@
+<!-- ── View: Event Creation & Management (AIN53 Coordinator) ── -->
+<section id="view-events" class="view-section hidden">
+  <!-- Coordinator Top Header Bar matching official coordinator layout -->
+  <div class="coordinator-top-header">
+    <div class="coordinator-brand" id="btn-hidden-safars-grid" title="Click to view all Safars in Grid" onclick="window.toggleSafarsGridPage(event)">
+      <span>AIN53 Coordinator</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.4; margin-left:2px;">
+        <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+    </div>
+    <div class="coordinator-safar-dropdown-wrap">
+      <button type="button" class="btn-coordinator-safar" id="btn-safar-selector-pill">
+        <span id="active-safar-label">Khandala</span>
+        <svg class="safar-pill-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="safar-floating-menu hidden" id="safar-floating-menu">
+        <div class="safar-menu-items" id="safar-menu-items">
+          <!-- Dynamically populated Safar items with "Ongoing" badge -->
+        </div>
+        <div class="safar-menu-divider"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;">
+          <div class="safar-menu-action" id="safar-menu-add-btn" style="flex: 1;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>New Safar...</span>
+          </div>
+          <button type="button" id="safar-menu-clear-all-btn" title="Clear all Safars and events" style="display: none; background: none; border: none; font-size: 0.76rem; color: #ef4444; font-weight: 700; cursor: pointer; padding: 6px 10px; border-radius: 6px; transition: background 0.15s ease;">
+            Clear All
+          </button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-safar-folder" id="btn-safar-folder-picker" title="Configure Safar Root Folder">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+      <span>Safar Folder</span>
+    </button>
+    <button type="button" class="btn-safar-folder" id="btn-import-safar-crew" title="Manage Crew Roster &amp; Camera Series for this Safar" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.35); color: var(--color-emerald-light, #34d399);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="8.5" cy="7" r="4"></circle>
+        <polyline points="17 11 19 13 23 9"></polyline>
+      </svg>
+      <span>Crew &amp; Series</span>
+    </button>
+    <div class="coordinator-header-right-actions">
+      <button type="button" class="btn-safar-folder btn-safar-download-ain53-top" id="btn-export-safar-ain53" title="Download complete Safar data package (.AIN53) for website sync">
+        <img src="ICON.png" alt="AIN53" style="width: 16px; height: 16px; border-radius: 3px; object-fit: contain;">
+        <span>Download Safar (.AIN53)</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="coordinator-main-container">
+    <!-- View 1: Events Schedule Full Page -->
+    <div id="coordinator-schedule-page" class="coordinator-page-container">
+      <!-- Title Row: Events Schedule, Counts, Legend, Density Switcher, Create Event -->
+      <div class="events-title-row">
+        <div class="events-title-info">
+          <div class="events-title-header-line">
+            <h2 class="events-main-heading">Events Schedule</h2>
+            <div class="events-sub-heading-pill" id="events-summary-stats">
+              4 events across 1 city
+            </div>
+            <button type="button" id="btn-pill-download-safar" class="btn-safar-download-chip" data-tooltip="For syncing whole safar with the website" style="margin-left: 8px; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6; border-radius: 12px; padding: 3px 10px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+              <img src="ICON.png" alt="AIN53" style="width: 13px; height: 13px; object-fit: contain; border-radius: 2px;">
+              <span>Sync Whole Safar</span>
+            </button>
+          </div>
+          <div class="events-status-legend-bar">
+            <span class="legend-item"><span class="legend-dot green"></span> All Submitted</span>
+            <span class="legend-item"><span class="legend-dot yellow"></span> Partial</span>
+            <span class="legend-item"><span class="legend-dot red"></span> No Submission</span>
+            <span class="legend-item"><span class="legend-dot gray"></span> Event Not Ended</span>
+          </div>
+        </div>
+
+        <div class="events-top-actions">
+          <!-- Density Switcher: Comfortable | Cozy | Compact -->
+          <div class="density-switch-pill" id="events-density-switcher">
+            <button type="button" class="density-btn active" data-density="comfortable">Comfortable</button>
+            <button type="button" class="density-btn" data-density="cozy">Cozy</button>
+            <button type="button" class="density-btn" data-density="compact">Compact</button>
+          </div>
+
+          <button id="btn-top-download-safar" class="btn btn-secondary flex align-center gap-1" style="font-size: 0.85rem; padding: 0.5rem 0.95rem; background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.35); color: #60a5fa; font-weight: 600;" title="Download Whole Safar Sync Package (.AIN53)">
+            <img src="ICON.png" alt="AIN53" style="width: 16px; height: 16px; border-radius: 3px; object-fit: contain;">
+            <span>Download Whole Safar (.AIN53)</span>
+          </button>
+
+          <button id="btn-open-manage-cities" class="btn btn-secondary flex align-center gap-1" style="font-size: 0.85rem; padding: 0.5rem 0.95rem;" title="Manage Contributors &amp; Cities">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Crew &amp; Cities</span>
+          </button>
+
+          <button id="btn-open-create-event" class="btn btn-primary btn-emerald-action flex align-center gap-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Create Event</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inline Create Event(s) Form matching Video (sec_112 - sec_192) -->
+      <div id="create-event-inline-card" class="create-event-inline-card hidden"></div>
+
+      <!-- Accordion Events List Container -->
+      <div id="events-accordion-container" class="events-accordion-list" data-density="comfortable">
+        <div class="text-muted" style="padding: 2.5rem 1rem; text-align: center; font-size: 0.9rem;">
+          Loading events schedule...
+        </div>
+      </div>
+    </div>
+
+    <!-- View 2: All Safars Full Page Grid (Not a Popup) -->
+    <div id="coordinator-safars-grid-page" class="coordinator-page-container hidden">
+      <!-- Full Page Header -->
+      <div class="safars-page-header">
+        <div class="safars-page-header-left">
+          <button type="button" class="btn-back-to-schedule" id="btn-back-to-schedule" title="Back to Events Schedule" onclick="window.showEventsSchedulePage()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <span>Events Schedule</span>
+          </button>
+          <div class="safars-page-titles">
+            <div class="safars-title-row-flex">
+              <h2 class="events-main-heading">All Safars</h2>
+              <span class="events-sub-heading-pill" id="safars-page-count-pill">1 Safar</span>
+            </div>
+            <p class="safars-page-subtitle">Manage, browse, and switch across all registered Safars in full grid form.</p>
+          </div>
+        </div>
+
+        <div class="safars-page-header-right">
+          <button type="button" class="btn btn-primary btn-emerald-action" id="btn-grid-page-new-safar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ New Safar...</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Toolbar -->
+      <div class="safars-page-toolbar">
+        <div class="safars-search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="safars-page-search-input" placeholder="Search Safars by name or directory path...">
+        </div>
+        <div class="safars-count-summary" id="safars-page-count-label">1 Safar registered</div>
+      </div>
+
+      <!-- Full-Width Cards Grid -->
+      <div class="safars-cards-grid full-page-cards-grid" id="safars-page-cards-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+</section>

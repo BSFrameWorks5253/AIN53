@@ -16,6 +16,16 @@ from collections import defaultdict
 from openpyxl.styles import PatternFill, Font
 from openpyxl.utils import get_column_letter
 
+try:
+    from backends.exif_tools import find_missing_with_exif_rollover_support
+except Exception:
+    find_missing_with_exif_rollover_support = None
+
+try:
+    from backends.feature_logger import note_feature
+except Exception:
+    note_feature = None
+
 # ==============================================================================
 # FILE EXTENSION CLASSIFICATIONS
 # ==============================================================================
@@ -152,6 +162,11 @@ class DriveInventoryApi:
                 if self._window:
                     self._window.evaluate_js("window.showToast('Please select/drop a valid folder/directory.', true)")
                 return json.dumps({"error": "Invalid directory"})
+            try:
+                from backends.updater import AutoUpdater
+                AutoUpdater().set_setting("inventory_drive_path", path)
+            except Exception:
+                pass
             return json.dumps({"path": path})
         if not self._window: 
             return json.dumps({"error": "No window"})
@@ -159,21 +174,33 @@ class DriveInventoryApi:
         result = self._window.create_file_dialog(webview.FileDialog.FOLDER)
         if result:
             path_val = result[0] if isinstance(result, (list, tuple)) else result
+            try:
+                from backends.updater import AutoUpdater
+                AutoUpdater().set_setting("inventory_drive_path", path_val)
+            except Exception:
+                pass
             return json.dumps({"path": path_val})
         return json.dumps({"error": "Cancelled"})
 
-    def inventory_select_save_file(self, default_name):
+    def inventory_select_save_file(self, default_name, directory=None):
         """Opens native save dialog to specify target Excel filepath."""
         if not self._window: 
             return json.dumps({"error": "No window"})
         
+        save_dir = directory if directory and os.path.isdir(directory) else None
         result = self._window.create_file_dialog(
             webview.FileDialog.SAVE,
+            directory=save_dir or "",
             save_filename=f"{default_name}.xlsx",
             file_types=("Excel Files (*.xlsx)",)
         )
         if result:
             path_val = result[0] if isinstance(result, (list, tuple)) else result
+            try:
+                from backends.updater import AutoUpdater
+                AutoUpdater().set_setting("inventory_save_path", path_val)
+            except Exception:
+                pass
             return json.dumps({"path": path_val})
         return json.dumps({"error": "Cancelled"})
 
@@ -229,8 +256,14 @@ class DriveInventoryApi:
                         'Description': f"File is only {size_kb:.1f} KB (under 1 MB) — may be corrupt or incomplete"
                     })
             
-        # Discover gaps in this folder's sequence ranges
-        missing_files = find_missing_in_sequence(existing_files)
+        # Discover gaps in this folder's sequence ranges (with Exif rollover 600/9999 support)
+        if find_missing_with_exif_rollover_support:
+            try:
+                missing_files = find_missing_with_exif_rollover_support(existing_files)
+            except Exception:
+                missing_files = find_missing_in_sequence(existing_files)
+        else:
+            missing_files = find_missing_in_sequence(existing_files)
         combined = existing_files + missing_files
         # Re-sort utilizing natural keys
         combined.sort(key=lambda x: natural_keys(x['name']))
@@ -346,6 +379,24 @@ class DriveInventoryApi:
         # Execute DFS crawl
         self._dfs_scan(root_directory, all_folders, in_contributor=False, contributor_files=contributor_files, state={"count": 0})
         
+        # Collect all files present anywhere in the selected directory (regardless of folder depth)
+        all_drive_present_files = set()
+        for folder in all_folders:
+            for f in folder['files']:
+                if not f.get('is_missing', False):
+                    all_drive_present_files.add(f['name'].lower())
+        for cf in contributor_files:
+            all_drive_present_files.add(cf['File Name'].lower())
+
+        # Requirement 2 Fix: If a file exists anywhere in the selected directory
+        # (even if in a folder without an intermediate folder in between),
+        # it is seen as present only and MUST NOT be considered as a missing file!
+        for folder in all_folders:
+            folder['files'] = [
+                f for f in folder['files']
+                if not (f.get('is_missing', False) and f['name'].lower() in all_drive_present_files)
+            ]
+
         total_files = sum(len(f['files']) for f in all_folders) + len(contributor_files)
         if self._window:
             self._window.evaluate_js(f"window.ProgressController.start('Drive Inventory', 'Generating Excel Report...', {total_files})")
@@ -485,7 +536,15 @@ class DriveInventoryApi:
                 camera_series_combined = {}
                 for cam in camera_rankings:
                     existing = camera_files[cam]
-                    missing = find_missing_in_sequence(existing)
+                    if find_missing_with_exif_rollover_support:
+                        try:
+                            missing = find_missing_with_exif_rollover_support(existing)
+                        except Exception:
+                            missing = find_missing_in_sequence(existing)
+                    else:
+                        missing = find_missing_in_sequence(existing)
+                    # Filter any missing file that actually exists anywhere in the drive
+                    missing = [m for m in missing if m['name'].lower() not in all_drive_present_files]
                     combined = existing + missing
                     combined.sort(key=lambda x: natural_keys(x['name']))
                     camera_series_combined[cam] = combined
@@ -548,6 +607,16 @@ class DriveInventoryApi:
 
             if self._window:
                 self._window.evaluate_js("window.ProgressController.stop()")
+
+            if note_feature:
+                note_feature("Drive Inventory Report Generated", {
+                    "root_dir": root_directory,
+                    "output_path": output_excel_path,
+                    "total_folders": len(all_folders),
+                    "total_files": total_files,
+                    "missing_count": len(sheet1_data)
+                }, category="inventory")
+
             return json.dumps({"success": True, "path": output_excel_path})
         except Exception as e:
             if self._window:

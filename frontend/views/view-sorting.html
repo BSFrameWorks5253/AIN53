@@ -1,0 +1,486 @@
+<!-- ── View: Media Sorting ── -->
+<section id="view-sorting" class="view-section hidden">
+
+  <!-- SETUP SCREEN -->
+  <div id="sort-setup-screen" class="card glass flex-col sort-setup-card">
+    <div class="view-header-strip">
+      <div class="view-header-info">
+        <span class="view-tag-pill">EXIFTOOL &amp; ATOM ENGINE</span>
+        <h2 class="view-primary-title">Sort &amp; Organize Event Media</h2>
+        <p class="view-subtitle-desc">Analyze high-resolution RAW photos, 4K/8K video, and audio sidecars to match files chronologically into sequence folders with sequence reset immunity.</p>
+      </div>
+    </div>
+
+    <div class="grid-2 gap-4 setup-steps-grid">
+      <!-- Step 1: Mapping CSV -->
+      <div class="card setup-step-card">
+        <div>
+          <div class="setup-step-heading">
+            <span class="setup-step-number">1</span>
+            <h4 class="setup-step-title">Mapping CSV Schedule</h4>
+          </div>
+          <p class="setup-step-desc">
+            Drag &amp; drop or browse the event mapping CSV defining folder sequences.
+          </p>
+        </div>
+
+        <div class="input-group">
+          <div class="flex gap-2" id="sort-mapping-container">
+            <input type="text" id="sort-mapping-path" class="input-glass setup-path-input" readonly placeholder="No mapping file selected...">
+            <button id="btn-sort-mapping" class="btn btn-select setup-browse-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              Browse CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Root Source Directory -->
+      <div class="card setup-step-card">
+        <div>
+          <div class="setup-step-heading">
+            <span class="setup-step-number">2</span>
+            <h4 class="setup-step-title">Root Source Directory</h4>
+          </div>
+          <p class="setup-step-desc">
+            Drag &amp; drop or select the drive root containing raw media cards/folders.
+          </p>
+        </div>
+
+        <div class="input-group">
+          <div class="flex gap-2" id="sort-root-container">
+            <input type="text" id="sort-root-path" class="input-glass setup-path-input" readonly placeholder="No root directory selected...">
+            <button id="btn-sort-root" class="btn btn-select setup-browse-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Browse Root
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Banner -->
+    <div class="setup-action-banner">
+      <div class="setup-banner-left">
+        <h4 class="setup-banner-title">
+          <span class="setup-banner-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </span>
+          Sort Media
+        </h4>
+      </div>
+
+      <button id="btn-sort-scan" class="btn btn-primary setup-start-btn" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Start Sorting Files</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ANALYSIS SCREEN -->
+  <div id="sort-analysis-screen" class="card glass hidden analysis-container" style="display: none;">
+    <div class="analysis-header text-center flex-col align-center">
+      <div class="analysis-badge-pill mb-2">
+        <span class="pulse-live-dot"></span>
+        <span class="analysis-badge-text">SCANNING IN PROGRESS</span>
+      </div>
+      <h3 class="card-title mb-1 flex justify-center align-center gap-2">
+        <svg class="analysis-title-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        Analyzing Media Files
+      </h3>
+      <p id="analysis-subtitle" class="text-muted scanning-pulse mb-0">Scanning for sub-event markers in photos &amp; videos…</p>
+    </div>
+
+    <div class="scan-ring-container flex justify-center my-3">
+      <div class="scan-ring">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="50%" stop-color="#818cf8" />
+              <stop offset="100%" stop-color="#c084fc" />
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" class="ring-bg" />
+          <circle id="ring-progress" cx="50" cy="50" r="45" class="ring-active" stroke-dasharray="283" stroke-dashoffset="283" />
+        </svg>
+        <div class="ring-center-content">
+          <div id="ring-percent" class="ring-percent-val">0%</div>
+          <div class="ring-subtext">COMPLETE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-bar-bg mb-2">
+        <div class="progress-bar-fill" id="analysis-bar">
+          <div class="progress-shimmer"></div>
+        </div>
+      </div>
+      <div class="flex align-center justify-between">
+        <span class="text-sm font-bold flex align-center gap-1.5">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span id="analysis-progress-text">0 / 0 files</span>
+        </span>
+        <span class="text-muted text-sm flex align-center gap-1">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span id="analysis-eta">Starting analysis…</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" id="stat-card-photos">
+        <div class="stat-icon-wrapper photo-icon-bg">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value" id="analysis-photos">0</div>
+          <div class="stat-label">Photos</div>
+        </div>
+      </div>
+      <div class="stat-card" id="stat-card-videos">
+        <div class="stat-icon-wrapper video-icon-bg">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value" id="analysis-videos">0</div>
+          <div class="stat-label">Videos</div>
+        </div>
+      </div>
+      <div class="stat-card" id="stat-card-markers">
+        <div class="stat-icon-wrapper marker-icon-bg">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value" id="analysis-markers">0</div>
+          <div class="stat-label">Markers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-ticker">
+      <div class="flex align-center justify-between mb-1">
+        <div class="ticker-label text-xs text-muted flex align-center gap-1">
+          <span class="ticker-live-dot"></span>
+          CURRENTLY ANALYZING
+        </div>
+      </div>
+      <div class="flex gap-2 align-center">
+        <span class="ticker-badge photo" id="ticker-badge">Photo</span>
+        <span class="ticker-filename" id="ticker-filename" title="Waiting…">Waiting…</span>
+        <span class="ticker-contributor text-xs" id="ticker-contributor"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <div id="sort-main-screen" class="hidden sort-workspace-fill">
+    <div class="dashboard-header flex mb-4"
+      style="justify-content: space-between; align-items: center; background:var(--bg-glass); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass); flex-shrink: 0; gap: 1rem;">
+      <div class="flex align-center gap-3" style="flex: 1; min-width: 0;">
+        <h3 id="dashboard-title" class="mb-0" style="margin-bottom:0; flex-shrink:0;"><span style="font-size:1.15rem;">🗂️</span> Media Workspace</h3>
+        <div class="dashboard-search-wrapper" style="position:relative; width: 240px; max-width: 100%; display:inline-flex; align-items:center;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position:absolute; left:10px; color:#818cf8; pointer-events:none;"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" id="dashboard-folder-search" class="input-glass" placeholder="Search folders or files..." style="width:100%; padding-left:30px; padding-right:24px; font-size:0.8rem; height:32px; border-radius:8px;" autocomplete="off">
+          <button id="dashboard-folder-search-clear" class="hidden" style="position:absolute; right:8px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">✕</button>
+        </div>
+      </div>
+      <div class="header-actions flex gap-2 align-center">
+        <button class="btn btn-secondary" id="btn-undo" disabled
+          style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo</button>
+        <button class="btn btn-secondary" id="btn-undo-transfer" disabled
+          style="padding: 0.45rem 0.95rem; font-size:0.85rem;">Undo Transfer</button>
+        <div style="width:1px; height:20px; background:var(--border-glass); margin: 0 4px;"></div>
+        <button class="btn btn-primary" id="btn-move-all"
+          style="padding: 0.45rem 1.25rem; font-size:0.85rem; font-weight: 700;">Move All</button>
+      </div>
+    </div>
+
+    <div class="workspace-layout flex gap-4">
+      <!-- Sorting Internal Sidebar -->
+      <div class="sort-sidebar" style="width: 230px; flex-shrink:0; overflow-y: auto;">
+        <div class="card glass" style="padding: 1rem; display:flex; flex-direction:column; gap:0.65rem;">
+          <h4 class="text-sm text-muted mb-1">FILTER BY CONTRIBUTOR</h4>
+          <button class="btn btn-secondary w-full mb-1 active" id="btn-filter-all"
+            style="text-align:left; justify-content:flex-start; padding: 0.45rem 0.75rem;">All
+            Contributors</button>
+          <div id="contributor-filters" class="flex flex-col gap-1 mb-2"></div>
+
+          <h4 class="text-sm text-muted mb-1">FOLDER TOGGLES</h4>
+          <div class="flex gap-2 mb-2">
+            <button class="btn btn-secondary flex-1 text-xs" id="btn-expand-all"
+              style="padding:0.45rem 0.5rem;">Expand All</button>
+            <button class="btn btn-secondary flex-1 text-xs" id="btn-collapse-all"
+              style="padding:0.45rem 0.5rem;">Collapse All</button>
+          </div>
+
+          <h4 class="text-sm text-muted mb-1">FILTER BY MEDIA TYPE</h4>
+          <div class="flex gap-1 mb-2"
+            style="background:var(--input-bg); padding:3px; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+            <button class="btn btn-secondary flex-1 text-xs active" id="btn-type-all"
+              onclick="window.filterMediaType('ALL')" style="padding:0.35rem 0.4rem; border:none;">All</button>
+            <button class="btn btn-secondary flex-1 text-xs" id="btn-type-video"
+              onclick="window.filterMediaType('VIDEO')"
+              style="padding:0.35rem 0.4rem; border:none;">Videos</button>
+            <button class="btn btn-secondary flex-1 text-xs" id="btn-type-photo"
+              onclick="window.filterMediaType('PHOTO')"
+              style="padding:0.35rem 0.4rem; border:none;">Photos</button>
+          </div>
+
+          <h4 class="text-sm text-muted mb-1">QUICK SELECTION</h4>
+          <div class="flex flex-col gap-1.5 mb-2">
+            <button class="btn btn-secondary w-full text-xs justify-center"
+              onclick="window.selectGlobalMedia('all_videos')" style="padding:0.45rem 0.75rem;">Select All
+              Videos</button>
+            <button class="btn btn-secondary w-full text-xs justify-center"
+              onclick="window.selectGlobalMedia('all_photos')" style="padding:0.45rem 0.75rem;">Select All
+              Photos</button>
+            <button class="btn btn-secondary w-full text-xs justify-center"
+              onclick="window.selectGlobalMedia('none')" style="padding:0.45rem 0.75rem;">Deselect All</button>
+          </div>
+
+          <h4 class="text-sm text-muted mb-1">STATS</h4>
+          <div class="text-sm flex-col gap-1"
+            style="background:var(--input-bg); padding:0.6rem 0.8rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+            <div class="flex justify-between"><span>Total Files:</span> <strong id="stat-total-files">0</strong>
+            </div>
+            <div class="flex justify-between"><span>Excluded:</span> <strong id="stat-excluded">0</strong></div>
+            <div class="flex justify-between"><span>Folders:</span> <strong id="stat-total-folders">0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viewer Area -->
+      <div class="sort-viewer flex-1" style="min-width:0; padding-right: 0.5rem; position: relative;">
+        <!-- Floating Selection Action Dock (Inside Viewer Page Div) -->
+        <div id="floating-selection-bar" class="floating-selection-bar hidden" style="display: none;">
+          <div class="floating-bar-info">
+            <div class="floating-bar-meta">
+              <span class="floating-bar-badge" id="floating-selection-count">0 items selected</span>
+              <span class="floating-bar-dot hidden" id="floating-selection-dot">•</span>
+              <span class="floating-bar-subtext" id="floating-selection-details"></span>
+            </div>
+            <div class="floating-bar-folder-line hidden" id="floating-selection-folder-line">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              <span id="floating-selection-foldername" class="floating-bar-foldername" title=""></span>
+            </div>
+          </div>
+          <div class="floating-bar-divider"></div>
+          <div class="floating-bar-actions">
+            <button class="floating-bar-btn dont-copy-btn" id="floating-btn-dont-copy" onclick="window.toggleSelectedDontCopy()" title="Exclude from moving">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              <span id="floating-btn-dont-copy-text">Don't Move</span>
+            </button>
+            <button class="floating-bar-btn edit-btn" id="floating-btn-edit" onclick="window.openEditForSelected()">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span>Edit</span>
+            </button>
+            <div class="floating-bar-divider"></div>
+            <button class="floating-bar-btn pill-btn" onclick="window.selectGlobalMedia('all_videos')">Select Videos</button>
+            <button class="floating-bar-btn pill-btn clear-btn" onclick="window.selectGlobalMedia('none')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              <span>Deselect</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="search-bar mb-4 relative">
+          <input type="text" id="file-search-input" class="input-glass w-full"
+            placeholder="Search files by name…">
+          <div id="search-results-info" class="text-xs text-muted mt-1"></div>
+        </div>
+
+        <div id="folders-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="edit-modal" class="modal sort-modal" style="display: none;">
+    <div class="modal-content glass edit-modal-content">
+      <div class="edit-modal-header">
+        <div class="edit-modal-title-group">
+          <div class="edit-modal-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div>
+            <h3 id="modal-title" class="edit-modal-title">Shift File Assignment</h3>
+            <p id="modal-desc" class="edit-modal-desc">Reassign folder sequencing for selected items</p>
+          </div>
+        </div>
+        <button class="edit-modal-close-btn" id="btn-edit-close" onclick="window.closeEditModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="edit-modal-body">
+        <!-- Section 1: Sequence Shift (Ripple) -->
+        <div class="edit-modal-section">
+          <div class="edit-section-label">
+            <span class="edit-section-tag shift-tag">⚡ Sequence Shift (Ripple Effect)</span>
+          </div>
+          <div class="edit-card-grid">
+            <button class="edit-action-card shift-down-card" id="btn-shift-down">
+              <div class="edit-card-left">
+                <div class="edit-card-icon shift-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Shift All Down</span>
+                  <span class="edit-card-sub">Shift selected clip &amp; following clips down to next contributor folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Cascade Down</span>
+            </button>
+
+            <button class="edit-action-card shift-up-card" id="btn-shift-up">
+              <div class="edit-card-left">
+                <div class="edit-card-icon shift-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Shift All Up</span>
+                  <span class="edit-card-sub">Shift preceding clips &amp; selected clip up to previous contributor folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Cascade Up</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Isolated Move -->
+        <div class="edit-modal-section">
+          <div class="edit-section-label">
+            <span class="edit-section-tag move-tag">🔀 Isolated Move (Only Selected Items)</span>
+          </div>
+          <div class="edit-card-grid">
+            <button class="edit-action-card move-next-card" id="btn-move-down">
+              <div class="edit-card-left">
+                <div class="edit-card-icon move-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Move to Next Folder</span>
+                  <span class="edit-card-sub">Move selected file &amp; remaining files down into contributor's next folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Move Only</span>
+            </button>
+
+            <button class="edit-action-card move-prev-card" id="btn-move-up">
+              <div class="edit-card-left">
+                <div class="edit-card-icon move-icon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </div>
+                <div class="edit-card-text">
+                  <span class="edit-card-title">Move to Previous Folder</span>
+                  <span class="edit-card-sub">Move files from start up to selected file into contributor's previous folder</span>
+                </div>
+              </div>
+              <span class="edit-card-badge">Move Only</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-modal-footer">
+        <button class="btn btn-secondary edit-cancel-btn" id="btn-edit-cancel" onclick="window.closeEditModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="preview-modal" class="modal sort-modal" style="display: none;">
+    <div class="modal-content glass">
+      <h3 class="card-title">Sequence Change Preview</h3>
+      <p class="text-muted text-sm mb-4">Review the following changes before applying:</p>
+      <div id="preview-modal-body" class="report-body text-left text-sm mb-4"
+        style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-success flex-1" id="btn-preview-confirm">Confirm</button>
+        <button class="btn btn-secondary flex-1" id="btn-preview-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="report-modal" class="modal sort-modal" style="display: none;">
+    <div class="modal-content glass">
+      <h3 class="card-title">Sequence Change Summary</h3>
+      <div id="report-modal-body" class="report-body text-left text-sm mb-4"
+        style="max-height:300px; overflow-y:auto; background:var(--bg-glass-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-glass);">
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" id="btn-report-done">Done</button>
+        <button class="btn btn-secondary flex-1" id="btn-report-undo">Undo Changes</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- DRAG & DROP FOLDER GRID OVERLAY -->
+  <div id="drag-folder-grid-overlay" class="modal sort-modal drag-overlay-modal" style="display: none;">
+    <div class="modal-content glass drag-grid-content">
+      <div class="drag-grid-header">
+        <div class="flex align-center gap-3">
+          <div class="drag-grid-icon">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+          </div>
+          <div>
+            <h3 class="drag-grid-title" id="drag-grid-title">Relocate Media Files</h3>
+            <p class="drag-grid-subtitle" id="drag-grid-subtitle">Select or drop clips onto a target folder to move them</p>
+          </div>
+        </div>
+        <div class="flex align-center gap-3">
+          <div id="drag-grid-cameraman-badge" class="contributor-badge-tag"></div>
+          <button class="edit-modal-close-btn" id="btn-drag-grid-close" onclick="window.closeDragFolderGridOverlay()" title="Close (Esc)">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="drag-grid-body" id="drag-folder-grid-container">
+        <!-- Big Folder Cards rendered dynamically -->
+      </div>
+      <div class="drag-grid-footer flex justify-between align-center">
+        <div class="drag-grid-info-pill">
+          <span class="info-pulse-dot"></span>
+          <span class="text-xs" id="drag-grid-info-text">Select or drop on a folder card to move selected clips</span>
+        </div>
+        <button class="btn btn-secondary drag-cancel-btn" onclick="window.closeDragFolderGridOverlay()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOVE CONFIRMATION MODAL -->
+  <div id="move-confirm-modal" class="modal sort-modal drag-overlay-modal" style="display: none;">
+    <div class="modal-content glass move-confirm-content">
+      <div class="move-confirm-icon-box">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <h3 class="move-confirm-title">Folder Already Contains Files</h3>
+      <p id="move-confirm-message" class="move-confirm-text">
+        Are you sure you want to add these files to this folder? This folder already contains existing files.
+      </p>
+      <div class="move-confirm-actions flex gap-3">
+        <button class="btn move-confirm-cancel-btn flex-1" id="btn-move-confirm-cancel">Cancel</button>
+        <button class="btn move-confirm-ok-btn flex-1" id="btn-move-confirm-ok">Yes, Move Files</button>
+      </div>
+    </div>
+  </div>
+
+</section>

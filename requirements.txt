@@ -4,3 +4,5 @@ pdfplumber
 opencv-python
 Pillow
 openpyxl
+pypdfium2
+pyinstaller

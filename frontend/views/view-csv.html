@@ -1,0 +1,90 @@
+<!-- ── View: CSV to Folders ── -->
+<section id="view-csv" class="view-section hidden">
+  <div class="card glass">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+      <h3 class="card-title">
+        <img src="./ICON.png" class="card-title-icon" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> 
+        CSV to Folder Generator
+      </h3>
+      <span class="status-indicator-badge">
+        <span class="status-dot"></span> Ready
+      </span>
+    </div>
+    <p class="text-muted" style="margin-bottom: 1.5rem;">
+      Automatically generate structured Master &amp; Leaf event directories, sub-event leaf folders, and Document archives directly from your schedule CSV.
+    </p>
+
+    <div class="grid-2 gap-4">
+      <!-- Step 1: Input CSV File Card -->
+      <div class="card" style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #059669; color: white; font-weight: 800; font-size: 0.8rem;">1</span>
+          <h4 style="font-family: var(--font-main); font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--text-primary);">
+            Source Schedule CSV
+          </h4>
+        </div>
+        <p class="text-muted" style="font-size: 0.82rem; margin-bottom: 0.85rem;">
+          Drop or browse your event mapping CSV containing sequence and location definitions.
+        </p>
+
+        <div class="input-group">
+          <div class="flex gap-2" id="csv-input-container">
+            <input type="text" id="csv-input-path" class="input-glass" readonly placeholder="Drop .csv file here, or browse..." style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem;">
+            <button id="btn-csv-input" class="btn btn-select" style="padding: 0.65rem 1.1rem; white-space: nowrap;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              Browse CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Target Media Directory Card -->
+      <div class="card" style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #059669; color: white; font-weight: 800; font-size: 0.8rem;">2</span>
+          <h4 style="font-family: var(--font-main); font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--text-primary);">
+            Target Destination Folder
+          </h4>
+        </div>
+        <p class="text-muted" style="font-size: 0.82rem; margin-bottom: 0.85rem;">
+          Choose the external drive or destination root where folders should be established.
+        </p>
+
+        <div class="input-group">
+          <div class="flex gap-2" id="csv-dest-container">
+            <input type="text" id="csv-dest-path" class="input-glass" readonly placeholder="Drop destination folder, or browse..." style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem;">
+            <button id="btn-csv-dest" class="btn btn-select" style="padding: 0.65rem 1.1rem; white-space: nowrap;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Select Folder
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Execution & Features Banner -->
+    <div style="margin-top: 1.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h4 style="font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-primary);">
+          Generate Folders
+        </h4>
+      </div>
+
+      <button id="btn-csv-process" class="btn btn-primary" disabled style="padding: 0.85rem 2rem; font-size: 0.95rem; font-weight: 700; background: #059669; border: none; box-shadow: 0 4px 14px rgba(5,150,105,0.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          <line x1="12" y1="11" x2="12" y2="17"></line>
+          <line x1="9" y1="14" x2="15" y2="14"></line>
+        </svg>
+        Generate Folders
+      </button>
+    </div>
+
+    <div id="csv-result" class="mt-4 hidden status-bar success"></div>
+  </div>
+</section>

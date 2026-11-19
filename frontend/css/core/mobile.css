@@ -1,0 +1,67 @@
+/* ── AIN53 Responsive & Small Screen Stylesheet ── */
+
+@media (max-width: 768px) {
+  /* Prevent horizontal scroll and bounce */
+  html, body {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    touch-action: pan-y;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-primary);
+  }
+
+  /* Main Shell & Content Area */
+  .main-shell {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .content-area {
+    flex: 1;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.85rem !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card.glass {
+    padding: 1rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 1rem;
+  }
+
+  /* Form Inputs */
+  input[type="text"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 15px !important;
+    min-height: 42px !important;
+    padding: 0.6rem 0.85rem !important;
+    border-radius: 8px !important;
+  }
+
+  .btn {
+    min-height: 42px !important;
+    font-size: 0.9rem !important;
+    border-radius: 8px !important;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}

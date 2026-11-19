@@ -1,0 +1,92 @@
+<!-- ── View: Drive Inventory ── -->
+<section id="view-inventory" class="view-section hidden">
+  <div class="card glass">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+      <h3 class="card-title">
+        <img src="./ICON.png" class="card-title-icon" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/9322/9322127.png';"> 
+        Drive Inventory &amp; Gap Audit
+      </h3>
+      <span class="status-indicator-badge">
+        <span class="status-dot"></span> Ready
+      </span>
+    </div>
+    <p class="text-muted" style="margin-bottom: 1.5rem;">
+      Scan any external media hard drive or event master folder to generate a full Excel audit of sequence coverage, sub-event leaf directories, and missing sequence gaps.
+    </p>
+
+    <div class="grid-2 gap-4">
+      <!-- Step 1: Target Drive / Folder -->
+      <div class="card" style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #059669; color: white; font-weight: 800; font-size: 0.8rem;">1</span>
+          <h4 style="font-family: var(--font-main); font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--text-primary);">
+            Target Drive or Event Root
+          </h4>
+        </div>
+        <p class="text-muted" style="font-size: 0.82rem; margin-bottom: 0.85rem;">
+          Drag &amp; drop or select the drive root to scan for sequence folders.
+        </p>
+
+        <div class="input-group">
+          <div class="flex gap-2" id="inv-drive-container">
+            <input type="text" id="inv-drive-path" class="input-glass" readonly placeholder="Drop drive root here, or browse..." style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem;">
+            <button id="btn-inv-drive" class="btn btn-select" style="padding: 0.65rem 1.1rem; white-space: nowrap;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              </svg>
+              Select Drive
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Save Report Destination -->
+      <div class="card" style="background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #059669; color: white; font-weight: 800; font-size: 0.8rem;">2</span>
+          <h4 style="font-family: var(--font-main); font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--text-primary);">
+            Excel Output Location
+          </h4>
+        </div>
+        <p class="text-muted" style="font-size: 0.82rem; margin-bottom: 0.85rem;">
+          Saved automatically inside the target drive's <code style="color: #059669; font-weight: 600;">\Document\</code> directory.
+        </p>
+
+        <div class="input-group">
+          <div class="flex gap-2">
+            <input type="text" id="inv-save-path" class="input-glass" readonly placeholder="Output report path will appear here..." style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem;">
+            <button id="btn-inv-save" class="btn btn-select" disabled style="padding: 0.65rem 1.1rem; white-space: nowrap;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              </svg>
+              Change Path
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Execution Banner -->
+    <div style="margin-top: 1.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h4 style="font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-primary);">
+          Inventory Audit
+        </h4>
+      </div>
+
+      <button id="btn-inv-generate" class="btn btn-primary" disabled style="padding: 0.85rem 2.2rem; font-size: 0.95rem; font-weight: 700; background: #059669; border: none; box-shadow: 0 4px 14px rgba(5,150,105,0.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Generate Excel Report
+      </button>
+    </div>
+
+    <div id="inv-result" class="mt-4 hidden status-bar info"></div>
+  </div>
+</section>

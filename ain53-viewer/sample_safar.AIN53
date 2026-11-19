@@ -1,0 +1,267 @@
+{
+  "$schema": "https://ain53.org/schemas/safar-sync-v1.json",
+  "format": "AIN53_SAFAR_SYNC_PACKAGE",
+  "version": "1.0.0",
+  "generator": {
+    "app": "AIN53 Data Management Desktop",
+    "version": "1.5.0",
+    "platform": "win32",
+    "exported_at": "2026-09-27T16:45:00.000Z"
+  },
+  "safar": {
+    "name": "Khandala",
+    "scope": "FULL_SAFAR"
+  },
+  "cities": [
+    {
+      "id": 1,
+      "name": "Khandala",
+      "teams_required": 2
+    }
+  ],
+  "crew": [
+    {
+      "id": 101,
+      "name": "Murtaza Bhai",
+      "role": "photographer",
+      "series": "A",
+      "active": true
+    },
+    {
+      "id": 102,
+      "name": "Hussain Bhai",
+      "role": "videographer",
+      "series": "B",
+      "active": true
+    },
+    {
+      "id": 103,
+      "name": "Ali Asghar Bhai",
+      "role": "photographer",
+      "series": "C",
+      "active": true
+    },
+    {
+      "id": 104,
+      "name": "Taher Bhai",
+      "role": "videographer",
+      "series": "D",
+      "active": true
+    }
+  ],
+  "schedule": [
+    {
+      "date": "1448-04-06",
+      "slots": [
+        {
+          "slot_code": "01M",
+          "slot_name": "Morning",
+          "start_time": "09:30 AM",
+          "end_time": "01:30 PM",
+          "status": "COMPLETED",
+          "events_count": 2,
+          "sequences_count": 4,
+          "events": [
+            {
+              "id": "evt-kh-1448-04-06-01M-01",
+              "sequence_number": 1,
+              "event_code": "1448-04-06 _ 01M-01-Waaz-Khandala",
+              "name": "Subah Waaz Mubarak",
+              "type": "Waaz",
+              "engine": "Standard",
+              "city_id": 1,
+              "city_name": "Khandala",
+              "status": "COMPLETED",
+              "start_time": "09:30 AM",
+              "report_time": "08:45 AM",
+              "assignment_mode": "individual",
+              "assignments": [
+                {
+                  "sequence": "1",
+                  "event_abr": "Waaz",
+                  "sticker_name": "WZ-01",
+                  "name": "Waaz Mubarak Stage & Setup",
+                  "its": "50392817",
+                  "location": "Main Masjid Hall",
+                  "mobile": "+91 98200 99887",
+                  "photographer_id": 101,
+                  "photographer_name": "Murtaza Bhai",
+                  "photographer_series": "A",
+                  "videographer_id": 102,
+                  "videographer_name": "Hussain Bhai",
+                  "videographer_series": "B",
+                  "photo_not_covered": false,
+                  "video_not_covered": false
+                }
+              ]
+            },
+            {
+              "id": "evt-kh-1448-04-06-01M-02",
+              "sequence_number": 2,
+              "event_code": "1448-04-06 _ 01M-02-QMZ-Khandala",
+              "name": "Zohor Majlis & QMZ Visits",
+              "type": "QMZ",
+              "engine": "QMZ",
+              "city_id": 1,
+              "city_name": "Khandala",
+              "status": "COMPLETED",
+              "start_time": "11:30 AM",
+              "report_time": "11:00 AM",
+              "assignment_mode": "team",
+              "qmz_count": 3,
+              "assignments": [
+                {
+                  "sequence": "1",
+                  "event_abr": "Q",
+                  "sticker_name": "Q-01",
+                  "name": "Shk Shabbir Bhai Lightwala",
+                  "its": "30485921",
+                  "location": "Bunglow No 7, Hill Road",
+                  "mobile": "+91 98210 12345",
+                  "team_name": "Team 1",
+                  "photographer_id": 101,
+                  "photographer_name": "Murtaza Bhai",
+                  "photographer_series": "A",
+                  "videographer_id": 102,
+                  "videographer_name": "Hussain Bhai",
+                  "videographer_series": "B",
+                  "photo_not_covered": false,
+                  "video_not_covered": false
+                },
+                {
+                  "sequence": "2",
+                  "event_abr": "MZ",
+                  "sticker_name": "MZ-01",
+                  "name": "Mulla Hatim Bhai Godhrawala",
+                  "its": "20394812",
+                  "location": "Plot 14, Khandala Heights",
+                  "mobile": "+91 98204 55443",
+                  "team_name": "Team 1",
+                  "photographer_id": 101,
+                  "photographer_name": "Murtaza Bhai",
+                  "photographer_series": "A",
+                  "videographer_id": 102,
+                  "videographer_name": "Hussain Bhai",
+                  "videographer_series": "B",
+                  "photo_not_covered": false,
+                  "video_not_covered": false
+                },
+                {
+                  "sequence": "3",
+                  "event_abr": "Q",
+                  "sticker_name": "Q-02",
+                  "name": "Ibrahim Bhai Poonawala",
+                  "its": "40928172",
+                  "location": "Valley View Villa 3",
+                  "mobile": "+91 98209 87654",
+                  "team_name": "Team 2",
+                  "photographer_id": 103,
+                  "photographer_name": "Ali Asghar Bhai",
+                  "photographer_series": "C",
+                  "videographer_id": 104,
+                  "videographer_name": "Taher Bhai",
+                  "videographer_series": "D",
+                  "photo_not_covered": false,
+                  "video_not_covered": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slot_code": "02E",
+          "slot_name": "Evening",
+          "start_time": "05:00 PM",
+          "end_time": "09:30 PM",
+          "status": "CREATED",
+          "events_count": 1,
+          "sequences_count": 3,
+          "events": [
+            {
+              "id": "evt-kh-1448-04-06-02E-01",
+              "sequence_number": 1,
+              "event_code": "1448-04-06 _ 02E-01-Bethak-Khandala",
+              "name": "Evening Bethak Ceremonies",
+              "type": "Bethak",
+              "engine": "Bethak",
+              "city_id": 1,
+              "city_name": "Khandala",
+              "status": "CREATED",
+              "start_time": "05:00 PM",
+              "report_time": "04:30 PM",
+              "assignment_mode": "individual",
+              "bethak_counts": [
+                { "type": "Nikah", "count": 2 },
+                { "type": "Bethak QMZ", "count": 1, "subTypes": ["BQ"] }
+              ],
+              "assignments": [
+                {
+                  "sequence": "1",
+                  "event_abr": "N",
+                  "sticker_name": "N-01",
+                  "name": "Ali Asghar Bhai",
+                  "its": "30458921",
+                  "location": "Mawaid Hall 1",
+                  "mobile": "+91 98200 12345",
+                  "photographer_id": 101,
+                  "photographer_name": "Murtaza Bhai",
+                  "photographer_series": "A",
+                  "videographer_id": 102,
+                  "videographer_name": "Hussain Bhai",
+                  "videographer_series": "B",
+                  "photo_not_covered": false,
+                  "video_not_covered": false,
+                  "is_inline": false
+                },
+                {
+                  "sequence": "2",
+                  "event_abr": "N",
+                  "sticker_name": "N-02",
+                  "name": "Taher Bhai Kapasi",
+                  "its": "20391482",
+                  "location": "Mawaid Hall 2",
+                  "mobile": "+91 98211 54321",
+                  "photographer_id": 103,
+                  "photographer_name": "Ali Asghar Bhai",
+                  "photographer_series": "C",
+                  "videographer_id": 104,
+                  "videographer_name": "Taher Bhai",
+                  "videographer_series": "D",
+                  "photo_not_covered": false,
+                  "video_not_covered": false,
+                  "is_inline": false
+                },
+                {
+                  "sequence": "3",
+                  "event_abr": "BQ",
+                  "sticker_name": "BQ-01",
+                  "name": "Shk Shabbir Bhai",
+                  "its": "10492817",
+                  "location": "Bunglow No 4",
+                  "mobile": "+91 98202 99887",
+                  "photographer_id": 101,
+                  "photographer_name": "Murtaza Bhai",
+                  "photographer_series": "A",
+                  "videographer_id": 102,
+                  "videographer_name": "Hussain Bhai",
+                  "videographer_series": "B",
+                  "photo_not_covered": false,
+                  "video_not_covered": false,
+                  "is_inline": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "total_days": 1,
+    "total_events": 3,
+    "total_sequences": 7,
+    "total_crew": 4,
+    "covered_sequences": 7,
+    "uncovered_sequences": 0
+  }
+}

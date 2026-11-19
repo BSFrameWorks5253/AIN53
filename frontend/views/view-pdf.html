@@ -1,0 +1,239 @@
+<!-- ── View: PDF to CSV ── -->
+<section id="view-pdf" class="view-section active">
+  <div class="card glass">
+    <div class="view-header-strip">
+      <div class="view-header-info">
+        <span class="view-tag-pill">PDF EXTRACTION SUITE</span>
+        <h2 class="view-primary-title">Extract &amp; Map Event Schedule</h2>
+        <p class="view-subtitle-desc">Import event rosters, configure sequence ranges and sub-event divisions, and generate standardized CSV mappings.</p>
+      </div>
+      <div class="view-header-actions" id="pdf-header-actions" style="display: none;">
+        <button type="button" id="btn-toggle-split-pdf" class="btn btn-secondary btn-sm flex align-center gap-1" title="Toggle Split-Screen Side-by-Side View">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="12" y1="3" x2="12" y2="21"></line>
+          </svg>
+          <span id="header-split-btn-text">Split View</span>
+        </button>
+        <button type="button" id="btn-open-pdf-modal" class="btn btn-primary btn-sm flex align-center gap-1" title="Open Interactive Fullscreen PDF Viewer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>View PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="pdf-workspace-container" id="pdf-workspace-container">
+      <!-- Left Pane: Extraction Controls -->
+      <div class="pdf-pane-controls" id="pdf-pane-controls">
+        
+        <!-- Dropzone -->
+        <div class="dropzone" id="pdf-dropzone">
+          <svg class="dropzone-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M12 18v-6"></path>
+            <path d="m9 15 3 3 3-3"></path>
+          </svg>
+          <div class="dropzone-text">
+            <h4 style="font-family: var(--font-main); font-size: 1.15rem; font-weight: 700;">Select PDF File</h4>
+            <p>Drag & drop your PDF file here, or click to browse</p>
+          </div>
+          <button id="btn-pick-pdf" class="btn btn-primary" type="button" style="padding: 0.65rem 1.6rem; border-radius: 12px; font-weight: 700;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 6px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <span id="btn-pick-pdf-text">Browse PDF File</span>
+          </button>
+        </div>
+
+        <!-- Active File Control Bar -->
+        <div id="pdf-active-file-card" class="pdf-active-file-card hidden">
+          <div class="pdf-file-card-info">
+            <div class="pdf-file-icon-badge">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="pdf-file-details">
+              <div class="pdf-file-name" id="pdf-loaded-filename">Document.pdf</div>
+              <div class="pdf-file-meta" id="pdf-loaded-meta">32 rows detected • Ready to map</div>
+            </div>
+          </div>
+          <div class="pdf-file-card-actions">
+            <button type="button" id="btn-view-pdf-main" class="btn btn-primary btn-sm flex align-center gap-1" title="View PDF Document">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>View PDF</span>
+            </button>
+            <button type="button" id="btn-toggle-split-btn" class="btn btn-secondary btn-sm flex align-center gap-1" title="Toggle Split Screen Layout">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="12" y1="3" x2="12" y2="21"></line>
+              </svg>
+              <span id="split-btn-text">Split View</span>
+            </button>
+            <button type="button" id="btn-open-external-pdf" class="btn btn-secondary btn-sm flex align-center" title="Open in System PDF Reader (Adobe Acrobat / Edge)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </button>
+            <button type="button" id="btn-change-pdf" class="btn btn-secondary btn-sm flex align-center gap-1" title="Select a different PDF file">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>Change</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PDF Extraction Settings -->
+        <div id="pdf-settings" class="hidden mt-3">
+          <div class="file-info mb-3 hidden" id="pdf-file-info"></div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <div class="input-group">
+              <label>Mauze Location</label>
+              <input type="text" id="pdf-mauze" placeholder="e.g. Raipur (Optional)" class="input-glass">
+            </div>
+          </div>
+
+          <div class="pdf-parts-section mb-4">
+            <div class="flex align-center justify-between mb-3">
+              <label class="section-subtitle-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                Sequence Ranges &amp; Part Dividers
+              </label>
+              <button type="button" id="btn-add-part" class="btn-outline-accent flex align-center gap-1" title="Add another Part divider">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add Part</span>
+              </button>
+            </div>
+            <div id="pdf-parts-list" class="flex flex-col gap-2"></div>
+          </div>
+
+          <div class="mapping-container mb-4">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+              </svg>
+              Column Mapping
+            </h4>
+            <div id="pdf-mapping-grid" class="mapping-grid"></div>
+          </div>
+
+          <div class="flex gap-3 align-center" style="margin-top: 1.5rem;">
+            <button id="btn-pdf-preview" class="btn btn-secondary" style="padding: 0.85rem 1.6rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="margin-right: 0.5rem;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              Preview Data
+            </button>
+            <button id="btn-pdf-download" class="btn btn-primary" style="padding: 0.85rem 1.8rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="margin-right: 0.5rem;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download CSV
+            </button>
+          </div>
+
+          <div class="preview-wrapper mt-4 hidden" id="pdf-preview-wrapper" style="margin-top: 1.5rem;">
+            <div class="status-bar info mb-3" id="pdf-status">Rows found: 0</div>
+            <div class="table-container" style="max-height: 420px; overflow-y: auto;">
+              <table class="table-glass" id="pdf-table">
+                <thead style="position: sticky; top: 0; z-index: 5;">
+                  <tr>
+                    <th>Seq</th>
+                    <th>Event</th>
+                    <th>Sticker</th>
+                    <th>Name</th>
+                    <th>ITS</th>
+                    <th>Location</th>
+                    <th>Mobile</th>
+                    <th>Mauze</th>
+                    <th>Sub Event</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draggable Splitter Divider (Resizable Sidebar/Slider) -->
+      <div id="pdf-split-resizer" class="pdf-split-resizer hidden" title="Drag to resize PDF view">
+        <div class="resizer-handle"></div>
+      </div>
+
+      <!-- Right Pane: Live Embedded PDF Viewer (Visible in Split Mode) -->
+      <div class="pdf-pane-preview hidden" id="pdf-pane-preview">
+        <div class="pdf-preview-header">
+          <div class="pdf-preview-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span id="pdf-split-preview-filename">Document Preview</span>
+            <span class="pdf-hint-badge" title="Hold Shift while rolling your mouse wheel to scroll left/right horizontally, or right-click the PDF for Hand Tool (drag-to-pan).">
+              💡 Shift+Wheel = ↔ Pan
+            </span>
+          </div>
+          <div class="pdf-preview-actions">
+            <!-- Quick Width Presets -->
+            <div class="pdf-width-presets" title="Quick adjust PDF width">
+              <button type="button" class="btn-width-preset" data-width="40" title="40% Width">40%</button>
+              <button type="button" class="btn-width-preset active" data-width="50" title="50% Width">50%</button>
+              <button type="button" class="btn-width-preset" data-width="65" title="65% Width">65%</button>
+            </div>
+            <button type="button" id="btn-split-fullscreen" class="btn-icon-sm" title="Expand to Fullscreen Modal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </button>
+            <button type="button" id="btn-close-split" class="btn-icon-sm" title="Close Split View">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="pdf-frame-wrapper">
+          <iframe id="pdf-split-iframe" class="pdf-viewer-frame" title="PDF Split Viewer" src="about:blank"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
