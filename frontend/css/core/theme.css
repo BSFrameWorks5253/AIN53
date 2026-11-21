@@ -3037,5 +3037,151 @@ h1, h2, h3, h4 { font-family: var(--font-main); font-weight: 700; color: var(--t
   pointer-events: none !important;
 }
 
+/* ── High-Performance Media Player & Lightbox Engine ── */
+#lightbox-modal {
+  background: rgba(4, 7, 18, 0.94) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: opacity 0.2s ease !important;
+}
+
+#lightbox-modal .modal-content {
+  background: #0d1527 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85) !important;
+}
+
+[data-theme="light"] #lightbox-modal .modal-content {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45) !important;
+}
+
+.lightbox-media-container {
+  background: #000000 !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#lightbox-video {
+  max-width: 100% !important;
+  max-height: 62vh !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  background: #000000 !important;
+  border-radius: 8px !important;
+  outline: none !important;
+  will-change: transform !important;
+  transform: translateZ(0) !important;
+}
+
+.lightbox-video-controls {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+  box-sizing: border-box !important;
+}
+
+[data-theme="light"] .lightbox-video-controls {
+  background: rgba(241, 245, 249, 0.95) !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.player-icon-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f1f5f9 !important;
+  border-radius: 8px !important;
+  padding: 4px 9px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  transition: all 0.15s ease !important;
+  user-select: none !important;
+}
+
+[data-theme="light"] .player-icon-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.player-icon-btn:hover {
+  background: rgba(56, 189, 248, 0.2) !important;
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+  transform: translateY(-1px) !important;
+}
+
+.player-play-btn {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border: none !important;
+  color: #ffffff !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.92rem !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  user-select: none !important;
+}
+
+.player-play-btn:hover {
+  transform: scale(1.08) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.55) !important;
+}
+
+.player-play-btn:active {
+  transform: scale(0.96) !important;
+}
+
+.video-seek-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  height: 6px !important;
+  border-radius: 4px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  outline: none !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+[data-theme="light"] .video-seek-slider {
+  background: #cbd5e1 !important;
+}
+
+.video-seek-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease !important;
+}
+
+.video-seek-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.3) !important;
+}
+
 
 

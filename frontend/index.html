@@ -1805,26 +1805,39 @@
 
   <!-- MEDIA LIGHTBOX PREVIEW MODAL -->
   <div id="lightbox-modal" class="modal hidden"
-    style="background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 999999; display: none;">
+    style="background: rgba(4, 7, 18, 0.94); z-index: 999999; display: none; align-items: center; justify-content: center;">
     <div class="modal-content glass"
-      style="max-width: 960px; width: 94%; padding: 22px; border-radius: 20px; position: relative; display: flex; flex-direction: column; gap: 14px; align-items: center; border: 1px solid var(--border-glass-hover); box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+      style="max-width: 1060px; width: 95%; padding: 18px 22px; border-radius: 20px; position: relative; display: flex; flex-direction: column; gap: 10px; align-items: center; border: 1px solid var(--border-glass-hover); box-shadow: 0 25px 70px rgba(0,0,0,0.85);">
+      
+      <!-- Top Header Bar -->
       <div
-        style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">
+        style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;">
         <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0; flex: 1;">
-          <span id="lightbox-icon" style="font-size: 1.25rem;">🖼️</span>
+          <span id="lightbox-icon" style="font-size: 1.25rem;">🎬</span>
           <span id="lightbox-title"
-            style="font-family: var(--font-main); font-weight: 700; font-size: 1.05rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px;">Media
-            Preview</span>
+            style="font-family: var(--font-main); font-weight: 700; font-size: 1.05rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px;">Media Preview</span>
           <span id="lightbox-counter" class="lightbox-counter-pill hidden"></span>
           <span id="lightbox-folder-badge" class="lightbox-folder-pill hidden"></span>
         </div>
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <span class="lightbox-kbd-hint" title="Use Arrow Keys to navigate, Esc to close">
-            <kbd>←</kbd> <kbd>→</kbd> Navigate &bull; <kbd>Esc</kbd> Close
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <button id="lightbox-btn-external" class="player-icon-btn hidden" title="Play directly in default system player (VLC / Media Player) with full hardware acceleration" onclick="window.openLightboxInSystemPlayer()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Native Player</span>
+          </button>
+          <button id="lightbox-btn-explorer" class="player-icon-btn" title="Locate file in Windows Explorer" onclick="window.openLightboxInExplorer()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Explorer</span>
+          </button>
+          <span class="lightbox-kbd-hint" title="Space: Play/Pause | ← →: Seek 5s | [ ]: Clips | Esc: Close">
+            <kbd>Space</kbd> Play &bull; <kbd>←</kbd> <kbd>→</kbd> Seek &bull; <kbd>Esc</kbd> Close
           </span>
-          <button id="btn-close-lightbox" title="Close and select item (Esc)"
+          <button id="btn-close-lightbox" title="Close preview (Esc)"
             style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -1832,8 +1845,9 @@
         </div>
       </div>
 
+      <!-- Media Screen Container -->
       <div class="lightbox-media-container"
-        style="width: 100%; max-height: 70vh; min-height: 300px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.65); border-radius: 12px; border: 1px solid var(--border-glass);">
+        style="width: 100%; max-height: 62vh; min-height: 280px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; border-radius: 12px; border: 1px solid var(--border-glass);">
         <button id="lightbox-btn-prev" class="lightbox-nav-btn lightbox-prev" title="Previous item (Left Arrow)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 18 9 12 15 6"></polyline>
@@ -1841,9 +1855,10 @@
         </button>
 
         <img id="lightbox-img" src="" alt="Preview" class="hidden"
-          style="max-width: 100%; max-height: 70vh; object-fit: contain; user-select: none;">
-        <video id="lightbox-video" controls class="hidden"
-          style="max-width: 100%; max-height: 70vh; outline: none;"></video>
+          style="max-width: 100%; max-height: 62vh; object-fit: contain; user-select: none;">
+        
+        <video id="lightbox-video" preload="metadata" playsinline class="hidden"
+          style="max-width: 100%; max-height: 62vh; width: 100%; height: auto; object-fit: contain; outline: none; border-radius: 6px; will-change: transform;"></video>
 
         <button id="lightbox-btn-next" class="lightbox-nav-btn lightbox-next" title="Next item (Right Arrow)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1852,10 +1867,61 @@
         </button>
       </div>
 
+      <!-- Professional Custom Video Player Controller -->
+      <div id="lightbox-video-controls" class="lightbox-video-controls hidden">
+        <!-- Progress / Timeline Bar -->
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <span id="video-time-cur" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #94a3b8; min-width: 44px;">00:00</span>
+          <div style="flex: 1; position: relative; display: flex; align-items: center;">
+            <input type="range" id="video-seek-slider" class="video-seek-slider" min="0" max="100" value="0" step="0.05">
+          </div>
+          <span id="video-time-dur" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #94a3b8; min-width: 44px;">00:00</span>
+        </div>
+
+        <!-- Buttons Row -->
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 8px;">
+          <!-- Left: Playback controls -->
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button id="video-btn-prev-clip" class="player-icon-btn" title="Previous Clip ([)" onclick="window.navigateLightbox(-1)">⏮</button>
+            <button id="video-btn-rw-5" class="player-icon-btn" title="Rewind 5s (←)" onclick="window.seekVideoRelative(-5)">-5s</button>
+            <button id="video-btn-step-back" class="player-icon-btn" title="Step 1 Frame Back (Shift + ←)" onclick="window.stepVideoFrame(-1)">◀ 1F</button>
+            <button id="video-btn-play" class="player-play-btn" title="Play / Pause (Space)" onclick="window.toggleVideoPlayback()">
+              <span id="video-play-icon">▶</span>
+            </button>
+            <button id="video-btn-step-fwd" class="player-icon-btn" title="Step 1 Frame Forward (Shift + →)" onclick="window.stepVideoFrame(1)">1F ▶</button>
+            <button id="video-btn-ff-5" class="player-icon-btn" title="Fast Forward 5s (→)" onclick="window.seekVideoRelative(5)">+5s</button>
+            <button id="video-btn-next-clip" class="player-icon-btn" title="Next Clip (])" onclick="window.navigateLightbox(1)">⏭</button>
+          </div>
+
+          <!-- Right: Speed, Volume, Fullscreen -->
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Speed:</span>
+              <select id="video-speed-select" onchange="window.setVideoPlaybackRate(this.value)" style="background: rgba(0,0,0,0.35); color: var(--text-primary); border: 1px solid var(--border-glass); border-radius: 6px; padding: 2px 6px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; cursor: pointer;">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2.0">2.0x</option>
+              </select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <button id="video-btn-volume" class="player-icon-btn" title="Mute / Unmute (M)" onclick="window.toggleVideoMute()" style="padding: 4px 6px;">🔊</button>
+              <input type="range" id="video-volume-slider" min="0" max="1" step="0.05" value="1" oninput="window.setVideoVolume(this.value)" style="width: 55px; height: 5px; accent-color: #38bdf8; cursor: pointer;">
+            </div>
+
+            <button id="video-btn-fullscreen" class="player-icon-btn" title="Fullscreen (F)" onclick="window.toggleVideoFullscreen()">⛶</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- File details footer -->
       <div
-        style="display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.25); padding: 8px 14px; border-radius: 8px;">
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.3); padding: 7px 12px; border-radius: 8px;">
         <span id="lightbox-path"
-          style="max-width: 75%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+          style="max-width: 72%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
         <span id="lightbox-meta" style="color: var(--accent-blue); font-weight: 600;">High-Res View</span>
       </div>
     </div>

@@ -536,6 +536,24 @@ class UnifiedApi:
         except Exception as e:
             return json.dumps({"error": str(e)})
 
+    def get_media_stream_url(self, file_path):
+        """Returns a high-speed local HTTP 206 streaming URL for ultra-fast, smooth video playback."""
+        from backends.media_streamer import MediaStreamerManager
+        try:
+            streamer = MediaStreamerManager.get_instance()
+            url = streamer.get_stream_url(file_path)
+            if url:
+                return json.dumps({"url": url})
+            return json.dumps({"error": "Unable to generate stream URL"})
+        except Exception as e:
+            return json.dumps({"error": str(e)})
+
+    def open_in_player(self, file_path):
+        """Launches target media file directly in Windows default hardware player (e.g. VLC, Windows Media Player)."""
+        from backends.media_streamer import open_in_system_player
+        res = open_in_system_player(file_path)
+        return json.dumps(res)
+
 
     def reload_app(self):
         """Reloads the webview window cleanly and hot-reloads backend modules."""

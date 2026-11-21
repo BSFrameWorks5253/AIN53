@@ -1335,6 +1335,110 @@ window.openLightbox = async function(filePathOrOpts, fileName = '', isVideo = fa
   await window.renderLightboxCurrentItem();
 };
 
+// ── Media Player Helpers & Controls ──
+function formatMediaTime(seconds) {
+  if (isNaN(seconds) || seconds < 0) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  const mStr = mins < 10 ? '0' + mins : String(mins);
+  const sStr = secs < 10 ? '0' + secs : String(secs);
+  return `${mStr}:${sStr}`;
+}
+
+window.toggleVideoPlayback = function() {
+  const video = document.getElementById('lightbox-video');
+  if (!video) return;
+  if (video.paused || video.ended) {
+    video.play().catch(() => {});
+  } else {
+    video.pause();
+  }
+};
+
+window.seekVideoRelative = function(sec) {
+  const video = document.getElementById('lightbox-video');
+  if (!video || isNaN(video.duration)) return;
+  video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + sec));
+};
+
+window.stepVideoFrame = function(frames) {
+  const video = document.getElementById('lightbox-video');
+  if (!video) return;
+  video.pause();
+  const frameTime = 1 / 30; // 30fps default frame step
+  video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + frames * frameTime));
+};
+
+window.setVideoPlaybackRate = function(rate) {
+  const video = document.getElementById('lightbox-video');
+  if (!video) return;
+  video.playbackRate = parseFloat(rate) || 1.0;
+};
+
+window.setVideoVolume = function(val) {
+  const video = document.getElementById('lightbox-video');
+  if (!video) return;
+  const v = Math.max(0, Math.min(1, parseFloat(val) || 0));
+  video.volume = v;
+  video.muted = (v === 0);
+  const muteBtn = document.getElementById('video-btn-volume');
+  if (muteBtn) muteBtn.textContent = video.muted ? '🔇' : (v < 0.5 ? '🔉' : '🔊');
+};
+
+window.toggleVideoMute = function() {
+  const video = document.getElementById('lightbox-video');
+  if (!video) return;
+  video.muted = !video.muted;
+  const slider = document.getElementById('video-volume-slider');
+  const muteBtn = document.getElementById('video-btn-volume');
+  if (slider) slider.value = video.muted ? 0 : (video.volume || 1);
+  if (muteBtn) muteBtn.textContent = video.muted ? '🔇' : (video.volume < 0.5 ? '🔉' : '🔊');
+};
+
+window.toggleVideoFullscreen = function() {
+  const container = document.querySelector('.lightbox-media-container') || document.getElementById('lightbox-video');
+  if (!container) return;
+  if (!document.fullscreenElement) {
+    if (container.requestFullscreen) container.requestFullscreen();
+    else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+};
+
+window.openLightboxInSystemPlayer = async function() {
+  const state = window._lightboxState;
+  const item = (state.items && state.currentIndex >= 0 && state.currentIndex < state.items.length)
+    ? state.items[state.currentIndex]
+    : null;
+  const filePath = item ? (item.path || '') : '';
+  if (!filePath) return;
+  if (window.showToast) window.showToast('🚀 Launching native media player…', 'info', 2000);
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.open_in_player) {
+    try {
+      await window.pywebview.api.open_in_player(filePath);
+    } catch (e) {
+      console.error('[Lightbox] Launch player error:', e);
+    }
+  }
+};
+
+window.openLightboxInExplorer = async function() {
+  const state = window._lightboxState;
+  const item = (state.items && state.currentIndex >= 0 && state.currentIndex < state.items.length)
+    ? state.items[state.currentIndex]
+    : null;
+  const filePath = item ? (item.path || '') : '';
+  if (!filePath) return;
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.open_in_explorer) {
+    try {
+      await window.pywebview.api.open_in_explorer(filePath);
+    } catch (e) {
+      console.error('[Lightbox] Explorer error:', e);
+    }
+  }
+};
+
 window.renderLightboxCurrentItem = async function() {
   const state = window._lightboxState;
   const modal = document.getElementById('lightbox-modal');
@@ -1348,6 +1452,12 @@ window.renderLightboxCurrentItem = async function() {
   const prevBtn = document.getElementById('lightbox-btn-prev');
   const nextBtn = document.getElementById('lightbox-btn-next');
   const meta = document.getElementById('lightbox-meta');
+  const vControls = document.getElementById('lightbox-video-controls');
+  const btnExternal = document.getElementById('lightbox-btn-external');
+  const playIcon = document.getElementById('video-play-icon');
+  const timeCur = document.getElementById('video-time-cur');
+  const timeDur = document.getElementById('video-time-dur');
+  const seekSlider = document.getElementById('video-seek-slider');
 
   if (!modal) return;
 
@@ -1368,7 +1478,6 @@ window.renderLightboxCurrentItem = async function() {
   }
   if (path)  path.textContent  = filePath;
   if (icon)  icon.textContent  = isVideo ? '🎬' : '🖼️';
-  if (meta)  meta.textContent  = isVideo ? 'Video Playback' : 'High-Res View';
 
   // Counter
   if (counter) {
@@ -1405,8 +1514,15 @@ window.renderLightboxCurrentItem = async function() {
     nextBtn.style.display = state.items.length > 1 ? 'flex' : 'none';
   }
 
-  // Increment requestId to avoid race conditions with async raw thumbnail fetching
+  // Increment requestId to avoid race conditions with async fetching
   const currentReqId = ++state.requestId;
+
+  // Unload previous video pipeline immediately to free RAM and GPU resources
+  if (video) {
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+  }
 
   const ext = (filePath.split('.').pop() || '').toLowerCase();
   const rawExts = ['cr2', 'cr3', 'nef', 'arw', 'dng', 'raf', 'orf', 'pef', 'rw2', 'srw'];
@@ -1414,16 +1530,85 @@ window.renderLightboxCurrentItem = async function() {
 
   if (isVideo) {
     if (img) img.classList.add('hidden');
+    if (vControls) vControls.classList.remove('hidden');
+    if (btnExternal) {
+      btnExternal.classList.remove('hidden');
+      btnExternal.style.display = 'inline-flex';
+    }
+    if (meta) meta.textContent = '🎬 Fast Stream (206 Partial Content)';
+    if (timeCur) timeCur.textContent = '00:00';
+    if (timeDur) timeDur.textContent = '00:00';
+    if (seekSlider) seekSlider.value = 0;
+    if (playIcon) playIcon.textContent = '▶';
+
     if (video) {
-      const cleanPath = filePath.replace(/\\/g, '/');
-      video.src = cleanPath.startsWith('file://') ? cleanPath : `file:///${cleanPath}`;
       video.classList.remove('hidden');
-      video.play().catch(() => {});
+      const cleanPath = filePath.replace(/\\/g, '/');
+      let streamSrc = cleanPath.startsWith('file://') ? cleanPath : `file:///${cleanPath}`;
+
+      // Request local HTTP 206 streaming URL for smooth playback without file locks
+      if (window.pywebview && window.pywebview.api && window.pywebview.api.get_media_stream_url) {
+        try {
+          const respRaw = await window.pywebview.api.get_media_stream_url(filePath);
+          const resp = typeof respRaw === 'string' ? JSON.parse(respRaw) : respRaw;
+          if (resp && resp.url) {
+            streamSrc = resp.url;
+          }
+        } catch (e) {
+          console.warn('[Lightbox] Media streaming fallback:', e);
+        }
+      }
+
+      if (state.requestId === currentReqId) {
+        video.src = streamSrc;
+        const speedSel = document.getElementById('video-speed-select');
+        if (speedSel) video.playbackRate = parseFloat(speedSel.value) || 1.0;
+
+        video.onplay = () => { if (playIcon) playIcon.textContent = '⏸'; };
+        video.onpause = () => { if (playIcon) playIcon.textContent = '▶'; };
+        video.onended = () => { if (playIcon) playIcon.textContent = '▶'; };
+        video.onloadedmetadata = () => {
+          if (timeDur) timeDur.textContent = formatMediaTime(video.duration);
+        };
+        video.ontimeupdate = () => {
+          if (timeCur) timeCur.textContent = formatMediaTime(video.currentTime);
+          if (seekSlider && !video._isUserSeeking && video.duration) {
+            seekSlider.value = (video.currentTime / video.duration) * 100;
+          }
+        };
+
+        if (seekSlider && !seekSlider._hasBoundEvents) {
+          seekSlider._hasBoundEvents = true;
+          seekSlider.onmousedown = () => { video._isUserSeeking = true; };
+          seekSlider.ontouchstart = () => { video._isUserSeeking = true; };
+          seekSlider.oninput = () => {
+            if (video.duration && timeCur) {
+              const targetTime = (parseFloat(seekSlider.value) / 100) * video.duration;
+              timeCur.textContent = formatMediaTime(targetTime);
+            }
+          };
+          seekSlider.onchange = () => {
+            if (video.duration) {
+              video.currentTime = (parseFloat(seekSlider.value) / 100) * video.duration;
+            }
+            video._isUserSeeking = false;
+          };
+          seekSlider.onmouseup = () => { video._isUserSeeking = false; };
+          seekSlider.ontouchend = () => { video._isUserSeeking = false; };
+        }
+
+        // Auto-play smooth stream
+        video.play().catch(() => {});
+      }
     }
   } else {
+    if (vControls) vControls.classList.add('hidden');
+    if (btnExternal) {
+      btnExternal.classList.add('hidden');
+      btnExternal.style.display = 'none';
+    }
+    if (meta) meta.textContent = '🖼️ High-Res View';
     if (video) {
-      video.pause();
-      video.src = '';
       video.classList.add('hidden');
     }
     if (img) {
@@ -1470,7 +1655,8 @@ window.closeLightbox = function() {
   const video = document.getElementById('lightbox-video');
   if (video) {
     video.pause();
-    video.src = '';
+    video.removeAttribute('src');
+    video.load();
   }
   if (modal) {
     modal.classList.add('hidden');
@@ -1634,16 +1820,77 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLightboxOpen = lbModal && !lbModal.classList.contains('hidden') && lbModal.style.display !== 'none';
 
     if (isLightboxOpen) {
+      const state = window._lightboxState;
+      const currentItem = (state.items && state.currentIndex >= 0 && state.currentIndex < state.items.length)
+        ? state.items[state.currentIndex] : null;
+      const isVideoActive = currentItem && (currentItem.isVideo || currentItem.is_video);
+
+      // Space: Toggle Play / Pause for video
+      if (e.code === 'Space') {
+        if (isVideoActive) {
+          e.preventDefault();
+          window.toggleVideoPlayback();
+          return;
+        }
+      }
+
+      // Left Arrow: Seek -5s (or -1 frame with Shift) on video, or previous item on photo
       if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (isVideoActive) {
+          if (e.shiftKey) window.stepVideoFrame(-1);
+          else window.seekVideoRelative(-5);
+        } else {
+          window.navigateLightbox(-1);
+        }
+        return;
+      }
+
+      // Right Arrow: Seek +5s (or +1 frame with Shift) on video, or next item on photo
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (isVideoActive) {
+          if (e.shiftKey) window.stepVideoFrame(1);
+          else window.seekVideoRelative(5);
+        } else {
+          window.navigateLightbox(1);
+        }
+        return;
+      }
+
+      // [ or PageUp: Previous Clip
+      if (e.key === '[' || e.key === 'PageUp') {
         e.preventDefault();
         window.navigateLightbox(-1);
         return;
       }
-      if (e.key === 'ArrowRight') {
+
+      // ] or PageDown: Next Clip
+      if (e.key === ']' || e.key === 'PageDown') {
         e.preventDefault();
         window.navigateLightbox(1);
         return;
       }
+
+      // M: Toggle Mute
+      if (e.key === 'm' || e.key === 'M') {
+        if (isVideoActive) {
+          e.preventDefault();
+          window.toggleVideoMute();
+          return;
+        }
+      }
+
+      // F: Toggle Fullscreen
+      if (e.key === 'f' || e.key === 'F') {
+        if (isVideoActive) {
+          e.preventDefault();
+          window.toggleVideoFullscreen();
+          return;
+        }
+      }
+
+      // Escape: Close Lightbox
       if (e.key === 'Escape') {
         e.preventDefault();
         window.closeLightbox();
