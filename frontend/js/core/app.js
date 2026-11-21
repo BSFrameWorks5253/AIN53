@@ -58,6 +58,17 @@
 window.initEditionFeatures = function() {
   document.body.classList.add('is-standard-edition');
   document.body.classList.remove('is-admin-edition');
+
+  // Disable and hide Event Creation in Standard Edition front end
+  const eventNavBtn = document.querySelector('.nav-btn[data-view="view-events"]');
+  if (eventNavBtn) {
+    eventNavBtn.style.display = 'none';
+    eventNavBtn.setAttribute('disabled', 'true');
+  }
+  const eventSection = document.getElementById('view-events');
+  if (eventSection) {
+    eventSection.style.display = 'none';
+  }
 };
 
 // ── Register Ctrl+R & F5 Refresh Hotkeys (Direct & Universal Bridge) ──
@@ -283,6 +294,11 @@ function initAppNavigation() {
   function activateView(viewId) {
     if (!viewId) return;
 
+    // Standard Edition Guard: view-events is disabled; fallback safely to view-pdf
+    if (viewId === 'view-events') {
+      viewId = 'view-pdf';
+    }
+
     try {
       localStorage.setItem('ain53_active_view', viewId);
     } catch (e) {}
@@ -427,7 +443,10 @@ function initAppNavigation() {
   // Handle URL Hash Navigation or restore saved view from localStorage (e.g. #view-sorting)
   const savedView = localStorage.getItem('ain53_active_view');
   const hash = window.location.hash ? window.location.hash.substring(1) : '';
-  const initialView = hash || savedView;
+  let initialView = hash || savedView;
+  if (initialView === 'view-events') {
+    initialView = 'view-pdf';
+  }
   if (initialView && document.getElementById(initialView)) {
     setTimeout(() => window.switchNavToView(initialView), 120);
   }

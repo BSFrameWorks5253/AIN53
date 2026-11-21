@@ -3027,4 +3027,15 @@ h1, h2, h3, h4 { font-family: var(--font-main); font-weight: 700; color: var(--t
   color: #ffffff;
 }
 
+/* Standard Edition: Disable & completely hide Event Creation */
+.is-standard-edition .nav-btn[data-view="view-events"],
+.is-standard-edition #view-events,
+.is-standard-edition [data-target-view="view-events"],
+.is-standard-edition a[href="#guide-events"],
+.is-standard-edition #guide-events {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+
 

@@ -40,7 +40,7 @@ if sys.platform == 'win32':
 # ==============================================================================
 APP_NAME = "AIN53 Data Management"
 PUBLISHER = "AIN (All Rights Reserved)"
-VERSION = "1.0.60"
+VERSION = "1.0.63"
 
 # Default install location: C:\Program Files\AIN53 Data Management
 # (Standard Windows installation path — requires the installer to be run as Administrator)
